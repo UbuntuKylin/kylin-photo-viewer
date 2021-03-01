@@ -1,4 +1,5 @@
 QT       += core gui
+QT += dbus
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,15 +16,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += \
-    main.cpp \
-    widget.cpp
+SOURCES += src/main.cpp \
+    src/global/log.cpp \
+    src/model/dbus.cpp \
+    src/controller/interaction.cpp \
+    src/controller/core.cpp \
+    src/view/tmp.cpp \
+    src/global/variable.cpp
 
 HEADERS += \
-    widget.h
+    src/global/log.h \
+    src/model/dbus.h \
+    src/controller/interaction.h \
+    src/controller/core.h \
+    src/view/tmp.h \
+    src/global/variable.h
 
 TRANSLATIONS += \
-    kylin-photo-viewer_zh_CN.ts
+    translations/kylin-photo-viewer_zh_CN.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
