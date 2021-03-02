@@ -2,30 +2,30 @@
 #include <QDebug>
 Core::Core()
 {
-    initCore();
+    _initCore();
 }
 
-void Core::initCore()
+void Core::_initCore()
 {
 
 }
 
-void Core::initCoreModel(QStringList arguments)
+void Core::loadCoreModel(QStringList arguments)
 {
-    initDbus(arguments);
-    initFile();
+    _initDbus(arguments);
+    _initFile();
 }
 
-void Core::initDbus(QStringList arguments)
+void Core::_initDbus(QStringList arguments)
 {
-    dbus = new Dbus;
+    _dbus = new Dbus;
 
     //获取注册Dbus服务是否成功
-    bool connectSeccess=dbus->getConnectSeccess();
+    bool connectSeccess=_dbus->getConnectSeccess();
 
     //如果注册Dbus服务成功，接收命令
     if(connectSeccess)
-        connect(dbus,&Dbus::processingCommand,this,&Core::processingCommand);
+        connect(_dbus,&Dbus::processingCommand,this,&Core::_processingCommand);
 
     //没有参数不处理
     if(arguments.length() <2)
@@ -47,7 +47,7 @@ void Core::initDbus(QStringList arguments)
         format=format.split(".").last();
         if(!Variable::SUPPORT_FORMATS.contains(format))
             return;
-        processingCommand(arguments);
+        emit needOpenImage(arguments[1]);
         return;
     }
 
@@ -55,19 +55,54 @@ void Core::initDbus(QStringList arguments)
     if(Variable::SUPPORT_CMD.keys().contains(arguments[1])){
         if(connectSeccess)//如果为首个实例不响应
             return;
-        dbus->argumentsCommand(arguments);
+        _dbus->argumentsCommand(arguments);
         return;
     }
 
     qDebug()<<"参数异常";
 }
 
-void Core::initFile()
+void Core::_initFile()
 {
-    file = new File;
+    _file = new File;
 }
 
-void Core::processingCommand(QStringList cmd)
+void Core::_processingCommand(QStringList cmd)
 {
     qDebug()<<"此处处理命令"<<cmd;
+}
+
+QList<int> Core::openImage(QString fullPath)
+{
+    Q_UNUSED(fullPath);
+    QVariant oldVar = _file->loadImage(fullPath);
+    //QVariant newVar;
+
+
+    //emit openFinish();
+    return QList<int>();
+}
+
+QList<int> Core::findAllImageFromeDir(QString fullPath)
+{
+    QString path = QFileInfo(fullPath).absolutePath();//提取绝对路径
+    QDir dir(path);//实例化目录对象
+    QStringList nameFilters;//格式过滤
+    for(const QString &format : Variable::SUPPORT_FORMATS)
+        nameFilters<<"*."+format;//构造格式过滤列表
+    QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);//获取所有支持的图片
+    //将所有图片打上唯一标签并存入队列
+    QMap<int,QString> tmpImageUrlMap;
+    for(QString &filename : images){
+        QString tmpFullPath = path+"/"+filename;
+        _maxType++;
+        tmpImageUrlMap.insert(_maxType,tmpFullPath);
+        //记录需要显示的图片
+        if(tmpFullPath == fullPath)
+            _showingNowType = _maxType;
+    }
+    //新路径中的所有文件靠前排序
+    _imageUrlMap.swap(tmpImageUrlMap);
+    _imageUrlMap.unite(tmpImageUrlMap);
+    return _imageUrlMap.keys();
 }

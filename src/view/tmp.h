@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QLabel>
 #include "../controller/interaction.h"
 class Widget : public QWidget
 {
@@ -13,5 +14,9 @@ public:
 
 private:
     Interaction *interaction = nullptr;
+    void _initInteraction();
+    void _startWithOpenImage(QString path);
+    void _openImage(QString path);
+    QLabel *lable = nullptr;
 };
 #endif // WIDGET_H

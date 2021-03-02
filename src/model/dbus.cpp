@@ -4,7 +4,7 @@ Dbus::Dbus()
 {
     QDBusConnection sessionBus = QDBusConnection::sessionBus();
     if(sessionBus.registerService(Variable::PHOTO_VIEW_DBUS_SERVICENAME))
-        connectSeccess=sessionBus.registerObject(Variable::PHOTO_VIEW_DBUS_PARH,Variable::PHOTO_VIEW_DBUS_INTERFACE,this,QDBusConnection::ExportAllSlots);
+        _connectSeccess=sessionBus.registerObject(Variable::PHOTO_VIEW_DBUS_PARH,Variable::PHOTO_VIEW_DBUS_INTERFACE,this,QDBusConnection::ExportAllSlots);
         //connectSeccess=sessionBus.registerObject(Variable::PHOTO_VIEW_DBUS_PARH,this,QDBusConnection::ExportAllContents);
 }
 
@@ -22,7 +22,7 @@ void Dbus::argumentsCommand(const QStringList &arguments)
 
 bool Dbus::getConnectSeccess()
 {
-    return connectSeccess;
+    return _connectSeccess;
 }
 
 void Dbus::getCmdFromOtherMe(const QStringList &cmd)
