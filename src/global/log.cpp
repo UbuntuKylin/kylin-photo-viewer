@@ -40,15 +40,15 @@ void Log::msgHandler(QtMsgType type, const QMessageLogContext& context, const QS
     switch (type) {
     case QtDebugMsg:
         outMsg = QString("[%1 D]: %2").arg(timeStr).arg(msg);
-        thisLevel = Variable::NORMAL;
+        thisLevel = Variable::DEBUG;
         break;
     case QtInfoMsg:
         outMsg = QString("[%1 I]: %2").arg(timeStr).arg(msg);
-        thisLevel = Variable::ALL;
+        thisLevel = Variable::NORMAL;
         break;
     case QtWarningMsg:
         outMsg = QString("[%1 W]: %2").arg(timeStr).arg(msg);
-        thisLevel = Variable::DEBUG;
+        thisLevel = Variable::ALL;
         break;
     case QtCriticalMsg:
         outMsg = QString("[%1 C]: %2").arg(timeStr).arg(msg);
@@ -65,7 +65,7 @@ void Log::msgHandler(QtMsgType type, const QMessageLogContext& context, const QS
     }
 
     if (ctrlEnv == NULL || ctrlEnv == "")
-        env = "normal";
+        env = "debug";
     else
         env = QString(ctrlEnv).toLower();
 

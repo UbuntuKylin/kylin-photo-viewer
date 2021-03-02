@@ -15,10 +15,12 @@ public:
     enum LOGLEVEL{ NOLOG , RELEASE , NORMAL , DEBUG , ALL }; //日志级别
     static const QString ENV_LOGLEVEL; //日志级别环境变量名
     static const bool LOGTOFILE; //日志写入文件
+    static const QMap<QString,QString> SUPPORT_CMD; //支持的命令列表
 
 private:
     static QSettings *_getSettings();
     static QSettings *_settings;
+    static QMap<QString,QString> _getSupportCmd();
 
 };
 

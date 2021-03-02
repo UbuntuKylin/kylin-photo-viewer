@@ -21,6 +21,7 @@ SOURCES += src/main.cpp \
     src/model/dbus.cpp \
     src/controller/interaction.cpp \
     src/controller/core.cpp \
+    src/model/file.cpp \
     src/view/tmp.cpp \
     src/global/variable.cpp
 
@@ -29,6 +30,7 @@ HEADERS += \
     src/model/dbus.h \
     src/controller/interaction.h \
     src/controller/core.h \
+    src/model/file.h \
     src/view/tmp.h \
     src/global/variable.h
 
