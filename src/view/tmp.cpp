@@ -3,7 +3,7 @@
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
-    //qDebug()<<"123132";
+    interaction =Interaction::getInstance();
 }
 
 Widget::~Widget()

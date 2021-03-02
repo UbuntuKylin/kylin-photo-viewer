@@ -7,14 +7,9 @@ Build-Depends: debhelper (>=9),
                qt5-qmake,
                qtchooser,
                qtscript5-dev,
-               qttools5-dev-tools,
-               qtbase5-dev-tools,
-               libgeoip-dev,
-               libx11-dev,
-               libgsettings-qt-dev,
-			   pkgconf,
-			   libqt5x11extras5-dev,
-			   libkf5windowsystem-dev,
+               libopencv-core-dev,
+               libopencv-imgcodecs-dev,
+               pkgconf,
 Standards-Version: 4.4.0
 Homepage: https://github.com/ubuntukylin/kylin-photo-viewer
 Vcs-Git: https://github.com/ubuntukylin/kylin-photo-viewer.git

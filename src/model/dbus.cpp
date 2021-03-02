@@ -4,24 +4,30 @@ Dbus::Dbus()
 {
     QDBusConnection sessionBus = QDBusConnection::sessionBus();
     if(sessionBus.registerService(Variable::PHOTO_VIEW_DBUS_SERVICENAME))
-        connectSeccess=sessionBus.registerObject(Variable::PHOTO_VIEW_DBUS_PARH,"dbus.me",this,QDBusConnection::ExportAllContents);
-        //connectSeccess=sessionBus.registerObject(Variable::PHOTO_VIEW_DBUS_PARH,this,QDBusConnection::ExportAllContents);ExportAllSlots
+        connectSeccess=sessionBus.registerObject(Variable::PHOTO_VIEW_DBUS_PARH,Variable::PHOTO_VIEW_DBUS_INTERFACE,this,QDBusConnection::ExportAllSlots);
+        //connectSeccess=sessionBus.registerObject(Variable::PHOTO_VIEW_DBUS_PARH,this,QDBusConnection::ExportAllContents);
 }
 
-void Dbus::argumentsCommand(QString cmd)
+void Dbus::argumentsCommand(const QStringList &arguments)
 {
-    if(!connectSeccess)//如果为首个实例不响应
-        return;
-    else
-    {
-        //QDBusInterface(Variable::PHOTO_VIEW_DBUS_SERVICENAME,Variable::PHOTO_VIEW_DBUS_PARH,"",QDBusConnection::sessionBus()).call();
-        exit(0);
-    }
-
+    QStringList cmd = arguments;
+    cmd.removeFirst();
+    QDBusInterface *interface = new QDBusInterface(Variable::PHOTO_VIEW_DBUS_SERVICENAME,
+                                                   Variable::PHOTO_VIEW_DBUS_PARH,
+                                                   Variable::PHOTO_VIEW_DBUS_INTERFACE,
+                                                   QDBusConnection::sessionBus());
+    interface->call("getCmdFromOtherMe",cmd);
+    exit(0);
 }
 
-void Dbus::transmissionCMD(QStringList arguments)
+bool Dbus::getConnectSeccess()
 {
-    qDebug()<<arguments;
+    return connectSeccess;
+}
+
+void Dbus::getCmdFromOtherMe(const QStringList &cmd)
+{
+    emit processingCommand(cmd);
+    qDebug()<<"从DBUS接收到命令："<<cmd;
 }
 

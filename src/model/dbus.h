@@ -4,18 +4,24 @@
 #include <QObject>
 #include <QDBusInterface>
 #include <QDBusConnection>
+#include <QDBusReply>
 
 #include "../global/variable.h"
 
 class Dbus : public QObject
 {
     Q_OBJECT
+
+signals:
+    void processingCommand(QStringList);
+
 public:
     Dbus();
-    void argumentsCommand(QString cmd);
+    void argumentsCommand(const QStringList &arguments);
+    bool getConnectSeccess();
 
 public slots:
-    void transmissionCMD(QStringList);
+    void getCmdFromOtherMe(const QStringList &cmd);
 
 private:
     bool connectSeccess = false;//注册DBus成功
