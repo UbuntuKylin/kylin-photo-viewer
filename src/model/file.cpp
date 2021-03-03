@@ -5,9 +5,9 @@ File::File()
 
 }
 
-QVariant File::loadImage(QString path)
+MatAndFileinfo File::loadImage(QString path)
 {
-    QVariant var;
+    MatAndFileinfo maf;
     /*		参数2：图像文件解析的方式，支持的方式有如下：
             cv::IMREAD_UNCHANGED    不对图像文件进行任何转换，直接读取【读入完整图片，包括alpha通道(png有，jpg无）】
                 IMREAD_GRAYSCALE    将任何图像均转换为灰度图像（单通道）进行读取
@@ -21,16 +21,13 @@ QVariant File::loadImage(QString path)
     //判断图像是否有效
     if (!mat.data) {
         qDebug() << "读取图片失败："<< path;
-        return QVariant();
+        return maf;
     }
     //获取文件信息
     QFileInfo info(path);
-    var.setValue(mat);
-    var.setValue(info);
-    return var;
-
-//            QImage  img2(mat.data,mat.cols,mat.rows, mat.step, QImage::Format_RGB888);
-//            ui->label->setPixmap(QPixmap::fromImage(img2));
+    maf.mat = mat;
+    maf.info=info;
+    return maf;
 }
 
 void File::saveImage(QVariant var)

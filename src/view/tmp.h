@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QStandardItemModel>
 #include "../controller/interaction.h"
 class Widget : public QWidget
 {
@@ -17,6 +18,7 @@ private:
     void _initInteraction();
     void _startWithOpenImage(QString path);
     void _openImage(QString path);
+    void openFinish(QVariant var);
     QLabel *lable = nullptr;
 };
 #endif // WIDGET_H

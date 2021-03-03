@@ -28,6 +28,6 @@ bool Dbus::getConnectSeccess()
 void Dbus::getCmdFromOtherMe(const QStringList &cmd)
 {
     emit processingCommand(cmd);
-    qDebug()<<"从DBUS接收到命令："<<cmd;
+    //qDebug()<<"从DBUS接收到命令："<<cmd;
 }
 

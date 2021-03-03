@@ -37,6 +37,8 @@ void _Interaction::_initConnect(Core *core)
     connect(this,&_Interaction::_openImage,core,&Core::openImage);//阻塞调用取反回值
 
     connect(core,&Core::needOpenImage,this,&_Interaction::needOpenImage);//需要启动时加载图片
+    connect(core,&Core::openFinish,this,&_Interaction::openFinish);//图片打开完成，将数据返回给UI层
+    connect(this,&_Interaction::_changeImage,core,&Core::changeImage);//切换图片
 }
 
 void _Interaction::initUiFinish()
@@ -47,12 +49,27 @@ void _Interaction::initUiFinish()
     _initUiFinish = true;
 }
 
-QList<int> _Interaction::openImage(QString path)
+QVariant _Interaction::openImage(const QString &path)
 {
     return _openImage(path);
 }
 
-void _Interaction::needOpenImage(QString path)
+void _Interaction::changeImage(const int &type)
+{
+    emit _changeImage(type);
+}
+
+void _Interaction::nextImage()
+{
+    emit _changeImage(-1);
+}
+
+void _Interaction::backImage()
+{
+    emit _changeImage(-2);
+}
+
+void _Interaction::needOpenImage(const QString &path)
 {
     if(_initUiFinish){
         //如果UI已经初始化完成

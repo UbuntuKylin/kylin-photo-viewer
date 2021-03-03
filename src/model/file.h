@@ -8,14 +8,20 @@
 #include <opencv4/opencv2/imgcodecs.hpp>
 using namespace cv;
 
+class MatAndFileinfo
+{
+public:
+    Mat mat;
+    QFileInfo info;
+};
+
 class File : public QObject
 {
     Q_OBJECT
 public:
     File();
-    QVariant loadImage(QString path);
+    MatAndFileinfo loadImage(QString path);
     void saveImage(QVariant var);
 };
-Q_DECLARE_METATYPE(Mat)//声明类型，使其可以放入QVariant
 
 #endif // FILE_H

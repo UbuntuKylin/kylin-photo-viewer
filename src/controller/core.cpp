@@ -7,7 +7,9 @@ Core::Core()
 
 void Core::_initCore()
 {
-
+    _maxType = 0;
+    _nowType = 0;
+    _backType = 0;
 }
 
 void Core::loadCoreModel(QStringList arguments)
@@ -69,23 +71,106 @@ void Core::_initFile()
 
 void Core::_processingCommand(QStringList cmd)
 {
-    qDebug()<<"此处处理命令"<<cmd;
+    qDebug()<<"响应外部命令"<<cmd;
+
+    if(cmd[0] == "-next"){
+        changeImage(-1);
+        return;
+    }
+    if(cmd[0] == "-back"){
+        changeImage(-2);
+        return;
+    }
 }
 
-QList<int> Core::openImage(QString fullPath)
+Mat ImageShowStatus::_changeImage(Mat mat)
+{
+    if(_backMat.data)
+        _backMat.release();
+    _backMat = _nowMat;
+    _nowMat = mat;
+    if(_nowImage!=nullptr)
+        delete _nowImage;
+    return _nowMat;
+}
+
+void ImageShowStatus::_changeImageType(int num)
+{
+    if(num == 0)//回滚
+    {
+        _nowType=_backType;
+        return;
+    }
+    _backType = _nowType;
+    _nowType = num;
+}
+
+QVariant Core::openImage(QString fullPath)
 {
     Q_UNUSED(fullPath);
-    QVariant oldVar = _file->loadImage(fullPath);
-    //QVariant newVar;
-
-
-    //emit openFinish();
-    return QList<int>();
+    MatAndFileinfo maf = _file->loadImage(fullPath);
+    if(!maf.mat.data)
+    {
+        //如果图片打开失败则回滚
+        _changeImageType();
+        return QVariant();
+    }
+    //格式转换，记录状态
+    Mat mat = _changeImage(maf.mat);
+    _nowImage = new QImage(mat.data,mat.cols,mat.rows, mat.step, QImage::Format_RGB888);
+    ImageAndInfo package;
+    package.info = maf.info;
+    package.image = _nowImage;
+    package.type = _nowType;
+    QVariant var;
+    var.setValue<ImageAndInfo>(package);
+    emit openFinish(var);
+    return QVariant();
 }
 
-QList<int> Core::findAllImageFromeDir(QString fullPath)
+void Core::changeImage(const int &type)
 {
-    QString path = QFileInfo(fullPath).absolutePath();//提取绝对路径
+    //如果图片队列小于2，不处理
+    if(_imageUrlMap.size()<2)
+        return;
+
+    QList<int> list = _imageUrlMap.keys();
+    if(type == -1){
+        if(_nowType == list.last()){
+            //最后一张切下一张时，回到队列开头
+            _changeImageType(list.first());
+            openImage(_imageUrlMap.first());
+            return;
+        }
+        int key =list[list.indexOf(_nowType)+1];
+        _changeImageType(key);
+        openImage(_imageUrlMap.value(key));
+        return;
+    }
+    if(type == -2){
+        if(_nowType == list.first()){
+            //第一张切上一张时，回到队列结尾
+            _changeImageType(list.last());
+            openImage(_imageUrlMap.last());
+            return;
+        }
+        int key =list[list.indexOf(_nowType)-1];
+        _changeImageType(key);
+        openImage(_imageUrlMap.value(key));
+        return;
+    }
+    //如果队列中无此关键值，不处理
+    if(list.indexOf(type)<0)
+        return;
+    _changeImageType(type);
+    openImage(_imageUrlMap.value(type));
+}
+
+QVariant Core::findAllImageFromeDir(QString fullPath)
+{
+    QFileInfo info(fullPath);
+    QString path = info.absolutePath();//转成绝对路径
+    QString filepath = info.absoluteFilePath();//转成绝对路径
     QDir dir(path);//实例化目录对象
     QStringList nameFilters;//格式过滤
     for(const QString &format : Variable::SUPPORT_FORMATS)
@@ -98,11 +183,17 @@ QList<int> Core::findAllImageFromeDir(QString fullPath)
         _maxType++;
         tmpImageUrlMap.insert(_maxType,tmpFullPath);
         //记录需要显示的图片
-        if(tmpFullPath == fullPath)
-            _showingNowType = _maxType;
+        if(tmpFullPath == filepath)
+        {
+            _backType = _nowType;
+            _nowType = _maxType;
+        }
     }
     //新路径中的所有文件靠前排序
     _imageUrlMap.swap(tmpImageUrlMap);
     _imageUrlMap.unite(tmpImageUrlMap);
-    return _imageUrlMap.keys();
+    QVariant var;
+    var.setValue<QList<int>>(_imageUrlMap.keys());
+    return var;
 }
+

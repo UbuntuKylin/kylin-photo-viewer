@@ -18,7 +18,10 @@ public:
     static Interaction *getInstance();//单例取指针
     virtual void creatCore(const QStringList &list)=0;//初始化核心模块
     virtual void initUiFinish()=0;//UI初始化完成
-    virtual QList<int> openImage(QString path)=0;//打开图片，返回相册标签列表
+    virtual QVariant openImage(const QString &path)=0;//打开图片，返回相册标签列表
+    virtual void changeImage(const int &type)=0;//切换图片
+    virtual void nextImage()=0;//切换图片
+    virtual void backImage()=0;//切换图片
 private:
     static Interaction *m_interaction;//单例指针
 };
@@ -32,13 +35,18 @@ class _Interaction : public Interaction
 
 signals:
     void _loadCoreModel(const QStringList &list);//初始化核心模块
-    QList<int> _openImage(QString path);//打开图片  QVariant -> int,QList
+    QVariant _openImage(const QString &path);//打开图片  QVariant -> QHash<int,QList<int>>
+    void _changeImage(const int &type); //切换图片
 
 public:
-    void creatCore(const QStringList &list);//初始化核心模块
-    void initUiFinish();//UI初始化完成
-    QList<int> openImage(QString path);//打开图片  QVariant -> int,QList
-    void needOpenImage(QString path);//处理启动时立即打开图片的场景
+    virtual void creatCore(const QStringList &list);//初始化核心模块
+    virtual void initUiFinish();//UI初始化完成
+    virtual QVariant openImage(const QString &path);//打开图片  QVariant -> QHash<int,QList<int>>
+    virtual void changeImage(const int &type);//切换图片
+    virtual void nextImage();//切换图片
+    virtual void backImage();//切换图片
+
+    void needOpenImage(const QString &path);//处理启动时立即打开图片的场景
 
 private:
     void _initConnect(Core *core);
