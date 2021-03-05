@@ -11,11 +11,13 @@ ToolBar::ToolBar(QWidget *parent) : QDialog(parent)
     XAtomHelper::getInstance()->setWindowMotifHint(this->winId(), hints);
 
     this->resize(678,40);
+//    this->setAttribute(Qt::MouseEventFlag);
     tooleWid = new QWidget(this);
+
     toolLayout = new QHBoxLayout(this);
 
     reduce = new QPushButton(this);
-    reduce->setFixedSize(25,25);
+    reduce->setFixedSize(24,24);
 
     reduce->setFocusPolicy(Qt::NoFocus);
 
@@ -77,16 +79,21 @@ ToolBar::ToolBar(QWidget *parent) : QDialog(parent)
     delImage = new QPushButton(this);
     delImage->setFixedSize(24,24);
     delImage->setFocusPolicy(Qt::NoFocus);
+//    setWindowFlags(Qt::FramelessWindowHint);
+//    setAttribute(Qt::WA_TranslucentBackground);
 
     this->initControlQss();
     this->setstyle();
+
+//    installEventFilter(this);
 }
+//布局
 void ToolBar::initControlQss()
 {
 
     toolLayout->addWidget(reduce,0,Qt::AlignCenter);
     toolLayout->setSpacing(10);
-    toolLayout->addWidget(percentage,0,Qt::AlignCenter);
+    toolLayout->addWidget(percentage,0,Qt::AlignLeft);
     toolLayout->setSpacing(10);
     toolLayout->addWidget(enlarge,0,Qt::AlignCenter);
     toolLayout->setSpacing(20);
@@ -117,15 +124,16 @@ void ToolBar::initControlQss()
     toolLayout->addWidget(delImage,0,Qt::AlignCenter);
 //    toolLayout->setMargin(20);
     toolLayout->setContentsMargins(20,8,20,8);
-    tooleWid->setLayout(toolLayout);
+    this->setLayout(toolLayout);
     tooleWid->resize(this->width(),this->height());
     tooleWid->move(0,0);
 
 }
+//样式
 void ToolBar::setstyle()
 {
 //    this->setObjectName("mainWid");
-//    this->setStyleSheet("background:blue;");
+//    this->setStyleSheet("border-radius: 4px;");
 
     percentage->setStyleSheet("QLabel{background-color:transparent;}");
     line1->setStyleSheet("QLabel{background-color:transparent;border:1px;color:black;}");
@@ -186,15 +194,7 @@ void ToolBar::setstyle()
 
 }
 
-//void ToolBar::enterEvent(QEvent *event)
-//{
-//    qDebug()<<"鼠标移入";
-//    emit showTwobar();
-////    QWidget::enterEvent(event);
-//}
-//void ToolBar::leaveEvent(QEvent *event)
-//{
-//    qDebug()<<"鼠标移出";
-//    emit hideTwobar();
-////    QWidget::leaveEvent(event);
-//}
+bool ToolBar::event(QEvent *event)
+{
+    return QObject::event(event);
+}

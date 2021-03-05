@@ -14,10 +14,11 @@ class OpenImage : public QWidget
 public:
     explicit OpenImage(QWidget *parent = nullptr);
 private:
-    QPushButton *openInCenter;
-    QPushButton *addFile;
-    QLabel *openText;
+    QPushButton *openInCenter;//圆形图标
+    QPushButton *addFile;//“+”图标
+    QLabel *openText;//下方文字
     QSize iconsize;
+
     void setstyle();
     void initconnect();
     void openimage();

@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    qInstallMessageHandler(Log::msgHandler);//注册MessageHandler
+//    qInstallMessageHandler(Log::msgHandler);//注册MessageHandler
 
     //如果初始化异常则退出
     Interaction *interaction =Interaction::getInstance();

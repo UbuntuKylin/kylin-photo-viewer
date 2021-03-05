@@ -2,12 +2,10 @@
 #include "kyview.h"
 TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
 {
-    this->resize(MainWindow::mutual->width(),40);
+
     titleWid = new QWidget(this);
-    titleLayout = new QHBoxLayout(titleWid);
-    titleWid->resize(MainWindow::mutual->width(),40);
-    qDebug()<<"3"<<titleWid->width();
-    qDebug()<<"4"<<this->width();
+    titleLayout = new QHBoxLayout(this);
+
     logoBtn = new QPushButton(this);
     logolb = new QLabel(this);
     logolb->setFixedSize(100,24);
@@ -19,9 +17,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
 
 
     m_menu = new menuModule(this);
-//    m_menu-setIcon(QIcon::fromTheme("open-menu-symbolic"));
-//    m_menu->menuButton->setIcon(QIcon::fromTheme("open-menu-symbolic"));
-//    m_menu->setFixedSize(30,30);
+
     minibtn = new QPushButton(this);
     minibtn->setFixedSize(30,30);
     minibtn->setToolTip(tr("minimize"));
@@ -40,13 +36,14 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     closebtn->setFixedSize(30,30);
     closebtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
 
-
+    this->re_resize();
     this->setFixedHeight(40);
     this->setStyle();
     this->initConnect();
     this->initControlQss();
 
 }
+//样式
 void TitleBar::setStyle()
 {
     this->setStyleSheet("background-color:rgba(255, 255, 255, 0.7);");
@@ -62,7 +59,7 @@ void TitleBar::setStyle()
                                "QPushButton:Pressed{border:0px;border-radius:4px;background:transparent;background-color:#E44C50;}");
 
 }
-
+//初始化顶栏布局
 void TitleBar::initControlQss()
 {
 
@@ -86,32 +83,41 @@ void TitleBar::initControlQss()
 //    titleWid->setMaximumWidth(1920);
     titleWid->move(0,0);
 }
+//初始化连接
 void TitleBar::initConnect()
 {
     connect(minibtn, &QPushButton::clicked, MainWindow::mutual, &MainWindow::showMinimized);
     connect(fullscreen, &QPushButton::clicked, this, &TitleBar::fullRecovery);
     connect(closebtn, &QPushButton::clicked, MainWindow::mutual, &MainWindow::close);
+//    connect(fullscreen, &QPushButton::clicked, MainWindow::mutual, &MainWindow::showFullScreen);
 
-//    connect(m_menu,&QMenu::triggered,this,&menuModule::triggerMenu);
 }
+//触发全屏事件
 void TitleBar::fullRecovery()
 {
+    QScreen *screen = QGuiApplication::primaryScreen ();
+    QRect screenRect =  screen->availableVirtualGeometry();
 
-    if(!MainWindow::mutual->isFullScreen())
+    if(!(MainWindow::mutual->width() == screenRect.width() && MainWindow::mutual->height() == screenRect.height()))
     {
-        MainWindow::mutual->showFullScreen();
-        fullscreen->setIcon(QIcon::fromTheme("window-restore-symbolic"));//主题库的最小化图标
+
+        fullscreen->setIcon(QIcon::fromTheme("window-restore-symbolic"));//主题库的恢复图标
         fullscreen->setToolTip(tr("recovery"));
         emit changeSize();
 
     }else{
-        MainWindow::mutual->showNormal();
-        fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的最小化图标
+
+        fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的全屏图标
         fullscreen->setToolTip(tr("full srceen"));
-        emit changeSize();
+        emit recovery();
 
     }
-    qDebug()<< "a" << MainWindow::mutual->width();
-   qDebug()<<"s"<<titleWid->width();
-   qDebug()<<"d"<<this->width();
+
+}
+void TitleBar::re_resize()
+{
+    qDebug()<<"qq";
+    this->resize(MainWindow::mutual->width(),40);
+    titleWid->resize(MainWindow::mutual->width(),40);
+
 }

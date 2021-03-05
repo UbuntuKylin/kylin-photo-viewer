@@ -31,6 +31,7 @@ SOURCES += src/main.cpp \
     src/controller/interaction.cpp \
     src/controller/core.cpp \
     src/model/file.cpp \
+    src/view/cannotmove.cpp \
     src/view/information.cpp \
     src/view/kyview.cpp \
     src/global/variable.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
     src/controller/core.h \
     src/model/file.h \
     src/model/file.h \
+    src/view/cannotmove.h \
     src/view/information.h \
     src/view/kyview.h \
     src/global/variable.h \

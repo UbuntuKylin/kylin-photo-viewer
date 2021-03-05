@@ -12,9 +12,9 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QMouseEvent>
-#include "toolbar.h"
+#include <QScreen>
 
-//#include "menumodule.h"
+#include "toolbar.h"
 #include "titlebar.h"
 #include "openimage.h"
 
@@ -27,29 +27,33 @@ public:
     static MainWindow *mutual;//指针类型静态成员变量
 
 private:
-    TitleBar *titlebar = nullptr;
-    ToolBar *toolbar = nullptr;
-    OpenImage *openImage = nullptr;
+    TitleBar *titlebar = nullptr;//顶栏
+    ToolBar *toolbar = nullptr;//工具栏
+    OpenImage *openImage = nullptr;//打开图片
+    QWidget *centerWidget;
+    QVBoxLayout *centerLayout;
 
-    QVBoxLayout *mainLayout;
-    QWidget *mainWidget;
+    QWidget *openImageWidget;
+    QHBoxLayout *openImageLayout;
 
-    QWidget *titleWidTest;
+    QWidget *toolbarWidget;
+    QHBoxLayout *toolbarLayout;
 
-
-    void setStyle();
-    void titlebarQSS();
-    void initconnect();
-
+    QLabel *showImage;//用来展示图片的区域
+    QSize widgetSize;
+    QSize widgetPosition;
+    QPoint p;
+    void setstyle();//设置QSS
+    void initconnect();//初始化连接
+    void mouseMoveEvent(QMouseEvent *event);
+    void layout();
+    bool event(QEvent *event);
 
 private slots:
-    void changSize();
-    void showTwobar();
-    void hideTwobar();
+    void changFullScreen();
+    void changOrigSize();
     void removeForfull();
-//    void showmini();
-//    void showFull();
-//    void closewindow();
+
 
 signals:
 

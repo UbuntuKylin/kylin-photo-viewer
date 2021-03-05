@@ -29,5 +29,6 @@
         <file>res/reduce.png</file>
         <file>res/originalSize.png</file>
         <file>res/originalSize_hover.png</file>
+        <file>res/menu_d.png</file>
     </qresource>
 </RCC>

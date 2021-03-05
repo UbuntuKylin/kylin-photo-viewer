@@ -21,8 +21,8 @@ void menuModule::initAction(){
     iconSize = QSize(30,30);
     menuButton = new QPushButton;
     menuButton->setToolTip(tr("menu"));
-    menuButton->setIcon(QIcon::fromTheme("application-menu"));
-//    menuButton->setIcon(QIcon(":/res/control_icons/menu.png"));
+//    menuButton->setIcon(QIcon::fromTheme("application-menu"));
+    menuButton->setIcon(QIcon(":/res/res/menu_d.png"));
     menuButton->setIconSize(QSize(30,30));
     menuButton->setProperty("setIconHighlightEffectDefaultColor", QColor(Qt::white));
     menuButton->setStyleSheet("color:rgba(255,255,255，1);");
