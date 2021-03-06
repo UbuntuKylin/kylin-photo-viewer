@@ -2,7 +2,7 @@
 #define LOG_H
 
 #include "variable.h"
-#include <QDebug>
+
 
 class Log
 {

@@ -44,22 +44,23 @@ void Log::msgHandler(QtMsgType type, const QMessageLogContext& context, const QS
         break;
     case QtInfoMsg:
         outMsg = QString("[%1 I]: %2").arg(timeStr).arg(msg);
-        thisLevel = Variable::NORMAL;
+        thisLevel = Variable::INFO;
         break;
     case QtWarningMsg:
         outMsg = QString("[%1 W]: %2").arg(timeStr).arg(msg);
-        thisLevel = Variable::ALL;
+        thisLevel = Variable::WARNING;
         break;
     case QtCriticalMsg:
         outMsg = QString("[%1 C]: %2").arg(timeStr).arg(msg);
-        thisLevel = Variable::RELEASE;
+        thisLevel = Variable::CRITICAL;
         break;
     case QtFatalMsg:
         outMsg = QString("[%1 F]: %2").arg(timeStr).arg(msg);
-        thisLevel = Variable::RELEASE;
+        thisLevel = Variable::FATAL;
     }
 
-    if (fp != NULL) {
+    //写入日志文件
+    if (fp != NULL && Variable::LOGTOFILE) {
         fprintf(fp, "%s\n", outMsg.toUtf8().data());
         fflush(fp);
     }
@@ -71,16 +72,19 @@ void Log::msgHandler(QtMsgType type, const QMessageLogContext& context, const QS
 
     // 根据环境变量级别，将信息输出到命令行
     Variable::LOGLEVEL envLogLevel = Variable::NOLOG;
-    if ((env == "release") || (env == "1"))
-        envLogLevel = Variable::RELEASE;
-    else if((env == "normal") || (env == "2"))
-        envLogLevel = Variable::NORMAL;
-    else if((env == "debug") || (env == "3"))
+    if ((env == "fatal") || (env == "1"))
+        envLogLevel = Variable::FATAL;
+    else if((env == "critical") || (env == "2"))
+        envLogLevel = Variable::CRITICAL;
+    else if((env == "info") || (env == "3"))
+        envLogLevel = Variable::INFO;
+    else if((env == "debug") || (env == "4"))
         envLogLevel = Variable::DEBUG;
-    else if((env == "all") || (env == "4"))
-        envLogLevel = Variable::ALL;
+    else if((env == "warning") || (env == "5"))
+        envLogLevel = Variable::WARNING;
     if(thisLevel<=envLogLevel){
-        fprintf(stdout, "%s\n", outMsg.toStdString().c_str());
+        //打印到控制台
+        fprintf(stdout, "%s\n", msg.toStdString().c_str());
         fflush(stdout);
     }
 

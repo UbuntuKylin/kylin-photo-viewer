@@ -1,5 +1,5 @@
 #include "core.h"
-#include <QDebug>
+
 Core::Core()
 {
     _initCore();
@@ -15,7 +15,6 @@ void Core::_initCore()
 void Core::loadCoreModel(QStringList arguments)
 {
     _initDbus(arguments);
-    _initFile();
 }
 
 void Core::_initDbus(QStringList arguments)
@@ -64,11 +63,6 @@ void Core::_initDbus(QStringList arguments)
     qDebug()<<"参数异常";
 }
 
-void Core::_initFile()
-{
-    _file = new File;
-}
-
 void Core::_processingCommand(QStringList cmd)
 {
     qDebug()<<"响应外部命令"<<cmd;
@@ -89,8 +83,6 @@ Mat ImageShowStatus::_changeImage(Mat mat)
         _backMat.release();
     _backMat = _nowMat;
     _nowMat = mat;
-    if(_nowImage!=nullptr)
-        delete _nowImage;
     return _nowMat;
 }
 
@@ -107,8 +99,7 @@ void ImageShowStatus::_changeImageType(int num)
 
 QVariant Core::openImage(QString fullPath)
 {
-    Q_UNUSED(fullPath);
-    MatAndFileinfo maf = _file->loadImage(fullPath);
+    MatAndFileinfo maf = File::loadImage(fullPath);
     if(!maf.mat.data)
     {
         //如果图片打开失败则回滚
@@ -117,25 +108,35 @@ QVariant Core::openImage(QString fullPath)
     }
     //格式转换，记录状态
     Mat mat = _changeImage(maf.mat);
-    _nowImage = new QImage(mat.data,mat.cols,mat.rows, mat.step, QImage::Format_RGB888);
+    _nowImage = Processing::converFormat(mat);
+    _info = maf.info;
+    _showImage();
+    return QVariant();
+}
+
+void Core::_showImage()
+{
+    if(_nowImage.isNull())
+        return;
+    QPixmap pix = Processing::resizePix(_nowImage,_size);
     ImageAndInfo package;
-    package.info = maf.info;
-    package.image = _nowImage;
+    package.proportion = 100 * pix.width() / _nowImage.width();
+    package.info = _info;
+    package.image = pix;
     package.type = _nowType;
     QVariant var;
     var.setValue<ImageAndInfo>(package);
     emit openFinish(var);
-    return QVariant();
 }
 
-void Core::changeImage(const int &type)
+void Core::changeImage(const int &mat)
 {
     //如果图片队列小于2，不处理
     if(_imageUrlMap.size()<2)
         return;
 
     QList<int> list = _imageUrlMap.keys();
-    if(type == -1){
+    if(mat == -1){
         if(_nowType == list.last()){
             //最后一张切下一张时，回到队列开头
             _changeImageType(list.first());
@@ -147,7 +148,7 @@ void Core::changeImage(const int &type)
         openImage(_imageUrlMap.value(key));
         return;
     }
-    if(type == -2){
+    if(mat == -2){
         if(_nowType == list.first()){
             //第一张切上一张时，回到队列结尾
             _changeImageType(list.last());
@@ -160,10 +161,16 @@ void Core::changeImage(const int &type)
         return;
     }
     //如果队列中无此关键值，不处理
-    if(list.indexOf(type)<0)
+    if(list.indexOf(mat)<0)
         return;
-    _changeImageType(type);
-    openImage(_imageUrlMap.value(type));
+    _changeImageType(mat);
+    openImage(_imageUrlMap.value(mat));
+}
+
+void Core::changeWidgetSize(const QSize &size)
+{
+    _size = size;
+    _showImage();
 }
 
 QVariant Core::findAllImageFromeDir(QString fullPath)
@@ -194,6 +201,16 @@ QVariant Core::findAllImageFromeDir(QString fullPath)
     _imageUrlMap.unite(tmpImageUrlMap);
     QVariant var;
     var.setValue<QList<int>>(_imageUrlMap.keys());
+    _loadAlbum();
     return var;
 }
 
+void Core::_loadAlbum()
+{
+    for(int &type : _imageUrlMap.keys()){
+        AlbumThumbnail* thread= new AlbumThumbnail(type,_imageUrlMap.value(type));
+        connect(thread,&AlbumThumbnail::finished,thread,&AlbumThumbnail::deleteLater);
+        connect(thread,&AlbumThumbnail::albumFinish,this,&Core::albumFinish);
+        thread->start();
+    }
+}

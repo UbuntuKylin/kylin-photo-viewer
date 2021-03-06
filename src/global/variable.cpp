@@ -1,5 +1,4 @@
 #include "variable.h"
-#include <QDebug>
 
 const QString Variable::PROGRAM_NAME = QString("kylin-photo-viewer");
 const QString Variable::PHOTO_VIEW_DBUS_SERVICENAME = QString("org.ukui.kylin_photo_viewer");
@@ -7,8 +6,9 @@ const QString Variable::PHOTO_VIEW_DBUS_PARH = QString("/");
 const QString Variable::PHOTO_VIEW_DBUS_INTERFACE = QString("kylin_photo_viewer.commands");
 const QString Variable::ENV_LOGLEVEL = QString("UKPV_DEBUG");
 const QMap<QString,QString> Variable::SUPPORT_CMD = Variable::_getSupportCmd();
-const QStringList Variable::SUPPORT_FORMATS={"jpg","jpeg","png","gif","bmp"}; //支持的格式列表
-
+const QStringList Variable::SUPPORT_FORMATS={"jpg","jpeg","png","gif","bmp"};
+const QSize Variable::ALBUM_IMAGE_SIZE = QSize(94,58);
+const int Variable::REFRESH_RATE = 20;
 
 QSettings * Variable::_settings = Variable::_getSettings();
 const bool Variable::LOGTOFILE = Variable::_settings->value("logToFile").toBool();

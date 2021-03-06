@@ -3,8 +3,9 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QBoxLayout>
 #include <QStandardItemModel>
-#include "../controller/interaction.h"
+#include "src/controller/interaction.h"
 class Widget : public QWidget
 {
     Q_OBJECT
@@ -19,6 +20,8 @@ private:
     void _startWithOpenImage(QString path);
     void _openImage(QString path);
     void openFinish(QVariant var);
-    QLabel *lable = nullptr;
+    void albumFinish(QVariant var);
+    void resizeEvent(QResizeEvent *event);
+    QLabel *label = nullptr;
 };
 #endif // WIDGET_H
