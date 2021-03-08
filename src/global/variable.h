@@ -34,6 +34,7 @@ public:
     static const QStringList SUPPORT_FORMATS; //支持的格式列表
     static const QSize ALBUM_IMAGE_SIZE; //相册缩略图尺寸
     static const int REFRESH_RATE; //刷新间隔
+    static const int BAR_HEIGHT;//顶栏和工具栏的高度
 
 private:
     static QSettings *_getSettings();

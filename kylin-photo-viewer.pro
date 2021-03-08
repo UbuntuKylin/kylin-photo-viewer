@@ -1,10 +1,15 @@
 QT       += core gui
 QT += dbus
-
+QT       += x11extras KWindowSystem
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
+# 适配窗口管理器圆角阴影
+LIBS +=-lpthread
+LIBS +=-lX11
 
+CONFIG += link_pkgconfig
+PKGCONFIG += gsettings-qt
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -29,8 +34,15 @@ SOURCES += src/main.cpp \
     src/controller/core/core.cpp \
     src/model/file.cpp \
     src/model/processing/processing.cpp \
-    src/view/tmp.cpp \
-    src/global/variable.cpp
+    src/view/information.cpp \
+    src/view/kyview.cpp \
+    src/global/variable.cpp \
+    src/view/menumodule.cpp \
+    src/view/openimage.cpp \
+    src/view/showimagewidget.cpp \
+    src/view/titlebar.cpp \
+    src/view/toolbar.cpp \
+    src/view/xatom-helper.cpp
 
 HEADERS += \
     src/controller/core/albumthumbnail.h \
@@ -40,13 +52,53 @@ HEADERS += \
     src/controller/core/core.h \
     src/model/file.h \
     src/model/processing/processing.h \
-    src/view/tmp.h \
-    src/global/variable.h
+    src/view/information.h \
+    src/view/kyview.h \
+    src/global/variable.h \
+    src/view/menumodule.h \
+    src/view/openimage.h \
+    src/view/showimagewidget.h \
+    src/view/titlebar.h \
+    src/view/toolbar.h \
+    src/view/xatom-helper.h
 
 TRANSLATIONS += \
     translations/kylin-photo-viewer_zh_CN.ts
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+#DISTFILES += \
+#    src/res/侧边缩略图.png \
+#    src/res/侧边缩略图hover@1x.png \
+#    src/res/信息.png \
+#    src/res/信息hover.png \
+#    src/res/删除.png \
+#    src/res/删除hover.png \
+#    src/res/原始大小.png \
+#    src/res/原始大小hover.png \
+#    src/res/向右旋转.png \
+#    src/res/向右旋转hover.png \
+#    src/res/放大.png \
+#    src/res/放大hover.png \
+#    src/res/标注.png \
+#    src/res/标注hover.png \
+#    src/res/滤镜.png \
+#    src/res/滤镜hover.png \
+#    src/res/箭头.png \
+#    src/res/缩小.png \
+#    src/res/缩小hover.png \
+#    src/res/裁剪.png \
+#    src/res/裁剪hover.png \
+#    src/res/适应窗口.png \
+#    src/res/适应窗口hover.png \
+#    src/res/镜像.png \
+#    src/res/镜像hover.png \
+#    src/res/镜像上下.png \
+#    src/res/镜像上下hover.png
+
+RESOURCES += \
+    res.qrc

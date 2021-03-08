@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/res">
+        <file>res/addplus.png</file>
+        <file>res/adaptiveWidget_hover.png</file>
+        <file>res/adaptiveWidget.png</file>
+        <file>res/cutImage_hover.png</file>
+        <file>res/cutImage.png</file>
+        <file>res/delImage_hover.png</file>
+        <file>res/delImage.png</file>
+        <file>res/filter_hover.png</file>
+        <file>res/filter.png</file>
+        <file>res/flipH_hover.png</file>
+        <file>res/sidebar_hover.png</file>
+        <file>res/rotate.png</file>
+        <file>res/rotate_hover.png</file>
+        <file>res/labelbar.png</file>
+        <file>res/labelbar_hover.png</file>
+        <file>res/information.png</file>
+        <file>res/information_hover.png</file>
+        <file>res/flipV.png</file>
+        <file>res/flipV_hover.png</file>
+        <file>res/flipH.png</file>
+        <file>res/sidebar.png</file>
+        <file>res/right.png</file>
+        <file>res/left.png</file>
+        <file>res/enlarge_hover.png</file>
+        <file>res/enlarge.png</file>
+        <file>res/reduce_hover.png</file>
+        <file>res/reduce.png</file>
+        <file>res/originalSize.png</file>
+        <file>res/originalSize_hover.png</file>
+        <file>res/menu_d.png</file>
+    </qresource>
+</RCC>

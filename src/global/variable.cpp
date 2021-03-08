@@ -9,6 +9,7 @@ const QMap<QString,QString> Variable::SUPPORT_CMD = Variable::_getSupportCmd();
 const QStringList Variable::SUPPORT_FORMATS={"jpg","jpeg","png","gif","bmp"};
 const QSize Variable::ALBUM_IMAGE_SIZE = QSize(94,58);
 const int Variable::REFRESH_RATE = 20;
+const int Variable::BAR_HEIGHT = 40;
 
 QSettings * Variable::_settings = Variable::_getSettings();
 const bool Variable::LOGTOFILE = Variable::_settings->value("logToFile").toBool();
