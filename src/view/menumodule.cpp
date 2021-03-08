@@ -1,4 +1,5 @@
 #include "menumodule.h"
+#include "kyview.h"
 #include "xatom-helper.h"
 
 menuModule::menuModule(QWidget *parent = nullptr) : QWidget(parent)
@@ -19,6 +20,14 @@ void menuModule::initAction(){
     bodySupport = new QLabel();
     titleText = new QLabel();
     iconSize = QSize(30,30);
+
+    titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
+    bodySupport->setText(tr("Service & Support Team: ") +
+                         "<a href=\"mailto://support@kylinos.cn\""
+                         "style=\"color:rgba(255,255,255,1)\">"
+                         "support@kylinos.cn</a>");
+    bodyAppVersion->setText(tr("Version: ") + appVersion);
+
     menuButton = new QPushButton;
     menuButton->setToolTip(tr("menu"));
 //    menuButton->setIcon(QIcon::fromTheme("application-menu"));
@@ -33,6 +42,7 @@ void menuModule::initAction(){
 
     QList<QAction *> actions ;
     QAction *actionOpen = new QAction(m_menu);
+    actionOpen->setText(tr("Open"));
     QAction *actionTheme = new QAction(m_menu);
     actionTheme->setText(tr("Theme"));
     QAction *actionHelp = new QAction(m_menu);
@@ -41,7 +51,7 @@ void menuModule::initAction(){
     actionAbout->setText(tr("About"));
     QAction *actionQuit = new QAction(m_menu);
     actionQuit->setText(tr("Quit"));
-    actions<<actionOpen<<actionHelp<<actionAbout<<actionQuit;
+    actions<<actionOpen/*<<actionTheme*/<<actionHelp<<actionAbout<<actionQuit;//暂时禁掉主题切换按钮
     m_menu->addActions(actions);
 //    互斥按钮组
     QMenu *themeMenu = new QMenu;
@@ -63,6 +73,9 @@ void menuModule::initAction(){
     actionTheme->setMenu(themeMenu);
     menuButton->setMenu(m_menu);
     connect(m_menu,&QMenu::triggered,this,&menuModule::triggerMenu);
+    connect(this,&menuModule::openSignal,KyView::mutual,&KyView::menuopen);
+    connect(this,&menuModule::menuModuleClose,KyView::mutual,&KyView::close);
+//    connect()
     initGsetting();
 //    setThemeFromLocalThemeSetting(themeActions);
 //    themeUpdate();
@@ -112,6 +125,7 @@ void menuModule::setStyleByThemeGsetting(){
 void menuModule::triggerMenu(QAction *act){
 
 
+
     QString str = act->text();
     if(tr("Quit") == str){
         emit menuModuleClose();
@@ -119,6 +133,10 @@ void menuModule::triggerMenu(QAction *act){
         aboutAction();
     }else if(tr("Help") == str){
         helpAction();
+    }else if(tr("Open") == str){
+        QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+        QString file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,"Image Files(*.jpg *.png *.bmp *.pgm *.pbm);;All(*.*)");
+        emit openSignal(file_path);
     }
 }
 
@@ -164,6 +182,7 @@ void menuModule::helpAction(){
 }
 
 void menuModule::initAbout(){
+
     aboutWindow->setWindowModality(Qt::ApplicationModal);
     aboutWindow->setWindowFlag(Qt::Tool);
 
@@ -195,6 +214,7 @@ QHBoxLayout* menuModule::initTitleBar(){
     titleIcon->setFixedSize(QSize(24,24));
     appShowingName = tr("kylin view");
     iconPath = ":/res/control_icons/indicator-china-weather.svg";
+
     titleIcon->setPixmap(QPixmap::fromImage(QImage(iconPath)));
     titleIcon->setScaledContents(true);
 
@@ -284,13 +304,13 @@ void menuModule::setThemeDark(){
     bodyAppName->setStyleSheet("color:rgba(255,255,255,1);font-size:18px;");
     bodyAppVersion->setStyleSheet("color:rgba(255,255,255,1);font-size:14px;");
     bodySupport->setStyleSheet("color:rgba(255,255,255,1);font-size:14px;");
-    titleBtnClose->setIcon(QIcon::fromTheme(":/res/control_icons/dark-window-close.svg"));
+    titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
     titleBtnClose->setIconSize(QSize(16,16));
     titleBtnClose->setFixedSize(30,30);
     titleBtnClose->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
                                "QPushButton:Hover{border:0px;border-radius:4px;background:transparent;background-color:#F86457;}"
                                "QPushButton:Pressed{border:0px;border-radius:4px;background:transparent;background-color:#E44C50;}");
-    bodySupport->setText(tr("Service & Support: ") +
+    bodySupport->setText(tr("Service & Support Team: ") +
                          "<a href=\"mailto://support@kylinos.cn\""
                          "style=\"color:rgba(255,255,255,1)\">"
                          "support@kylinos.cn</a>");
@@ -304,13 +324,13 @@ void menuModule::setThemeLight(){
     bodyAppVersion->setStyleSheet("color:rgba(0,0,0,1);font-size:14px;");
     bodySupport->setStyleSheet("color:rgba(0,0,0,1);font-size:14px;");
 
-    titleBtnClose->setIcon(QIcon::fromTheme(":/res/control_icons/close_black.png"));
+    titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
     titleBtnClose->setFixedSize(30,30);
     titleBtnClose->setIconSize(QSize(30,30));
     titleBtnClose->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
                                "QPushButton:Hover{border:0px;border-radius:4px;background:transparent;background-color:#F86457;}"
                                "QPushButton:Pressed{border:0px;border-radius:4px;background:transparent;background-color:#E44C50;}");
-    bodySupport->setText(tr("Service & Support: ") +
+    bodySupport->setText(tr("Service & Support Team: ") +
                          "<a href=\"mailto://support@kylinos.cn\""
                          "style=\"color:rgba(0,0,0,1)\">"
                          "support@kylinos.cn</a>");

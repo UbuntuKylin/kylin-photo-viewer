@@ -1,21 +1,12 @@
 #include "toolbar.h"
-#include "xatom-helper.h"
+#include "kyview.h"
 
-ToolBar::ToolBar(QWidget *parent) : QDialog(parent)
+ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
 {
 
-    MotifWmHints hints;
-    hints.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
-    hints.functions = MWM_FUNC_ALL;
-    hints.decorations = MWM_DECOR_BORDER;
-    XAtomHelper::getInstance()->setWindowMotifHint(this->winId(), hints);
 
-    this->resize(678,40);
-//    this->setAttribute(Qt::MouseEventFlag);
-    tooleWid = new QWidget(this);
-
+//    this->setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);
     toolLayout = new QHBoxLayout(this);
-
     reduce = new QPushButton(this);
     reduce->setFixedSize(24,24);
 
@@ -79,16 +70,19 @@ ToolBar::ToolBar(QWidget *parent) : QDialog(parent)
     delImage = new QPushButton(this);
     delImage->setFixedSize(24,24);
     delImage->setFocusPolicy(Qt::NoFocus);
-//    setWindowFlags(Qt::FramelessWindowHint);
-//    setAttribute(Qt::WA_TranslucentBackground);
 
-    this->initControlQss();
-    this->setstyle();
+    //设置窗体透明
+//    this->setAttribute(Qt::WA_TranslucentBackground);
+//    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+
+    this->_initControlQss();
+    this->_setstyle();
+    this->_initConnect();
 
 //    installEventFilter(this);
 }
 //布局
-void ToolBar::initControlQss()
+void ToolBar::_initControlQss()
 {
 
     toolLayout->addWidget(reduce,0,Qt::AlignCenter);
@@ -125,15 +119,15 @@ void ToolBar::initControlQss()
 //    toolLayout->setMargin(20);
     toolLayout->setContentsMargins(20,8,20,8);
     this->setLayout(toolLayout);
-    tooleWid->resize(this->width(),this->height());
-    tooleWid->move(0,0);
+
+//    tooleWid->move(0,4);
 
 }
 //样式
-void ToolBar::setstyle()
+void ToolBar::_setstyle()
 {
 //    this->setObjectName("mainWid");
-//    this->setStyleSheet("border-radius: 4px;");
+//    this->setStyleSheet("background-color:white;");
 
     percentage->setStyleSheet("QLabel{background-color:transparent;}");
     line1->setStyleSheet("QLabel{background-color:transparent;border:1px;color:black;}");
@@ -193,8 +187,121 @@ void ToolBar::setstyle()
 
 
 }
-
-bool ToolBar::event(QEvent *event)
+void ToolBar::_initConnect()
 {
-    return QObject::event(event);
+
+    connect(reduce,&QPushButton::clicked,this,&ToolBar::_reduceImage);
+    connect(enlarge,&QPushButton::clicked,this,&ToolBar::_enlargeImage);
+    connect(rotate,&QPushButton::clicked,this,&ToolBar::_rotate);
+    connect(originalSize,&QPushButton::clicked,this,&ToolBar::_originalSize);
+    connect(adaptiveWidget,&QPushButton::clicked,this,&ToolBar::_adaptiveWidget);
+    connect(flipH,&QPushButton::clicked,this,&ToolBar::_flipH);
+    connect(flipV,&QPushButton::clicked,this,&ToolBar::_flipV);
+    connect(cutImage,&QPushButton::clicked,this,&ToolBar::_cutImage);
+    connect(filter,&QPushButton::clicked,this,&ToolBar::_filter);
+    connect(labelbar,&QPushButton::clicked,this,&ToolBar::_labelbar);
+    connect(sidebar,&QPushButton::clicked,this,&ToolBar::_sidebar);
+    connect(information,&QPushButton::clicked,this,&ToolBar::_information);
+    connect(delImage,&QPushButton::clicked,this,&ToolBar::_delImage);
+
 }
+//改变百分比的数值
+void ToolBar::changePerRate(QString num)
+{
+    this->percentage->setText(num);
+}
+
+void ToolBar::_reduceImage()
+{
+//    QString currPer = this->percentage->text();
+//    QString currNum = currPer.mid(0,currPer.lastIndexOf("%"));
+//    int num = currNum.toInt() - 10;
+//    QString per = QString("%1").arg(num) + "%";
+//    changePerRate(per);
+    qDebug()<<"缩小";
+}
+
+void ToolBar::_enlargeImage()
+{
+    qDebug()<<"放大";
+}
+
+void ToolBar::_originalSize()
+{
+    qDebug()<<"原始尺寸";
+}
+
+void ToolBar::_adaptiveWidget()
+{
+    qDebug()<<"适应窗口";
+}
+
+void ToolBar::_rotate()
+{
+    qDebug()<<"旋转";
+}
+
+void ToolBar::_flipH()
+{
+    qDebug()<<"水平镜像";
+}
+
+void ToolBar::_flipV()
+{
+    qDebug()<<"垂直镜像";
+}
+
+void ToolBar::_cutImage()
+{
+    qDebug()<<"裁剪";
+}
+
+void ToolBar::_filter()
+{
+    qDebug()<<"滤镜";
+}
+
+void ToolBar::_labelbar()
+{
+    qDebug()<<"标注";
+}
+
+void ToolBar::_sidebar()
+{
+    qDebug()<<"相册侧栏";
+}
+
+void ToolBar::_information()
+{
+    qDebug()<<"详细信息";
+}
+
+void ToolBar::_delImage()
+{
+    qDebug()<<"删除";
+}
+
+
+
+void ToolBar::paintEvent(QPaintEvent *event)
+{
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.fillRect(QRect(4, 4, this->width() - 2 * 4, this->height() - 2 * 4), QBrush(Qt::white));
+
+    QColor color(50, 50, 50, 30);
+    for (int i = 0; i < 4; i++)
+    {
+        color.setAlpha(120 - qSqrt(i) * 40);
+        painter.setPen(color);
+        // 圆角阴影边框;
+        painter.drawRoundedRect(4 - i, 4 - i, this->width() - (4 - i) * 2, this->height() - (4 - i) * 2, 4, 4);
+    }
+
+
+}
+
+
+
+

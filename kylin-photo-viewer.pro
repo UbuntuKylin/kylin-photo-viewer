@@ -24,36 +24,40 @@ DEFINES += QT_DEPRECATED_WARNINGS
 INCLUDEPATH += /usr/include/opencv4/
 LIBS += -lopencv_core \
         -lopencv_imgcodecs \
+        -lopencv_imgproc \
 
 SOURCES += src/main.cpp \
+    src/controller/core/albumthumbnail.cpp \
     src/global/log.cpp \
     src/model/dbus.cpp \
     src/controller/interaction.cpp \
-    src/controller/core.cpp \
+    src/controller/core/core.cpp \
     src/model/file.cpp \
-    src/view/cannotmove.cpp \
+    src/model/processing/processing.cpp \
     src/view/information.cpp \
     src/view/kyview.cpp \
     src/global/variable.cpp \
     src/view/menumodule.cpp \
     src/view/openimage.cpp \
+    src/view/showimagewidget.cpp \
     src/view/titlebar.cpp \
     src/view/toolbar.cpp \
     src/view/xatom-helper.cpp
 
 HEADERS += \
+    src/controller/core/albumthumbnail.h \
     src/global/log.h \
     src/model/dbus.h \
     src/controller/interaction.h \
-    src/controller/core.h \
+    src/controller/core/core.h \
     src/model/file.h \
-    src/model/file.h \
-    src/view/cannotmove.h \
+    src/model/processing/processing.h \
     src/view/information.h \
     src/view/kyview.h \
     src/global/variable.h \
     src/view/menumodule.h \
     src/view/openimage.h \
+    src/view/showimagewidget.h \
     src/view/titlebar.h \
     src/view/toolbar.h \
     src/view/xatom-helper.h

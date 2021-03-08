@@ -12,11 +12,12 @@ class TitleBar : public QWidget
     Q_OBJECT
 public:
     explicit TitleBar(QWidget *parent = nullptr);
-    void re_resize();
+
+    QWidget *titleWid; //布局
 private:
     menuModule *m_menu = nullptr;
 
-    QWidget *titleWid; //布局
+
     QHBoxLayout *titleLayout;
     QPushButton *logoBtn;//logo
     QLabel *logolb;//name

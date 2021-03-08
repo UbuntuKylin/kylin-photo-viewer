@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     Interaction *interaction =Interaction::getInstance();
     interaction->creatCore(a.arguments());
 
-    MainWindow w;
+    KyView w;
     MotifWmHints hints;
     hints.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
     hints.functions = MWM_FUNC_ALL;

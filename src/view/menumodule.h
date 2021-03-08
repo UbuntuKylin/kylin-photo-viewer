@@ -19,7 +19,10 @@
 #include <QScreen>
 #include <QGSettings>
 #include <QMetaEnum>
-#include<QApplication>
+#include <QApplication>
+
+//#include "titlebar.h"
+//#include "kyview.h"
 //#include "daemondbus.h"    0301-cancel
 
 class menuModule : public QWidget
@@ -33,6 +36,7 @@ public:
 
 signals:
     void menuModuleClose();
+    void openSignal(QString path);
 //    void menuModuleSetThemeStyle(QString);
 public:
     QPushButton *menuButton = nullptr;

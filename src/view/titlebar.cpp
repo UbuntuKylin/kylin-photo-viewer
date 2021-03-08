@@ -36,7 +36,6 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     closebtn->setFixedSize(30,30);
     closebtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
 
-    this->re_resize();
     this->setFixedHeight(40);
     this->setStyle();
     this->initConnect();
@@ -76,48 +75,33 @@ void TitleBar::initControlQss()
     titleLayout->setSpacing(4);
     titleLayout->setMargin(4);
     titleWid->setLayout(titleLayout);
-//    titleWid->resize(MainWindow::mutual->width(),40);
+//    titleWid->resize(KyView::mutual->width(),40);
 //    titleWid->resize(800,40);
 //    titleWid->setFixedHeight(40);
 //    titleWid->setMinimumWidth(1920);
 //    titleWid->setMaximumWidth(1920);
-    titleWid->move(0,0);
+//    titleWid->move(0,0);
 }
 //初始化连接
 void TitleBar::initConnect()
 {
-    connect(minibtn, &QPushButton::clicked, MainWindow::mutual, &MainWindow::showMinimized);
+    connect(minibtn, &QPushButton::clicked, KyView::mutual, &KyView::showMinimized);
     connect(fullscreen, &QPushButton::clicked, this, &TitleBar::fullRecovery);
-    connect(closebtn, &QPushButton::clicked, MainWindow::mutual, &MainWindow::close);
-//    connect(fullscreen, &QPushButton::clicked, MainWindow::mutual, &MainWindow::showFullScreen);
+    connect(closebtn, &QPushButton::clicked, KyView::mutual, &KyView::close);
 
 }
 //触发全屏事件
 void TitleBar::fullRecovery()
 {
-    QScreen *screen = QGuiApplication::primaryScreen ();
-    QRect screenRect =  screen->availableVirtualGeometry();
-
-    if(!(MainWindow::mutual->width() == screenRect.width() && MainWindow::mutual->height() == screenRect.height()))
-    {
-
-        fullscreen->setIcon(QIcon::fromTheme("window-restore-symbolic"));//主题库的恢复图标
-        fullscreen->setToolTip(tr("recovery"));
-        emit changeSize();
-
-    }else{
-
+    if (KyView::mutual->isFullScreen()){
         fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的全屏图标
         fullscreen->setToolTip(tr("full srceen"));
         emit recovery();
-
+    }else{
+        fullscreen->setIcon(QIcon::fromTheme("window-restore-symbolic"));//主题库的恢复图标
+        fullscreen->setToolTip(tr("recovery"));
+        emit changeSize();
     }
 
 }
-void TitleBar::re_resize()
-{
-    qDebug()<<"qq";
-    this->resize(MainWindow::mutual->width(),40);
-    titleWid->resize(MainWindow::mutual->width(),40);
 
-}

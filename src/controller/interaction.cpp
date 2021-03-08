@@ -2,6 +2,12 @@
 
 Interaction * Interaction::m_interaction(nullptr);
 
+_Interaction::_Interaction()
+{
+    _canResize = new QTimer;
+    _canResize->setSingleShot(true);
+}
+
 Interaction *Interaction::getInstance()
 {
     if(m_interaction == nullptr)
@@ -38,7 +44,9 @@ void _Interaction::_initConnect(Core *core)
 
     connect(core,&Core::needOpenImage,this,&_Interaction::needOpenImage);//需要启动时加载图片
     connect(core,&Core::openFinish,this,&_Interaction::openFinish);//图片打开完成，将数据返回给UI层
+    connect(core,&Core::albumFinish,this,&Interaction::albumFinish);//相册缩略图打开完成，获取数据
     connect(this,&_Interaction::_changeImage,core,&Core::changeImage);//切换图片
+    connect(this,&_Interaction::_changeWidgetSize,core,&Core::changeWidgetSize);//切换图片
 }
 
 void _Interaction::initUiFinish()
@@ -67,6 +75,14 @@ void _Interaction::nextImage()
 void _Interaction::backImage()
 {
     emit _changeImage(-2);
+}
+
+void _Interaction::changeWidgetSize(const QSize &size)
+{
+    if(_canResize->isActive())
+        return;
+    _canResize->start(Variable::REFRESH_RATE);//刷新间隔
+    emit _changeWidgetSize(size);
 }
 
 void _Interaction::needOpenImage(const QString &path)

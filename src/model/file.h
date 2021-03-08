@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QFileInfo>
 #include <QVariant>
-#include <opencv4/opencv2/core.hpp>
-#include <opencv4/opencv2/imgcodecs.hpp>
+#include "src/global/variable.h"
+
 using namespace cv;
 
 class MatAndFileinfo
@@ -19,8 +19,7 @@ class File : public QObject
 {
     Q_OBJECT
 public:
-    File();
-    MatAndFileinfo loadImage(QString path);
+    static MatAndFileinfo loadImage(QString path, ImreadModes modes = IMREAD_UNCHANGED);
     void saveImage(QVariant var);
 };
 

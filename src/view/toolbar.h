@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QDialog>
-#include <QMainWindow>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -11,14 +10,16 @@
 #include <QMouseEvent>
 #include <QtMath>
 #include <QPainter>
+#include <QGraphicsDropShadowEffect>
 
-class ToolBar : public QDialog
+class ToolBar : public QWidget
 {
     Q_OBJECT
 public:
     explicit ToolBar(QWidget *parent = nullptr);
+    void changePerRate(QString num);
 private:
-    QWidget *tooleWid;//布局
+//    QWidget *tooleWid;//布局
     QHBoxLayout *toolLayout;
 
     QPushButton *reduce;//缩小
@@ -38,20 +39,32 @@ private:
     QPushButton *information;//详细信息---
     QPushButton *delImage;//删除图片
 
-    void initControlQss();//初始化布局
-    void setstyle();
-    bool event(QEvent *event);
-//    void paintEvent(QPaintEvent *event);
+    void _initControlQss();//初始化布局
+    void _setstyle();
+//    bool event(QEvent *event);
 
-protected:
-//    virtual void mousePressEvent(QMouseEvent *e);
-//    virtual void mouseMoveEvent(QMouseEvent *e);
-//    virtual void mouseReleaseEvent(QMouseEvent *e);
+    void _reduceImage();
+    void _enlargeImage();
+    void _originalSize();
+    void _adaptiveWidget();
+    void _rotate();
+    void _flipH();
+    void _flipV();
+    void _cutImage();
+    void _filter();
+    void _labelbar();
+    void _sidebar();
+    void _information();
+    void _delImage();
 
+    void _initConnect();
+    void paintEvent(QPaintEvent *event);
+
+private slots:
 
 
 signals:
-
+    void _changeNum(QString num);
 
 };
 

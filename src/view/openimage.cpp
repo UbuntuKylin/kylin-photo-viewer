@@ -1,4 +1,5 @@
 #include "openimage.h"
+#include "kyview.h"
 
 OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
 {
@@ -14,10 +15,12 @@ OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
 
     iconsize = QSize(30,30);
     this->setFixedSize(128,128+50);
-    this->move(int((this->width()-this->width())/2),int((this->height()-this->height())/2));
     this->setstyle();
     this->initconnect();
+
+//    _initInteraction();//一定要放到构造函数末尾
 }
+
 //设置样式
 void OpenImage::setstyle()
 {
@@ -31,9 +34,15 @@ void OpenImage::initconnect()
 {
     connect(openInCenter,&QPushButton::clicked,this,&OpenImage::openimage);
     connect(addFile,&QPushButton::clicked,this,&OpenImage::openimage);
+
 }
 //打开图片
 void OpenImage::openimage()
 {
-    qDebug()<<"open image file";
+    QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+    //打开文件夹中的图片文件
+    QString file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,"Image Files(*.jpg *.png *.bmp *.jpeg *.gif)");
+    qDebug() << "file_path " << file_path;
+    emit openImage(file_path);
+
 }

@@ -1,11 +1,7 @@
 #include "file.h"
 #include <QDebug>
-File::File()
-{
 
-}
-
-MatAndFileinfo File::loadImage(QString path)
+MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
 {
     MatAndFileinfo maf;
     /*		参数2：图像文件解析的方式，支持的方式有如下：
@@ -17,7 +13,7 @@ MatAndFileinfo File::loadImage(QString path)
                 IMREAD_LOAD_GDAL    调用gdal库进行图像文件读取。（可以简单地理解为读取TIFF图像文件）
     */
     //读取图像
-    Mat mat = imread(path.toLocal8Bit().data(), IMREAD_UNCHANGED);
+    Mat mat = imread(path.toLocal8Bit().data(), modes);
     //判断图像是否有效
     if (!mat.data) {
         qDebug() << "读取图片失败："<< path;

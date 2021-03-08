@@ -6,7 +6,7 @@
 #include <QDBusConnection>
 #include <QDBusReply>
 
-#include "../global/variable.h"
+#include "src/global/variable.h"
 
 class Dbus : public QObject
 {
