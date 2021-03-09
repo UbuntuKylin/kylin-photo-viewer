@@ -275,9 +275,8 @@ void ToolBar::_information()
 void ToolBar::_delImage()
 {
     qDebug()<<"删除";
+
 }
-
-
 
 void ToolBar::paintEvent(QPaintEvent *event)
 {

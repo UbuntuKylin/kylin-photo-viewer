@@ -38,6 +38,7 @@ SOURCES += src/main.cpp \
     src/view/kyview.cpp \
     src/global/variable.cpp \
     src/view/menumodule.cpp \
+    src/view/navigator.cpp \
     src/view/openimage.cpp \
     src/view/showimagewidget.cpp \
     src/view/titlebar.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
     src/view/kyview.h \
     src/global/variable.h \
     src/view/menumodule.h \
+    src/view/navigator.h \
     src/view/openimage.h \
     src/view/showimagewidget.h \
     src/view/titlebar.h \

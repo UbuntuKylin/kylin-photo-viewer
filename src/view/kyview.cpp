@@ -40,7 +40,7 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
     titlebar->show();
     qDebug()<<"sdsdsds"<<this->width()<<this->height();
     showImageWidget = new ShowImageWidget(this,WIDTH,HEIGHT);
-    showImageWidget->resize(WIDTH,HEIGHT);
+//    showImageWidget->resize(WIDTH,HEIGHT);
     showImageWidget->setMouseTracking(true);
     showImageWidget->move(int((this->width() - showImageWidget->width())/2),int((this->height() - showImageWidget->height())/2));
     showImageWidget->hide();

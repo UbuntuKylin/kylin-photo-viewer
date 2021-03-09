@@ -133,6 +133,7 @@ void ShowImageWidget::albumFinish(QVariant var)
 void ShowImageWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
+//    ShowImageWidget::resizeEvent(event);
     this->showImage->resize(KyView::mutual->width(),KyView::mutual->height());
     interaction->changeWidgetSize(this->showImage->size());
 }
