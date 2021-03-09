@@ -7,8 +7,9 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
     int HEIGHT = 720;
     this->resize(1080, 720);
 
-    this ->setWindowIcon(QIcon::fromTheme("kylin-recorder", QIcon(":/svg/svg/recording_128.svg")));
-    this ->setWindowTitle(tr("kylin-recorder"));
+//    this ->setWindowIcon(QIcon::fromTheme("kylin-recorder", QIcon(":/svg/svg/recording_128.svg")));
+    this ->setWindowIcon(QIcon(":/res/res/kyview_logo.png"));
+    this ->setWindowTitle(tr("Kylin Photo Viewer"));
     this->setMouseTracking(true);
 //    centerWidget = new QWidget(this);
 //    centerLayout = new QVBoxLayout(this);
@@ -24,7 +25,7 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
     mutual = this;
     //
     titlebar = new TitleBar(this);
-    titlebar->resize(this->width(),Variable::BAR_HEIGHT);
+//    titlebar->resize(this->width(),Variable::BAR_HEIGHT);
     titlebar->move(0,0);
 
     openImage = new OpenImage(this);
@@ -37,17 +38,19 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
 
     toolbar->show();
     titlebar->show();
-
-    showImageWidget = new ShowImageWidget(this,this->width(),this->height());
-    showImageWidget->resize(this->width(),this->height());
+    qDebug()<<"sdsdsds"<<this->width()<<this->height();
+    showImageWidget = new ShowImageWidget(this,WIDTH,HEIGHT);
+    showImageWidget->resize(WIDTH,HEIGHT);
     showImageWidget->setMouseTracking(true);
     showImageWidget->move(int((this->width() - showImageWidget->width())/2),int((this->height() - showImageWidget->height())/2));
     showImageWidget->hide();
 
+    timer = new QTimer(this);
+
     this->setMinimumSize(678,678);
     this->_setstyle();
     this->_initconnect();
-    this->layout();
+    this->_layout();
     this->_openState();
 
 
@@ -55,7 +58,7 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
 KyView::~KyView()
 {
 }
-
+//从顶栏打开
 void KyView::menuopen(QString path)
 {
     emit openSignal(path);
@@ -72,10 +75,12 @@ void KyView::_initconnect()
     connect(showImageWidget,&ShowImageWidget::ToshowImage,this,&KyView::_Toshowimage);
     //右上菜单--打开
     connect(this,&KyView::openSignal,showImageWidget,&ShowImageWidget::_startWithOpenImage);
+    //定时器
+    connect(timer ,&QTimer::timeout, this, &KyView::_delayHide);
 
 
 }
-
+//打开首先检测是否需要展示工具栏
 void KyView::_openState()
 {
 
@@ -84,7 +89,7 @@ void KyView::_openState()
         toolbar->move(int((this->width()-toolbar->width())/2),this->height() - toolbar->height());
     }
 }
-
+//顶栏大小随主界面大小改变的响应函数
 void KyView::_titlebarChange()
 {
     if (titlebar->isHidden()){
@@ -96,7 +101,7 @@ void KyView::_titlebarChange()
     }
 
 }
-
+//中间打开图片按钮大小随主界面大小改变的响应函数
 void KyView::_openImageChange()
 {
     if (openImage->isHidden()){
@@ -105,19 +110,19 @@ void KyView::_openImageChange()
         openImage->move(int((this->width()-openImage->width())/2),int((this->height()-openImage->height())/2));
     }
 }
-
+//主界面展示的图片大小随主界面大小改变的响应函数
 void KyView::_showImageChange()
 {
-    if (showImageWidget->isHidden()){
-        return;
-    }else{
+//    if (showImageWidget->isHidden()){
+//        return;
+//    }else{
         showImageWidget->move(0,0);
         showImageWidget->resize(this->width(),this->height());
-        showImageWidget->re_move(showImageWidget->width(),showImageWidget->height());
+        showImageWidget->re_move(this->width(),this->height());
 
-    }
+//    }
 }
-
+//工具栏大小随主界面大小改变的响应函数
 void KyView::_toolbarChange()
 {
     if (toolbar->isHidden()){
@@ -128,6 +133,13 @@ void KyView::_toolbarChange()
 
     }
 }
+//延时隐藏
+void KyView::_delayHide()
+{
+    titlebar->hide();
+    toolbar->hide();
+}
+
 //设置某些控件的QSS
 void KyView::_setstyle()
 {
@@ -139,7 +151,7 @@ void KyView::_setstyle()
     toolbar->setStyleSheet("background-color:rgba(255, 255, 255, 0.7);");
 
 }
-//全屏时改变控件大小
+//全屏
 void KyView::changFullScreen()
 {
 
@@ -183,7 +195,8 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
                     toolbar->raise();
                 }
             }else{
-
+//                timer->start(2000); //开启延时隐藏
+//                qDebug()<<"aa"<<titlebar->m_menu->m_menu->windowState();
                 toolbar->hide();
                 titlebar->hide();
                 this->showImageWidget->next->show();
@@ -200,27 +213,21 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-void KyView::layout()
+void KyView::_layout()
 {
 //    openImageLayout->addStretch();
 //    openImageLayout->addWidget(openImage);
 //    openImageLayout->addStretch();
-//    openImageWidget->setLayout(openImageLayout);
+//    openImageWid->setLayout(openImageLayout);
+//    openImageWid->resize(this->width(),this->height());
+//    openImageWid->move(0,0);
 
-//    toolbarLayout->addStretch();
-//    toolbarLayout->addWidget(toolbar);
-//    toolbarLayout->addStretch();
-//    toolbarWidget->setLayout(toolbarLayout);
-
-
-//    centerLayout->addWidget(titlebar);
-//    openImageLayout->addStretch();
-//    centerLayout->addWidget(openImage);
-//    openImageLayout->addStretch();
-//    centerLayout->addWidget(toolbar);
-//    centerWidget->setLayout(centerLayout);
-//    centerWidget->resize(1080,720);
-//    centerWidget->move(0,0);
+//    showImageLayout->addStretch();
+//    showImageLayout->addWidget(showImageWidget);
+//    showImageLayout->addStretch();
+//    showImageWid->setLayout(showImageLayout);
+//    showImageWid->resize(this->width(),this->height());
+//    showImageWid->move(0,0);
 
 }
 
@@ -231,5 +238,16 @@ void KyView::resizeEvent(QResizeEvent *event){
     _showImageChange();
     _toolbarChange();
 
+}
+
+void KyView::leaveEvent(QEvent *event)
+{
+    if(openImage->isHidden()){
+
+        titlebar->hide();
+        toolbar->hide();
+        showImageWidget->next->hide();
+        showImageWidget->back->hide();
+    }
 
 }

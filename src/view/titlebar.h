@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QToolButton>
 #include <QLabel>
 #include <QHBoxLayout>
 
@@ -14,8 +15,9 @@ public:
     explicit TitleBar(QWidget *parent = nullptr);
 
     QWidget *titleWid; //布局
-private:
     menuModule *m_menu = nullptr;
+private:
+
 
 
     QHBoxLayout *titleLayout;

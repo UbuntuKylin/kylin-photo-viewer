@@ -3,13 +3,30 @@
 ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent)
 {
     this->resize(w,h);
+    imageWid = new QWidget(this);
+    imageLayout = new QHBoxLayout(this);
+
     showImage = new QLabel(this);
     showImage->resize(this->width(),this->height());
+//    showImage->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     showImage->move(int((this->width() - showImage->width())/2),int((this->height() - showImage->height())/2));
     showImage->setMouseTracking(true);
     showImage->setAlignment(Qt::AlignCenter);
-//    showImage->setContextMenuPolicy(Qt::ActionsContextMenu);
-//    showImage->customContextMenuRequested(_rightmenu());
+
+    showImage->setContextMenuPolicy(Qt::ActionsContextMenu);
+    showImage->setContextMenuPolicy(Qt::CustomContextMenu);
+
+//    imageLayout->addWidget(showImage);
+//    imageWid->setLayout(imageLayout);
+//    imageWid->resize(this->width(),this->height());
+//    imageWid->move(int((this->width() - imageWid->width())/2),int((this->height() - imageWid->height())/2));
+//    imageWid->setMouseTracking(true);
+
+
+    action_wallpaper = new QAction(tr("set wallpaper"),this);
+    imageMenu = new QMenu(this);
+    imageMenu->addAction(action_wallpaper);
+
     next = new QPushButton(this);
     next->resize(56,56);
     next->setIcon(QIcon(":/res/res/right.png"));
@@ -33,21 +50,27 @@ void ShowImageWidget::_initConnect()
 {
     connect(next,&QPushButton::clicked,this,&ShowImageWidget::_nextImage);
     connect(back,&QPushButton::clicked,this,&ShowImageWidget::_backImage);
+    //设置壁纸
+    connect(showImage,&QLabel::customContextMenuRequested,[=](const QPoint &pos)
+    {
+       imageMenu->exec(QCursor::pos());
+    });
+    connect(action_wallpaper, &QAction::triggered, this,&ShowImageWidget::_setWallpaper);
 }
-
+//下一张
 void ShowImageWidget::_nextImage()
 {
     interaction->nextImage();
 }
-
+//下一张
 void ShowImageWidget::_backImage()
 {
     interaction->backImage();
 }
 
-void ShowImageWidget::_rightmenu()
+void ShowImageWidget::_setWallpaper()
 {
-
+    qDebug()<<"设置壁纸";
 }
 
 void ShowImageWidget::_initInteraction()
@@ -85,17 +108,18 @@ void ShowImageWidget::openFinish(QVariant var)
     this->showImage->setPixmap(pixmap);
     emit perRate(num);
     emit ToshowImage();
-//    this->showImage->show();
 
 //    qDebug()<<info<<type<<proportion;
 }
 
-void ShowImageWidget::re_move(int w, int h)
+void ShowImageWidget::re_move(int W, int H)
 {
 
-    this->showImage->move(int((w - this->showImage->width())/2),int((h - this->showImage->height())/2));
+    this->resize(W,H);
+    this->showImage->resize(W,H);
+    this->showImage->move(int((W - this->showImage->width())/2),int((H - this->showImage->height())/2));
     back->move(43,int((this->height() - back->height())/2));
-    next->move(w - 43 - next->width(),int((h - next->height())/2));
+    next->move(W - 43 - next->width(),int((H - next->height())/2));
 }
 
 void ShowImageWidget::albumFinish(QVariant var)
@@ -104,11 +128,12 @@ void ShowImageWidget::albumFinish(QVariant var)
     QFileInfo info = package.info;//详情信息
     QPixmap pixmap = package.image;//图片
     int type = package.type;//在队列中的标签
-    qDebug()<<pixmap<<info<<type;
+//    qDebug()<<pixmap<<info<<type;
 }
 void ShowImageWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
+    this->showImage->resize(KyView::mutual->width(),KyView::mutual->height());
     interaction->changeWidgetSize(this->showImage->size());
 }
 

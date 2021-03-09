@@ -40,7 +40,7 @@ signals:
 //    void menuModuleSetThemeStyle(QString);
 public:
     QPushButton *menuButton = nullptr;
-
+    QMenu *m_menu = nullptr;
 public:
     QString appName = "appName字段未填充!"; //格式kylin-usb-creator
     QString appShowingName = "app展示名字段未填充"; //格式kylin usb creator ,用来在前端展示
@@ -50,7 +50,7 @@ public:
     QString confPath = "org.china-weather-data.settings";
 
 private:
-    QMenu *m_menu = nullptr;
+
     QMenu *themeMenu = nullptr;
     QSize iconSize;
 //    QString appPath = "tools/kylin-usb-creator"; //拉起帮助菜单时使用appName字段

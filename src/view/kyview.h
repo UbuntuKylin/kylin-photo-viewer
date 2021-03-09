@@ -12,6 +12,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QMouseEvent>
+#include <QTimer>
 
 #include "toolbar.h"
 #include "titlebar.h"
@@ -37,21 +38,17 @@ private:
     OpenImage *openImage = nullptr;//打开图片
     ShowImageWidget *showImageWidget = nullptr;
 
-//    QWidget *centerWidget;
-//    QVBoxLayout *centerLayout;
-
-//    QWidget *openImageWidget;
-//    QHBoxLayout *openImageLayout;
-
-//    QWidget *toolbarWidget;
-//    QHBoxLayout *toolbarLayout;
-
-
     QSize widgetSize;
     QSize widgetPosition;
     QPoint p;
 
+    QTimer *timer;
 
+//    QWidget *openImageWid;
+//    QHBoxLayout *openImageLayout;
+
+//    QWidget *showImageWid;
+//    QHBoxLayout *showImageLayout;
 
     void _setstyle();//设置QSS
     void _initconnect();//初始化连接
@@ -61,14 +58,13 @@ private:
     void _openImageChange();//改变中间打开图片位置和大小
     void _showImageChange();//改变图片展示的位置和大小
     void _toolbarChange();//改变工具栏位置和大小
-
+    void _delayHide();//顶栏工具栏的延时隐藏
 
     void mouseMoveEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);
+    void leaveEvent(QEvent *event);
 
-//    bool event(QEvent *event);
-
-    void layout();
+    void _layout();
 
 private slots:
 

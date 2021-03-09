@@ -10,9 +10,10 @@ OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
     openInCenter->move(0,0);
     addFile->setFixedSize(40,40);
     addFile->move(openInCenter->geometry().center()-addFile->rect().center());
-    openText->setText(tr("载入图片或文件夹"));
-    openText->move(8,128+30);
-
+    openText->setText(tr("Load picture"));
+    openText->setFixedWidth(128);
+    openText->setAlignment(Qt::AlignCenter);
+    openText->move(0,128+30);
     iconsize = QSize(30,30);
     this->setFixedSize(128,128+50);
     this->setstyle();

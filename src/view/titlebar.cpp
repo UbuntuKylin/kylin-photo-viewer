@@ -8,35 +8,49 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
 
     logoBtn = new QPushButton(this);
     logolb = new QLabel(this);
-    logolb->setFixedSize(100,24);
+//    logolb->setFixedSize(100,24);
     logoBtn->setFixedSize(24,24);
     logoBtn->setIconSize(QSize(24,24));//重置图标大小
-    logoBtn->setIcon(QIcon(":/res/control_icons/logo_24.png"));
-    logolb->setText(tr("Kylin View"));
+    logoBtn->setIcon(QIcon(":/res/res/kyview_logo.png"));
+    logolb->setText(tr("Kylin Photo Viewer"));
     logoBtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
 
 
     m_menu = new menuModule(this);
+//    m_menu->menuButton->setAutoRaise(true);
+    m_menu->menuButton->setProperty("isWindowButton", 0x1);
+    m_menu->menuButton->setProperty("useIconHighlightEffect",0x2);
+//    m_menu->menuButton->setPopupMode(QToolButton::InstantPopup);//QToolButton必须加上的
 
     minibtn = new QPushButton(this);
     minibtn->setFixedSize(30,30);
     minibtn->setToolTip(tr("minimize"));
     minibtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     minibtn->setIcon(QIcon::fromTheme("window-minimize-symbolic"));//主题库的最小化图标
+    minibtn->setProperty("isWindowButton", 0x1);
+    minibtn->setProperty("useIconHighlightEffect", 0x2);
+//    minibtn->setAutoRaise(true);
 
     fullscreen = new QPushButton(this);
     fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的最小化图标
     fullscreen->setFixedSize(30,30);
     fullscreen->setToolTip(tr("full screen"));
     fullscreen->setFocusPolicy(Qt::NoFocus);//设置焦点类型
+    fullscreen->setProperty("isWindowButton", 0x1);
+    fullscreen->setProperty("useIconHighlightEffect", 0x2);
+//    fullscreen->setAutoRaise(true);
 
     closebtn = new QPushButton(this);
     closebtn->setToolTip(tr("close"));
     closebtn->setIcon(QIcon::fromTheme("window-close-symbolic"));//主题库的叉子图标
     closebtn->setFixedSize(30,30);
     closebtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
+    closebtn->setProperty("isWindowButton", 0x1);
+    closebtn->setProperty("useIconHighlightEffect", 0x2);
+//    closebtn->setAutoRaise(true);
 
-    this->setFixedHeight(40);
+
+//    this->setFixedHeight(40);
     this->setStyle();
     this->initConnect();
     this->initControlQss();
@@ -74,13 +88,7 @@ void TitleBar::initControlQss()
     titleLayout->addWidget(closebtn);
     titleLayout->setSpacing(4);
     titleLayout->setMargin(4);
-    titleWid->setLayout(titleLayout);
-//    titleWid->resize(KyView::mutual->width(),40);
-//    titleWid->resize(800,40);
-//    titleWid->setFixedHeight(40);
-//    titleWid->setMinimumWidth(1920);
-//    titleWid->setMaximumWidth(1920);
-//    titleWid->move(0,0);
+    this->setLayout(titleLayout);
 }
 //初始化连接
 void TitleBar::initConnect()

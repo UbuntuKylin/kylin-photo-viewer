@@ -213,7 +213,7 @@ QHBoxLayout* menuModule::initTitleBar(){
 //    titleBtnClose = new QPushButton;
     titleIcon->setFixedSize(QSize(24,24));
     appShowingName = tr("kylin view");
-    iconPath = ":/res/control_icons/indicator-china-weather.svg";
+    iconPath = ":/res/res/kyview_logo.png";
 
     titleIcon->setPixmap(QPixmap::fromImage(QImage(iconPath)));
     titleIcon->setScaledContents(true);
