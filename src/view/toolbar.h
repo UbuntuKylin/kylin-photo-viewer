@@ -11,6 +11,7 @@
 #include <QtMath>
 #include <QPainter>
 #include <QGraphicsDropShadowEffect>
+#include "src/controller/interaction.h"
 
 class ToolBar : public QWidget
 {
@@ -38,6 +39,8 @@ private:
     QPushButton *sidebar;//侧边栏---
     QPushButton *information;//详细信息---
     QPushButton *delImage;//删除图片
+
+    Interaction *interaction = nullptr;
 
     void _initControlQss();//初始化布局
     void _setstyle();

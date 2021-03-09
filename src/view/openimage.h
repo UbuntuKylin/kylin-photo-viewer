@@ -9,8 +9,8 @@
 #include <QSize>
 #include <QStandardPaths>
 #include <QFileDialog>
-#include "../global/variable.h"
-#include "../controller/interaction.h"
+#include "src/global/variable.h"
+#include "src/controller/interaction.h"
 class OpenImage : public QWidget
 {
     Q_OBJECT

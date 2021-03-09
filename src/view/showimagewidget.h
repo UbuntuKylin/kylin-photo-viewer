@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QDebug>
-#include "../controller/interaction.h"
+#include "src/controller/interaction.h"
 class ShowImageWidget : public QWidget
 {
     Q_OBJECT

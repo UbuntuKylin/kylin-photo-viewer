@@ -80,6 +80,9 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     this->_initConnect();
 
 //    installEventFilter(this);
+
+
+    interaction=Interaction::getInstance();
 }
 //布局
 void ToolBar::_initControlQss()
@@ -219,21 +222,25 @@ void ToolBar::_reduceImage()
 //    QString per = QString("%1").arg(num) + "%";
 //    changePerRate(per);
     qDebug()<<"缩小";
+    interaction->watchSmallImage();
 }
 
 void ToolBar::_enlargeImage()
 {
     qDebug()<<"放大";
+    interaction->watchBigImage();
 }
 
 void ToolBar::_originalSize()
 {
     qDebug()<<"原始尺寸";
+    interaction->watchOriginalImage();
 }
 
 void ToolBar::_adaptiveWidget()
 {
     qDebug()<<"适应窗口";
+    interaction->watchAutoImage();
 }
 
 void ToolBar::_rotate()

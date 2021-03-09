@@ -18,9 +18,9 @@
 #include "openimage.h"
 #include "showimagewidget.h"
 
-#include "../global/variable.h"
-#include "../controller/interaction.h"
-#include "../global/variable.h"
+#include "src/global/variable.h"
+#include "src/controller/interaction.h"
+#include "src/global/variable.h"
 class KyView : public QWidget
 {
     Q_OBJECT

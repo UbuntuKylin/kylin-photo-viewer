@@ -8,6 +8,7 @@ Build-Depends: debhelper (>=9),
                qtchooser,
                qtscript5-dev,
                libopencv-core-dev,
+               libopencv-imgproc-dev,
                libopencv-imgcodecs-dev,
                pkgconf,
 Standards-Version: 4.4.0

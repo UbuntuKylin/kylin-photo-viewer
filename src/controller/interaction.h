@@ -14,6 +14,7 @@ signals:
     void startWithOpenImage(QString);
     void openFinish(QVariant var);
     void albumFinish(QVariant var);
+    void showNavigation(QPixmap pix);
 
 public:
     static Interaction *getInstance();//单例取指针
@@ -24,6 +25,11 @@ public:
     virtual void nextImage()=0;//切换图片
     virtual void backImage()=0;//切换图片
     virtual void changeWidgetSize(const QSize &size)=0;//切换窗口大小
+    virtual void watchBigImage()=0;//图片放大
+    virtual void watchSmallImage()=0;//图片缩小
+    virtual void watchOriginalImage()=0;//查看原图
+    virtual void watchAutoImage()=0;//自适应窗口大小
+    virtual void clickNavigation(const QPoint &point)=0;//导航器点击
 private:
     static Interaction *m_interaction;//单例指针
 };
@@ -40,9 +46,14 @@ signals:
     QVariant _openImage(const QString &path);//打开图片  QVariant -> QHash<int,QList<int>>
     void _changeImage(const int &type); //切换图片
     void _changeWidgetSize(const QSize &size);//切换窗口大小
+    void _changeImageShowSize(ImageShowStatus::ChangeShowSizeType);//图片显示状态（放大缩小）
+    void _clickNavigation(const QPoint &point);//导航器点击
 
 public:
     _Interaction();
+    void needOpenImage(const QString &path);//处理启动时立即打开图片的场景
+
+protected:
     virtual void creatCore(const QStringList &list);//初始化核心模块
     virtual void initUiFinish();//UI初始化完成
     virtual QVariant openImage(const QString &path);//打开图片  QVariant -> QHash<int,QList<int>>
@@ -50,8 +61,11 @@ public:
     virtual void nextImage();//切换图片
     virtual void backImage();//切换图片
     virtual void changeWidgetSize(const QSize &size);//切换窗口大小
-
-    void needOpenImage(const QString &path);//处理启动时立即打开图片的场景
+    virtual void watchBigImage();//图片放大
+    virtual void watchSmallImage();//图片缩小
+    virtual void watchOriginalImage();//查看原图
+    virtual void watchAutoImage();//自适应窗口大小
+    virtual void clickNavigation(const QPoint &point);//导航器点击
 
 private:
     void _initConnect(Core *core);

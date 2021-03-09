@@ -10,6 +10,9 @@ void Core::_initCore()
     _maxType = 0;
     _nowType = 0;
     _backType = 0;
+    _proportion = 0;
+    _isNavigationShow = false;
+    qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
 }
 
 void Core::loadCoreModel(QStringList arguments)
@@ -17,7 +20,7 @@ void Core::loadCoreModel(QStringList arguments)
     _initDbus(arguments);
 }
 
-void Core::_initDbus(QStringList arguments)
+void Core::_initDbus(const QStringList &arguments)
 {
     _dbus = new Dbus;
 
@@ -63,7 +66,7 @@ void Core::_initDbus(QStringList arguments)
     qDebug()<<"参数异常";
 }
 
-void Core::_processingCommand(QStringList cmd)
+void Core::_processingCommand(const QStringList &cmd)
 {
     qDebug()<<"响应外部命令"<<cmd;
 
@@ -73,6 +76,22 @@ void Core::_processingCommand(QStringList cmd)
     }
     if(cmd[0] == "-back"){
         changeImage(-2);
+        return;
+    }
+    if(cmd[0] == "-big"){
+        changeImageShowSize(ImageShowStatus::Big);
+        return;
+    }
+    if(cmd[0] == "-small"){
+        changeImageShowSize(ImageShowStatus::Small);
+        return;
+    }
+    if(cmd[0] == "-origin"){
+        changeImageShowSize(ImageShowStatus::Origin);
+        return;
+    }
+    if(cmd[0] == "-auto"){
+        changeImageShowSize(ImageShowStatus::Auto);
         return;
     }
 }
@@ -110,23 +129,123 @@ QVariant Core::openImage(QString fullPath)
     Mat mat = _changeImage(maf.mat);
     _nowImage = Processing::converFormat(mat);
     _info = maf.info;
-    _showImage();
+    _creatImage();
     return QVariant();
 }
 
-void Core::_showImage()
+void Core::_showImage(const QPixmap &pix)
 {
-    if(_nowImage.isNull())
-        return;
-    QPixmap pix = Processing::resizePix(_nowImage,_size);
     ImageAndInfo package;
-    package.proportion = 100 * pix.width() / _nowImage.width();
+    package.proportion = _proportion;
     package.info = _info;
     package.image = pix;
     package.type = _nowType;
     QVariant var;
     var.setValue<ImageAndInfo>(package);
     emit openFinish(var);
+}
+
+void Core::_creatImage(const int &proportion)
+{
+    if(_nowImage.isNull())
+        return;
+
+    int defaultProportion  = 100 * _size.width() / _nowImage.width();
+
+    //自适应窗口大小显示
+    if(proportion <= 0){
+        QPixmap pix = Processing::resizePix(_nowImage,_size);
+        _proportion  = defaultProportion;
+        _navigation(); //关闭导航器
+        _showImage(pix);
+        return;
+    }
+
+    _proportion = proportion;
+
+    //如果显示比例大于默认比例
+    if(_proportion > defaultProportion){
+        _navigation(QPoint(0,0));
+        return;
+    }
+
+    //如果显示比例小于或等于默认比例
+    _navigation(); //关闭导航器
+    QSize tmpSize = _nowImage.size() * _proportion / 100;;
+
+    QPixmap pix = Processing::resizePix(_nowImage,tmpSize);
+    _showImage(pix);
+}
+
+void Core::_navigation(const QPoint &point)
+{
+    if(point.isNull()){//关闭导航器
+        _isNavigationShow = false;
+        emit showNavigation(QPixmap());
+    }
+    clickNavigation(point);
+}
+
+void Core::_pictureDeepen(QImage &image , const QSize &hightlightSize ,const QPoint &point)
+{
+    int key = Variable::PICTURE_DEEPEN_KEY;
+    int left = point.x();
+    int right = point.x()+hightlightSize.width();
+    int top = point.y();
+    int bottom = point.y()+hightlightSize.height();
+
+    for(int j = 0 ; j < image.height() ; ++j){
+        for(int i = 0 ; i < image.width() ; ++i){
+            if(i>left && i<right && j>top && j<bottom)continue;//高亮区域不处理
+            QColor color(image.pixel(i, j));
+            color.setRed(color.red()-key);
+            color.setGreen(color.green()-key);
+            color.setBlue(color.blue()-key);
+            image.setPixel(i, j, color.rgb());
+        }
+    }
+}
+
+void Core::clickNavigation(const QPoint &point)
+{
+    //导航栏背景
+    QSize navigationSize = Variable::NAVIGATION_SIZE;
+    QImage navigation = Processing::resizePix(_nowImage,navigationSize).toImage();
+
+    //高亮区域大小
+    QSize hightlightSize;
+    hightlightSize.setWidth(navigationSize.width() * _size.width() / _nowImage.width());
+    hightlightSize.setWidth(navigationSize.height() * _size.height() / _nowImage.height());
+
+    //计算点击区域
+    QSize halfHightlightSize = hightlightSize / 2;
+    QPoint startPoint(point.x()-halfHightlightSize.width(),point.y()-halfHightlightSize.height());
+    int right = navigation.width()-halfHightlightSize.width();//右侧边缘
+    int bottom = navigation.width()-halfHightlightSize.width();//下侧边缘
+
+    //过滤无效区域
+    if(startPoint.x()<0)startPoint.setX(0);
+    if(startPoint.y()<0)startPoint.setY(0);
+    if(startPoint.x()>right)startPoint.setX(right);
+    if(startPoint.y()>bottom)startPoint.setY(bottom);
+
+    //和上次点击的有效区域一致则不处理
+    if(startPoint == _clickBeforePosition)
+        return;
+    _clickBeforePosition = startPoint;
+
+    //处理导航器图片
+    _pictureDeepen(navigation,hightlightSize,startPoint);
+
+    //发送到导航器
+    emit showNavigation(QPixmap::fromImage(navigation));
+
+    //处理待显示区域
+    QSize pixSize = _nowImage.size() * _proportion / 100;
+    QPixmap pix = Processing::resizePix(_nowImage,pixSize);
+    QPoint start = startPoint * _nowImage.width() / navigation.width();
+    QPixmap result = pix.copy(start.x(),start.y(),_size.width(),_size.height());
+    _showImage(result);
 }
 
 void Core::changeImage(const int &mat)
@@ -170,7 +289,67 @@ void Core::changeImage(const int &mat)
 void Core::changeWidgetSize(const QSize &size)
 {
     _size = size;
-    _showImage();
+    _creatImage();
+}
+
+void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
+{
+    int resizeKey = Variable::RESIZE_KEY;
+    int tmpProportion = 0;
+    switch (type) {
+
+    ///----------------------------放大图片----------------------------
+    case ImageShowStatus::Big:
+        if(_proportion == Variable::RESIZE_KEY_MAX){//等于临界值
+            return;
+        }
+        if(_proportion + resizeKey > Variable::RESIZE_KEY_MAX){//将要超出临界值
+            tmpProportion = Variable::RESIZE_KEY_MAX;
+            _creatImage(tmpProportion);
+            return;
+        }
+        if(_proportion % resizeKey != 0){ //不能整除
+            tmpProportion = (_proportion/resizeKey + 1)*resizeKey;
+            _creatImage(tmpProportion);
+            return;
+        }
+        tmpProportion = _proportion + resizeKey;
+        _creatImage(tmpProportion);
+        return;
+
+        ///----------------------------缩小图片----------------------------
+    case ImageShowStatus::Small:
+        if(_proportion == Variable::RESIZE_KEY_MIN){//等于临界值
+            return;
+        }
+        if(_proportion - resizeKey < Variable::RESIZE_KEY_MIN){//将要超出临界值
+            tmpProportion = Variable::RESIZE_KEY_MIN;
+            _creatImage(tmpProportion);
+            return;
+        }
+        if(_proportion % resizeKey != 0){ //不能整除
+            tmpProportion = (_proportion/resizeKey)*resizeKey;
+            _creatImage(tmpProportion);
+            return;
+        }
+        tmpProportion = _proportion - resizeKey;
+        _creatImage(tmpProportion);
+        return;
+
+        ///----------------------------查看原图----------------------------
+    case ImageShowStatus::Origin:
+        _creatImage(100);
+        return;
+
+        ///----------------------------查看自适应图----------------------------
+    case ImageShowStatus::Auto:
+        _creatImage();
+        return;
+
+    default:
+        qDebug()<<"代码错误，请检查";
+        break;
+    }
 }
 
 QVariant Core::findAllImageFromeDir(QString fullPath)
@@ -214,3 +393,4 @@ void Core::_loadAlbum()
         thread->start();
     }
 }
+
