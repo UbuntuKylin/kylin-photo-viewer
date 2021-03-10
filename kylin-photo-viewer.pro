@@ -33,6 +33,8 @@ SOURCES += src/main.cpp \
     src/controller/interaction.cpp \
     src/controller/core/core.cpp \
     src/model/file.cpp \
+    src/model/processing/_processing.cpp \
+    src/model/processing/flip.cpp \
     src/model/processing/processing.cpp \
     src/view/information.cpp \
     src/view/kyview.cpp \
@@ -51,6 +53,8 @@ HEADERS += \
     src/controller/interaction.h \
     src/controller/core/core.h \
     src/model/file.h \
+    src/model/processing/_processing.h \
+    src/model/processing/flip.h \
     src/model/processing/processing.h \
     src/view/information.h \
     src/view/kyview.h \

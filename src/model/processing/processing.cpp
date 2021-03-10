@@ -1,8 +1,14 @@
 #include "processing.h"
 
-Mat Processing::processingImage(const QString &cmd, const QVariant &arg, const Mat &mat)
+Mat Processing::processingImage(const ProcessingType &type,const Mat &mat, const QVariant &args)
 {
+    switch (type) {
+    case flip:
+        Flip f;
+        return f.processing(mat,args);
+    }
 
+    return Mat();
 }
 
 QPixmap Processing::converFormat(const Mat &mat)

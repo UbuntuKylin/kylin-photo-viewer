@@ -85,7 +85,7 @@ void ShowImageWidget::openFinish(QVariant var)
     this->showImage->setPixmap(pixmap);
     emit perRate(num);
     emit ToshowImage();
-//    this->showImage->show();
+    this->showImage->show();
 
 //    qDebug()<<info<<type<<proportion;
 }

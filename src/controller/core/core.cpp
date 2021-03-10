@@ -13,6 +13,7 @@ void Core::_initCore()
     _proportion = 0;
     _isNavigationShow = false;
     qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
+    qRegisterMetaType<Processing::FlipWay>("Processing::FlipWay");
 }
 
 void Core::loadCoreModel(QStringList arguments)
@@ -246,6 +247,16 @@ void Core::clickNavigation(const QPoint &point)
     QPoint start = startPoint * _nowImage.width() / navigation.width();
     QPixmap result = pix.copy(start.x(),start.y(),_size.width(),_size.height());
     _showImage(result);
+}
+
+void Core::flipImage(const Processing::FlipWay &way)
+{
+    Mat mat = Processing::processingImage(Processing::flip,_nowMat,QVariant(way));
+    if(!mat.data)
+        return;
+    mat = _changeImage(mat);
+    _nowImage = Processing::converFormat(mat);
+    _creatImage();
 }
 
 void Core::changeImage(const int &mat)

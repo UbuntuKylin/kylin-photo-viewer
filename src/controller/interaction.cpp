@@ -50,6 +50,7 @@ void _Interaction::_initConnect(Core *core)
     connect(this,&_Interaction::_changeImageShowSize,core,&Core::changeImageShowSize);//图片显示状态（放大缩小）
     connect(core,&Core::showNavigation,this,&_Interaction::showNavigation);//显示导航器
     connect(this,&_Interaction::_clickNavigation,core,&Core::clickNavigation);//导航器点击
+    connect(this,&_Interaction::_flip,core,&Core::flipImage);//翻转
 }
 
 void _Interaction::initUiFinish()
@@ -111,6 +112,24 @@ void _Interaction::watchAutoImage()
 void _Interaction::clickNavigation(const QPoint &point)
 {
     emit _clickNavigation(point);
+}
+
+void _Interaction::rotate(const bool &direction)
+{
+    if(direction)
+        emit _flip(Processing::clockwise);
+    else
+        emit _flip(Processing::counterclockwise);
+}
+
+void _Interaction::flipH()
+{
+    emit _flip(Processing::horizontal);
+}
+
+void _Interaction::flipV()
+{
+    emit _flip(Processing::vertical);
 }
 
 void _Interaction::needOpenImage(const QString &path)

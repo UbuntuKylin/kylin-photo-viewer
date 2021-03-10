@@ -216,46 +216,37 @@ void ToolBar::changePerRate(QString num)
 
 void ToolBar::_reduceImage()
 {
-//    QString currPer = this->percentage->text();
-//    QString currNum = currPer.mid(0,currPer.lastIndexOf("%"));
-//    int num = currNum.toInt() - 10;
-//    QString per = QString("%1").arg(num) + "%";
-//    changePerRate(per);
-    qDebug()<<"缩小";
     interaction->watchSmallImage();
 }
 
 void ToolBar::_enlargeImage()
 {
-    qDebug()<<"放大";
     interaction->watchBigImage();
 }
 
 void ToolBar::_originalSize()
 {
-    qDebug()<<"原始尺寸";
     interaction->watchOriginalImage();
 }
 
 void ToolBar::_adaptiveWidget()
 {
-    qDebug()<<"适应窗口";
     interaction->watchAutoImage();
 }
 
 void ToolBar::_rotate()
 {
-    qDebug()<<"旋转";
+    interaction->rotate();
 }
 
 void ToolBar::_flipH()
 {
-    qDebug()<<"水平镜像";
+    interaction->flipH();
 }
 
 void ToolBar::_flipV()
 {
-    qDebug()<<"垂直镜像";
+    interaction->flipV();
 }
 
 void ToolBar::_cutImage()
