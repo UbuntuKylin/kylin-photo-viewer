@@ -42,7 +42,7 @@ void menuModule::initAction(){
 
     QList<QAction *> actions ;
     QAction *actionOpen = new QAction(m_menu);
-    actionOpen->setText(tr("Open"));
+    actionOpen->setText(tr("Open.."));
     QAction *actionTheme = new QAction(m_menu);
     actionTheme->setText(tr("Theme"));
     QAction *actionHelp = new QAction(m_menu);
@@ -133,7 +133,7 @@ void menuModule::triggerMenu(QAction *act){
         aboutAction();
     }else if(tr("Help") == str){
         helpAction();
-    }else if(tr("Open") == str){
+    }else if(tr("Open..") == str){
         QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
         QString file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,"Image Files(*.jpg *.png *.bmp *.pgm *.pbm);;All(*.*)");
         emit openSignal(file_path);
@@ -174,11 +174,14 @@ void menuModule::aboutAction(){
 void menuModule::helpAction(){
 //    帮助点击事件处理
 
-//    appName = "tools/indicator-china-weather";
-//    DaemonDbus *ipcDbus = new DaemonDbus();
-//    if(!ipcDbus->daemonIsNotRunning()){
-//        ipcDbus->showGuide(appName);
-//    }   ---0301-cancel
+    appName = "tools/indicator-china-weather";
+    if(!ipcDbus){
+        ipcDbus = new DaemonDbus();
+    }
+
+    if(!ipcDbus->daemonIsNotRunning()){
+        ipcDbus->showGuide(appName);
+    }
 }
 
 void menuModule::initAbout(){
@@ -202,9 +205,9 @@ void menuModule::initAbout(){
     mainlyt->addLayout(bodylyt);
     mainlyt->addStretch();
     aboutWindow->setLayout(mainlyt);
-    //TODO:在屏幕中央显示
-    QRect availableGeometry = qApp->primaryScreen()->availableGeometry();
-    aboutWindow->move((availableGeometry.width()-aboutWindow->width())/2,(availableGeometry.height()- aboutWindow->height())/2);
+    //TODO:在中央显示
+    QRect availableGeometry = this->parentWidget()->parentWidget()->geometry();
+    aboutWindow->move(availableGeometry.center()-aboutWindow->rect().center());
     aboutWindow->show();
 }
 
@@ -213,7 +216,7 @@ QHBoxLayout* menuModule::initTitleBar(){
 //    titleBtnClose = new QPushButton;
     titleIcon->setFixedSize(QSize(24,24));
     appShowingName = tr("kylin view");
-    iconPath = ":/res/control_icons/indicator-china-weather.svg";
+    iconPath = ":/res/res/kyview_logo.png";
 
     titleIcon->setPixmap(QPixmap::fromImage(QImage(iconPath)));
     titleIcon->setScaledContents(true);

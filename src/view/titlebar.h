@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QToolButton>
 #include <QLabel>
 #include <QHBoxLayout>
 
@@ -14,8 +15,12 @@ public:
     explicit TitleBar(QWidget *parent = nullptr);
 
     QWidget *titleWid; //布局
-private:
     menuModule *m_menu = nullptr;
+    QLabel *imageName;
+
+    void showImageName(QString name);
+private:
+
 
 
     QHBoxLayout *titleLayout;
@@ -29,6 +34,9 @@ private:
     void initConnect();//建立信号与槽的连接
     void setStyle();//
     void fullRecovery();
+//    void leaveEvent(QEvent *event);
+//    void enterEvent(QEvent *event);
+
 
 signals:
     void changeSize();

@@ -68,6 +68,7 @@ private slots:
 
 signals:
     void _changeNum(QString num);
+    void showInfor();
 
 };
 
