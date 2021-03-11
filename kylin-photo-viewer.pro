@@ -1,5 +1,5 @@
 QT       += core gui
-QT += dbus
+QT       += dbus
 QT       += x11extras KWindowSystem
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -36,12 +36,15 @@ SOURCES += src/main.cpp \
     src/model/file.cpp \
     src/model/processing/flip.cpp \
     src/model/processing/processing.cpp \
+    src/view/daemondbus.cpp \
     src/view/information.cpp \
     src/view/kyview.cpp \
     src/global/variable.cpp \
     src/view/menumodule.cpp \
+    src/view/navigator.cpp \
     src/view/openimage.cpp \
     src/view/showimagewidget.cpp \
+    src/view/sidebar.cpp \
     src/view/titlebar.cpp \
     src/view/toolbar.cpp \
     src/view/xatom-helper.cpp
@@ -56,12 +59,15 @@ HEADERS += \
     src/model/processing/_processing.h \
     src/model/processing/flip.h \
     src/model/processing/processing.h \
+    src/view/daemondbus.h \
     src/view/information.h \
     src/view/kyview.h \
     src/global/variable.h \
     src/view/menumodule.h \
+    src/view/navigator.h \
     src/view/openimage.h \
     src/view/showimagewidget.h \
+    src/view/sidebar.h \
     src/view/titlebar.h \
     src/view/toolbar.h \
     src/view/xatom-helper.h
