@@ -33,6 +33,7 @@ public:
     virtual void rotate(const bool &direction = true)=0;//旋转
     virtual void flipH()=0;//水平翻转
     virtual void flipV()=0;//垂直翻转
+    virtual void deleteImage()=0;//删除图片
 private:
     static Interaction *m_interaction;//单例指针
 };
@@ -52,6 +53,7 @@ signals:
     void _changeImageShowSize(ImageShowStatus::ChangeShowSizeType);//图片显示状态（放大缩小）
     void _clickNavigation(const QPoint &point);//导航器点击
     void _flip(const Processing::FlipWay &way);//翻转处理
+    void _deleteImage();//删除图片
 
 public:
     _Interaction();
@@ -73,9 +75,11 @@ protected:
     virtual void rotate(const bool &direction);//旋转
     virtual void flipH();//水平翻转
     virtual void flipV();//垂直翻转
+    virtual void deleteImage();//删除图片
 
 private:
-    void _initConnect(Core *core);
+    void _initConnect(Core *core);//初始化绑定
+    bool _operateTooOften();//操作过于频繁
     bool _isCoreInit = false;//防止多次初始化核心
     bool _initUiFinish = false;//UI初始化完成
     QString _needStartWithOpenImagePath = "";//UI未初始化时设置，使其初始化完成立即加载图片

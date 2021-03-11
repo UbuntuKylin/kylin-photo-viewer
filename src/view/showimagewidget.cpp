@@ -76,9 +76,15 @@ void ShowImageWidget::openFinish(QVariant var)
 {
 
     ImageAndInfo package =var.value<ImageAndInfo>();
+    int type = package.type;//在队列中的标签
+    if(type == 0){
+        //最后一张照片被删除，这里要清空相册，显示添加图片的界面
+        qDebug()<<"最后一张照片被删除，这里要清空相册，显示添加图片的界面";
+
+        return;
+    }
     QFileInfo info = package.info;//详情信息
     QPixmap pixmap = package.image;//图片
-    int type = package.type;//在队列中的标签
     int proportion = package.proportion;//比例
     QString num;
     num = QString("%1").arg(proportion) + "%";

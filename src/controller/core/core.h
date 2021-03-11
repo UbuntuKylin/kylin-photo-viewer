@@ -50,6 +50,7 @@ public:
     void changeImageShowSize(ImageShowStatus::ChangeShowSizeType type);//图片显示状态（放大缩小）
     void clickNavigation(const QPoint &point);//导航器点击
     void flipImage(const Processing::FlipWay &way);//翻转处理
+    void deleteImage();//删除图片
 
 private:
     void _initCore();//初始化核心

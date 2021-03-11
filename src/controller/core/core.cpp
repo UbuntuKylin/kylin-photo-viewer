@@ -7,6 +7,7 @@ Core::Core()
 
 void Core::_initCore()
 {
+    _imageUrlMap.clear();
     _maxType = 0;
     _nowType = 0;
     _backType = 0;
@@ -152,6 +153,8 @@ void Core::_creatImage(const int &proportion)
         return;
 
     int defaultProportion  = 100 * _size.width() / _nowImage.width();
+    if(_nowImage.height() * defaultProportion / 100 > _size.height())
+        defaultProportion = 100 * _size.height() / _nowImage.height();
 
     //自适应窗口大小显示
     if(proportion <= 0){
@@ -254,16 +257,39 @@ void Core::flipImage(const Processing::FlipWay &way)
     Mat mat = Processing::processingImage(Processing::flip,_nowMat,QVariant(way));
     if(!mat.data)
         return;
+    File::saveImage(mat,_imageUrlMap.value(_nowType));
     mat = _changeImage(mat);
     _nowImage = Processing::converFormat(mat);
     _creatImage();
 }
 
+void Core::deleteImage()
+{
+    File::deleteImage(_imageUrlMap.value(_nowType));
+
+    //切换到下一张
+    changeImage(-1);
+
+    //从队列中去除
+    _imageUrlMap.remove(_backType);
+
+    //删除后队列中无图片，返回状态
+    if(_imageUrlMap.isEmpty()){
+        _imageUrlMap.clear();
+        _maxType = 0;//重置计数
+        _nowType = 0;//显示添加图片按钮
+        _navigation();//关闭导航器
+        _showImage(QPixmap());//发送状态
+    }
+}
+
 void Core::changeImage(const int &mat)
 {
     //如果图片队列小于2，不处理
-    if(_imageUrlMap.size()<2)
+    if(_imageUrlMap.size()<2){
+        _backType = _nowType;
         return;
+    }
 
     QList<int> list = _imageUrlMap.keys();
     if(mat == -1){

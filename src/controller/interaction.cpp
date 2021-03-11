@@ -51,6 +51,15 @@ void _Interaction::_initConnect(Core *core)
     connect(core,&Core::showNavigation,this,&_Interaction::showNavigation);//显示导航器
     connect(this,&_Interaction::_clickNavigation,core,&Core::clickNavigation);//导航器点击
     connect(this,&_Interaction::_flip,core,&Core::flipImage);//翻转
+    connect(this,&_Interaction::_deleteImage,core,&Core::deleteImage);//删除图片
+}
+
+bool _Interaction::_operateTooOften()
+{
+    if(_canResize->isActive())
+        return true;
+    _canResize->start(Variable::REFRESH_RATE);//刷新间隔
+    return false;
 }
 
 void _Interaction::initUiFinish()
@@ -68,54 +77,61 @@ QVariant _Interaction::openImage(const QString &path)
 
 void _Interaction::changeImage(const int &type)
 {
+    if(_operateTooOften())return;
     emit _changeImage(type);
 }
 
 void _Interaction::nextImage()
 {
+    if(_operateTooOften())return;
     emit _changeImage(-1);
 }
 
 void _Interaction::backImage()
 {
+    if(_operateTooOften())return;
     emit _changeImage(-2);
 }
 
 void _Interaction::changeWidgetSize(const QSize &size)
 {
-    if(_canResize->isActive())
-        return;
-    _canResize->start(Variable::REFRESH_RATE);//刷新间隔
+    if(_operateTooOften())return;
     emit _changeWidgetSize(size);
 }
 
 void _Interaction::watchBigImage()
 {
+    if(_operateTooOften())return;
     emit _changeImageShowSize(ImageShowStatus::Big);
 }
 
 void _Interaction::watchSmallImage()
 {
+    if(_operateTooOften())return;
     emit _changeImageShowSize(ImageShowStatus::Small);
 }
 
 void _Interaction::watchOriginalImage()
 {
+    if(_operateTooOften())return;
     emit _changeImageShowSize(ImageShowStatus::Origin);
 }
 
 void _Interaction::watchAutoImage()
 {
+    if(_operateTooOften())return;
     emit _changeImageShowSize(ImageShowStatus::Auto);
 }
 
 void _Interaction::clickNavigation(const QPoint &point)
 {
+    if(_operateTooOften())return;
     emit _clickNavigation(point);
 }
 
 void _Interaction::rotate(const bool &direction)
 {
+    if(_operateTooOften())return;
     if(direction)
         emit _flip(Processing::clockwise);
     else
@@ -124,12 +140,20 @@ void _Interaction::rotate(const bool &direction)
 
 void _Interaction::flipH()
 {
+    if(_operateTooOften())return;
     emit _flip(Processing::horizontal);
 }
 
 void _Interaction::flipV()
 {
+    if(_operateTooOften())return;
     emit _flip(Processing::vertical);
+}
+
+void _Interaction::deleteImage()
+{
+    if(_operateTooOften())return;
+    emit _deleteImage();
 }
 
 void _Interaction::needOpenImage(const QString &path)

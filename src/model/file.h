@@ -20,7 +20,11 @@ class File : public QObject
     Q_OBJECT
 public:
     static MatAndFileinfo loadImage(QString path, ImreadModes modes = IMREAD_UNCHANGED);
-    void saveImage(QVariant var);
+    static bool saveImage(const Mat &mat , const QString &savepath , bool replace = true);
+    static void deleteImage(const QString &savepath);
+
+private:
+    static void processStart(const QString &cmd , QStringList arguments = QStringList());
 };
 
 #endif // FILE_H

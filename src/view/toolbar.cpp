@@ -276,7 +276,7 @@ void ToolBar::_information()
 
 void ToolBar::_delImage()
 {
-    qDebug()<<"删除";
+    interaction->deleteImage();
 }
 
 

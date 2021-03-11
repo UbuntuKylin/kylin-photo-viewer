@@ -21,6 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+#opencv
 INCLUDEPATH += /usr/include/opencv4/
 LIBS += -lopencv_core \
         -lopencv_imgcodecs \
@@ -33,7 +34,6 @@ SOURCES += src/main.cpp \
     src/controller/interaction.cpp \
     src/controller/core/core.cpp \
     src/model/file.cpp \
-    src/model/processing/_processing.cpp \
     src/model/processing/flip.cpp \
     src/model/processing/processing.cpp \
     src/view/information.cpp \

@@ -26,7 +26,37 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     return maf;
 }
 
-void File::saveImage(QVariant var)
+bool File::saveImage(const Mat &mat, const QString &savepath, bool replace)
 {
+    //覆盖保存
+    if(replace)
+        return imwrite(savepath.toStdString(),mat);
 
+    //备份保存
+    QFileInfo tmpFileInfo = QFileInfo(savepath);
+    QString tmpPath = savepath;
+    int num = 1;
+    while (QFileInfo::exists(tmpPath)) {
+        tmpPath = tmpFileInfo.absolutePath() + "/" +
+                tmpFileInfo.completeBaseName()+
+                "(" + QString::number(num) + ")" + "." +
+                tmpFileInfo.completeSuffix();
+        num++;
+    }
+    return imwrite(tmpPath.toStdString(),mat);
+}
+
+void File::deleteImage(const QString &savepath)
+{
+    processStart("gio",QStringList() << "trash" << savepath);
+}
+
+void File::processStart(const QString &cmd, QStringList arguments)
+{
+    QString cmdTmp = cmd;
+    for(QString &x : arguments){
+        cmdTmp += " ";
+        cmdTmp += x;
+    }
+    system(cmdTmp.toLocal8Bit().data());
 }
