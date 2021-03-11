@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QDateTime>
+#include <QFont>
 class Information : public QWidget
 {
     Q_OBJECT
@@ -33,6 +34,8 @@ private:
 
     QWidget *inforWid;
     QGridLayout *gdLayout;
+
+    QFont ft;
 
     void _setstyle();
     void _layout();

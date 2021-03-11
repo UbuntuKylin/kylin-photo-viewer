@@ -2,7 +2,8 @@
 
 Information::Information(QWidget *parent) : QWidget(parent)
 {
-    this->resize(207,197);
+    this->resize(207,197 + 18);
+
     widName = new QLabel(this);
 //    widName->setText(tr("Information"));
     widName->setText(tr("信息"));
@@ -54,7 +55,7 @@ void Information::contentText(QFileInfo info)
 
 void Information::_setstyle()
 {
-    this->setStyleSheet("QWidget{background-color:rgba(255, 255, 255, 0.7);border-bottom-left-radius:4px;}");
+//    this->setStyleSheet("QWidget{background-color:rgba(255, 255, 255, 0.7);border-bottom-left-radius:4px;}");
 }
 
 void Information::_layout()
@@ -75,7 +76,7 @@ void Information::_layout()
     gdLayout->addWidget(revisionTime,8,0,1,2);
     gdLayout->addWidget(revisionTimeC,8,3,1,4);
 
-    gdLayout->setContentsMargins(14,10,10,18);
+    gdLayout->setContentsMargins(12,10,10,16);
     inforWid->setLayout(gdLayout);
     inforWid->resize(this->width(),this->height());
     inforWid->move(0,0);

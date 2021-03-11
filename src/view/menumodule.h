@@ -39,7 +39,7 @@ signals:
     void openSignal(QString path);
 //    void menuModuleSetThemeStyle(QString);
 public:
-    QPushButton *menuButton = nullptr;
+    QToolButton *menuButton = nullptr;
     QMenu *m_menu = nullptr;
 public:
     QString appName = "appName字段未填充!"; //格式kylin-usb-creator
@@ -63,6 +63,10 @@ private:
         themeBlackOnly = 1,
         themeLightOnly = 2
     } themeStatus;
+    enum typeTheme {
+        themeBlack,
+        themeLight
+    } themeNow;
 public slots:
     void dealSystemGsettingChange(const QString);
 private:
@@ -71,7 +75,6 @@ private:
     QVBoxLayout* initBody();    // 关于窗口body初始化
     void initGsetting();
     void initAction();
-    void setStyle();
     void triggerMenu(QAction* act); //主菜单动作4
     void triggerThemeMenu(QAction* act); //主题动作
     void aboutAction();

@@ -19,8 +19,6 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     imageName->hide();
 
     m_menu = new menuModule(this);
-    m_menu->menuButton->setProperty("isWindowButton", 0x1);
-    m_menu->menuButton->setProperty("useIconHighlightEffect",0x2);
     m_menu->setFocusPolicy(Qt::NoFocus);
     minibtn = new QPushButton(this);
     minibtn->setFixedSize(30,30);
@@ -29,6 +27,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     minibtn->setIcon(QIcon::fromTheme("window-minimize-symbolic"));//主题库的最小化图标
     minibtn->setProperty("isWindowButton", 0x1);
     minibtn->setProperty("useIconHighlightEffect", 0x2);
+    minibtn->setFlat(true);
 
     fullscreen = new QPushButton(this);
     fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的最小化图标
@@ -37,15 +36,16 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     fullscreen->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     fullscreen->setProperty("isWindowButton", 0x1);
     fullscreen->setProperty("useIconHighlightEffect", 0x2);
+    fullscreen->setFlat(true);
 
     closebtn = new QPushButton(this);
     closebtn->setToolTip(tr("close"));
     closebtn->setIcon(QIcon::fromTheme("window-close-symbolic"));//主题库的叉子图标
     closebtn->setFixedSize(30,30);
     closebtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
-    closebtn->setProperty("isWindowButton", 0x1);
-    closebtn->setProperty("useIconHighlightEffect", 0x2);
-//    closebtn->setAutoRaise(true);
+    closebtn->setProperty("isWindowButton", 0x2);
+    closebtn->setProperty("useIconHighlightEffect", 0x8);
+    closebtn->setFlat(true);
 
     this->setFixedHeight(40);
     this->setStyle();
@@ -65,18 +65,10 @@ void TitleBar::showImageName(QString name)
 //样式
 void TitleBar::setStyle()
 {
-    this->setStyleSheet("background-color:rgba(255, 255, 255, 0.7);");
+
     logolb->setStyleSheet("background-color:transparent;");
     imageName->setStyleSheet("background-color:transparent;");
-    minibtn->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
-                               "QPushButton:Hover{border:0px;border-radius:4px;background:transparent;background-color:rgba(0,0,0,0.1);}"
-                               "QPushButton:Pressed{border:0px;border-radius:4px;background:transparent;background-color:rgba(0,0,0,0.15);}");
-    fullscreen->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
-                               "QPushButton:Hover{border:0px;border-radius:4px;background:transparent;background-color:rgba(0,0,0,0.1);}"
-                               "QPushButton:Pressed{border:0px;border-radius:4px;background:transparent;background-color:rgba(0,0,0,0.15);}");
-    closebtn->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
-                               "QPushButton:Hover{border:0px;border-radius:4px;background:transparent;background-color:#F86457;}"
-                               "QPushButton:Pressed{border:0px;border-radius:4px;background:transparent;background-color:#E44C50;}");
+    logoBtn->setStyleSheet("background-color:transparent;");
 
 }
 //初始化顶栏布局

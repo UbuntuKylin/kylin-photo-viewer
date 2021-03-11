@@ -99,9 +99,7 @@ void ShowImageWidget::openFinish(QVariant var)
     ImageAndInfo package =var.value<ImageAndInfo>();
     int type = package.type;//在队列中的标签
     if(type == 0){
-        //最后一张照片被删除，这里要清空相册，显示添加图片的界面
-        qDebug()<<"最后一张照片被删除，这里要清空相册，显示添加图片的界面";
-
+        emit clearImage();
         return;
     }
     QFileInfo info = package.info;//详情信息
@@ -114,7 +112,6 @@ void ShowImageWidget::openFinish(QVariant var)
     emit ToshowImage();
     emit changeInfor(info);
     emit titleName(info.fileName());
-
 
     qDebug()<<info.completeBaseName()<<type<<proportion;
 }

@@ -16,6 +16,8 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
     this ->move((screen->geometry().width() - WIDTH) / 2,(screen->geometry().height() - HEIGHT) / 2);
 
     titlebar = new TitleBar(this);
+    titlebar->setAutoFillBackground(true);
+    titlebar->setBackgroundRole(QPalette::Base);
 //    titlebar->resize(this->width(),Variable::BAR_HEIGHT);
     titlebar->move(0,0);
 
@@ -25,7 +27,9 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
 
     toolbar = new ToolBar(this);
 //    toolbar->resize(678,40);
-    toolbar->move( int((this->width()-toolbar->width())/2),this->height() - toolbar->height());
+    toolbar->setAutoFillBackground(true);
+    toolbar->setBackgroundRole(QPalette::Base);
+    toolbar->move( int((this->width()-toolbar->width())/2),this->height() - toolbar->height() + 4);
 
     toolbar->show();
     titlebar->show();
@@ -42,8 +46,10 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
     navigator->hide();
 
     information = new Information(this);
-    information->resize(207,197);
+    information->resize(207,197 + 18);
     information->move(this->width()-information->width(),Variable::BAR_HEIGHT);
+    information->setAutoFillBackground(true);
+    information->setBackgroundRole(QPalette::Base);
     information->hide();
 
     timer = new QTimer(this);
@@ -51,7 +57,6 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
     this->setMinimumSize(678,678);
     this->_setstyle();
     this->_initconnect();
-    this->_layout();
     this->_openState();
 
 
@@ -84,6 +89,8 @@ void KyView::_initconnect()
     connect(showImageWidget,&ShowImageWidget::changeInfor,information,&Information::contentText);
     //顶栏图片名字
     connect(showImageWidget,&ShowImageWidget::titleName,titlebar,&TitleBar::showImageName);
+    //清空相册时，展示的界面
+    connect(showImageWidget,&ShowImageWidget::clearImage,this,&KyView::_clearImage);
 
 }
 //打开首先检测是否需要展示工具栏
@@ -92,7 +99,7 @@ void KyView::_openState()
 
     if(!openImage->isHidden()){
         toolbar->hide();
-        toolbar->move(int((this->width()-toolbar->width())/2),this->height() - toolbar->height());
+        toolbar->move(int((this->width()-toolbar->width())/2),this->height() - toolbar->height() +4);
 
     }
 }
@@ -135,7 +142,7 @@ void KyView::_toolbarChange()
         return;
     }else{
 
-        toolbar->move(int((this->width()-toolbar->width())/2),this->height() - toolbar->height());
+        toolbar->move(int((this->width()-toolbar->width())/2),this->height() - toolbar->height() + 4);
     }
 }
 
@@ -181,13 +188,63 @@ void KyView::_showInforWid()
     }
 }
 
+void KyView::_clearImage()
+{
+    openImage->show();
+    showImageWidget->hide();
+    toolbar->hide();
+    if(titlebar->isHidden()){
+        titlebar->show();
+        titlebar->imageName->clear();
+    }else{
+        titlebar->imageName->clear();
+        return;
+    }
+}
+
+void KyView::_hoverChange(int y)
+{
+    if (y <= Variable::BAR_HEIGHT || y >= this->height() - Variable::BAR_HEIGHT)
+        {
+            toolbar->show();
+            titlebar->show();
+
+            _toolbarChange();
+            _titlebarChange();
+            this->showImageWidget->lower();
+            this->showImageWidget->next->hide();
+            this->showImageWidget->back->hide();
+            if(y <= Variable::BAR_HEIGHT){
+                titlebar->raise();
+            }else if(y >= this->height() - Variable::BAR_HEIGHT){
+                toolbar->raise();
+            }
+            if(information->isHidden()){
+                return;
+            }else{
+               information->move(this->width()-information->width(),Variable::BAR_HEIGHT);
+            }
+        }else{
+
+            toolbar->hide();
+            titlebar->hide();
+            this->showImageWidget->next->show();
+            this->showImageWidget->back->show();
+            if(information->isHidden()){
+                return;
+            }else{
+               information->move(this->width()-information->width(),0);
+            }
+
+
+        }
+}
+
 //设置某些控件的QSS
 void KyView::_setstyle()
 {
 
-    titlebar->setStyleSheet("background-color:rgba(255, 255, 255, 0.7);");
-    toolbar->setStyleSheet("background-color:rgba(255, 255, 255, 0.7);");
-    information->setStyleSheet("background-color:rgba(255, 255, 255, 0.7);");
+//    toolbar->setStyleSheet("background-color:rgba(255, 255, 255, 0.7);");
 
 }
 //全屏
@@ -216,7 +273,6 @@ void KyView::_Toshowimage()
     }else{
        information->move(this->width()-information->width(),0);
     }
-//    this->navigator->show();
 
 }
 //检测鼠标位置--顶栏和工具栏的出现和隐藏
@@ -225,79 +281,11 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
 
     int y =this->mapFromGlobal(QCursor().pos()).y();
     if (openImage->isHidden()) {
-        if (y <= Variable::BAR_HEIGHT || y >= this->height() - Variable::BAR_HEIGHT)
-            {
-                toolbar->show();
-                titlebar->show();
-
-                _toolbarChange();
-                _titlebarChange();
-                this->showImageWidget->lower();
-                this->showImageWidget->next->hide();
-                this->showImageWidget->back->hide();
-                if(y <= Variable::BAR_HEIGHT){
-                    titlebar->raise();
-                }else if(y >= this->height() - Variable::BAR_HEIGHT){
-                    toolbar->raise();
-                }
-                if(information->isHidden()){
-                    return;
-                }else{
-                   information->move(this->width()-information->width(),Variable::BAR_HEIGHT);
-                }
-            }else{
-
-                toolbar->hide();
-                titlebar->hide();
-                this->showImageWidget->next->show();
-                this->showImageWidget->back->show();
-                if(information->isHidden()){
-                    return;
-                }else{
-                   information->move(this->width()-information->width(),0);
-                }
-
-
-            }
+        _hoverChange(y);
     } else{
         toolbar->hide();
         titlebar->show();
     }
-
-}
-bool KyView::_enterWid(QPoint pp, QMenu *wid)
-
-{
-
-   int height = wid->height();
-   int width = wid->width();
-   QPoint widMinPos = wid->pos();
-   QPoint widMaxPos = wid->pos();
-   widMaxPos.setX(wid->pos().x()+width);
-   widMaxPos.setY(wid->pos().y()+height);
-   if(pp.x() >= widMinPos.x() && pp.y() >= widMinPos.y() && pp.x() <= widMaxPos.x() && pp.y() <= widMaxPos.y())
-   {
-       return true;
-   }else{
-       return false;
-   }
-}
-
-void KyView::_layout()
-{
-//    openImageLayout->addStretch();
-//    openImageLayout->addWidget(openImage);
-//    openImageLayout->addStretch();
-//    openImageWid->setLayout(openImageLayout);
-//    openImageWid->resize(this->width(),this->height());
-//    openImageWid->move(0,0);
-
-//    showImageLayout->addStretch();
-//    showImageLayout->addWidget(showImageWidget);
-//    showImageLayout->addStretch();
-//    showImageWid->setLayout(showImageLayout);
-//    showImageWid->resize(this->width(),this->height());
-//    showImageWid->move(0,0);
 
 }
 
@@ -315,13 +303,15 @@ void KyView::resizeEvent(QResizeEvent *event){
 void KyView::leaveEvent(QEvent *event)
 {
 
+    if(!titlebar->isHidden() && !titlebar->m_menu->m_menu->isHidden()){
+        return;
+    }
+    if(openImage->isHidden()){
 
-//    if(openImage->isHidden()){
-
-//        titlebar->hide();
-//        toolbar->hide();
-//        showImageWidget->next->hide();
-//        showImageWidget->back->hide();
-//    }
+        titlebar->hide();
+        toolbar->hide();
+        showImageWidget->next->hide();
+        showImageWidget->back->hide();
+    }
     _inforChange();
 }
