@@ -55,3 +55,33 @@ QPixmap Processing::resizePix(const QPixmap &pixmap , const QSize &size)
 {
     return pixmap.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);  // 按比例缩放
 }
+
+void Processing::_pictureDeepen(QImage &image , const QSize &hightlightSize ,const QPoint &point)
+{
+    qDebug()<<"==="<<image;
+    int key = Variable::PICTURE_DEEPEN_KEY;
+    int left = point.x();
+    int right = point.x()+hightlightSize.width();
+    int top = point.y();
+    int bottom = point.y()+hightlightSize.height();
+
+    for(int j = 0 ; j < image.height() ; ++j){
+        for(int i = 0 ; i < image.width() ; ++i){
+            if(i>left && i<right && j>top && j<bottom)continue;//高亮区域不处理
+            QColor color(image.pixel(i, j));
+            color.setRed(minNumIsZero(color.red(),key));
+            color.setGreen(minNumIsZero(color.green(),key));
+            color.setBlue(minNumIsZero(color.blue(),key));
+            image.setPixel(i, j, color.rgb());
+        }
+    }
+    qDebug()<<"==="<<image;
+}
+
+int Processing::minNumIsZero(const int &num1 ,const int &num2)
+{
+    int num = num1-num2;
+    if(num<0)
+        return 0;
+    return num;
+}

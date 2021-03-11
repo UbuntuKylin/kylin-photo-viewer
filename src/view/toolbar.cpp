@@ -209,7 +209,7 @@ void ToolBar::_reduceImage()
 //    int num = currNum.toInt() - 10;
 //    QString per = QString("%1").arg(num) + "%";
 //    changePerRate(per);
-    qDebug()<<"缩小";
+//    qDebug()<<"缩小";
     interaction->watchSmallImage();
 }
 

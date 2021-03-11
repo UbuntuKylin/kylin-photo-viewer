@@ -11,7 +11,6 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     showImage->move(int((this->width() - showImage->width())/2),int((this->height() - showImage->height())/2));
     showImage->setMouseTracking(true);
     showImage->setAlignment(Qt::AlignCenter);
-
     showImage->setContextMenuPolicy(Qt::ActionsContextMenu);
     showImage->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -50,8 +49,8 @@ void ShowImageWidget::_initConnect()
     connect(next,&QPushButton::clicked,this,&ShowImageWidget::_nextImage);
     connect(back,&QPushButton::clicked,this,&ShowImageWidget::_backImage);
     //设置壁纸
-    connect(showImage,&QLabel::customContextMenuRequested,[=](const QPoint &pos)
-    {
+    connect(showImage,&QLabel::customContextMenuRequested,[=](const QPoint &pos){
+       Q_UNUSED(pos);
        imageMenu->exec(QCursor::pos());
     });
     connect(action_wallpaper, &QAction::triggered, this,&ShowImageWidget::_setWallpaper);
@@ -113,7 +112,6 @@ void ShowImageWidget::openFinish(QVariant var)
     this->showImage->setPixmap(pixmap);
     emit perRate(num);
     emit ToshowImage();
-    emit showNavi(pixmap);
     emit changeInfor(info);
     emit titleName(info.fileName());
 

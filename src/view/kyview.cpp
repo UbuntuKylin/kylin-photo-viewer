@@ -78,9 +78,6 @@ void KyView::_initconnect()
     connect(this,&KyView::openSignal,showImageWidget,&ShowImageWidget::_startWithOpenImage);
     //定时器
     connect(timer ,&QTimer::timeout, this, &KyView::_delayHide);
-
-    //导航器
-    connect(showImageWidget,&ShowImageWidget::showNavi,navigator,&Navigator::bottomwidget);
     //展示或隐藏图片信息窗口
     connect(toolbar,&ToolBar::showInfor,this,&KyView::_showInforWid);
     //获取图片详细信息

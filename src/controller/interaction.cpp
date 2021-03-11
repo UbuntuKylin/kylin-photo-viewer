@@ -39,8 +39,8 @@ void _Interaction::_initConnect(Core *core)
     connect(this,&_Interaction::_loadCoreModel,core,&Core::loadCoreModel);//加载核心模块
 
     //下面两个绑定顺序一定不要写反，查找文件再打开
-    connect(this,&_Interaction::_openImage,core,&Core::findAllImageFromeDir,Qt::BlockingQueuedConnection);//阻塞调用取反回值
-    connect(this,&_Interaction::_openImage,core,&Core::openImage);//阻塞调用取反回值
+    connect(this,&_Interaction::_openImage,core,&Core::findAllImageFromeDir,Qt::BlockingQueuedConnection);//阻塞调用取反回值,获取缩略图列表
+    connect(this,&_Interaction::_openImage,core,&Core::openImage);//打开图片
 
     connect(core,&Core::needOpenImage,this,&_Interaction::needOpenImage);//需要启动时加载图片
     connect(core,&Core::openFinish,this,&_Interaction::openFinish);//图片打开完成，将数据返回给UI层

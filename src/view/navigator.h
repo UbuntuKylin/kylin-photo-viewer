@@ -5,19 +5,18 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QDebug>
+#include "src/controller/interaction.h"
 
 class Navigator : public QWidget
 {
     Q_OBJECT
 public:
     explicit Navigator(QWidget *parent = nullptr);
-public slots:
-    void bottomwidget(QPixmap img);
+
 private:
     QLabel *bottomImage;
-    QWidget *darkWidget;
-
-
+    void _showNavigation(QPixmap pix);
+    Interaction * interaction =nullptr;
 
 signals:
 

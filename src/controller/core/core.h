@@ -58,10 +58,9 @@ private:
     Dbus *_dbus = nullptr;//DBus模块对象
     void _showImage(const QPixmap &pix);//显示图片
     void _creatImage(const int &proportion = -1);//生成图像
-    void _navigation(const QPoint &point = QPoint());//导航器
+    void _navigation(const QPoint &point = QPoint(-1,-1));//导航器
     void _processingCommand(const QStringList &cmd);//处理终端命令
     void _loadAlbum();//加载相册
-    void _pictureDeepen(QImage &image , const QSize &hightlightSize, const QPoint &point);//图片加深
     QPoint _clickBeforePosition;//记录上次点击区域，用于节省算力
 };
 

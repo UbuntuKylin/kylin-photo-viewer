@@ -15,6 +15,8 @@ void Core::_initCore()
     _isNavigationShow = false;
     qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
     qRegisterMetaType<Processing::FlipWay>("Processing::FlipWay");
+
+    _clickBeforePosition = QPoint(-1,-1);
 }
 
 void Core::loadCoreModel(QStringList arguments)
@@ -155,7 +157,6 @@ void Core::_creatImage(const int &proportion)
     int defaultProportion  = 100 * _size.width() / _nowImage.width();
     if(_nowImage.height() * defaultProportion / 100 > _size.height())
         defaultProportion = 100 * _size.height() / _nowImage.height();
-
     //自适应窗口大小显示
     if(proportion <= 0){
         QPixmap pix = Processing::resizePix(_nowImage,_size);
@@ -166,7 +167,6 @@ void Core::_creatImage(const int &proportion)
     }
 
     _proportion = proportion;
-
     //如果显示比例大于默认比例
     if(_proportion > defaultProportion){
         _navigation(QPoint(0,0));
@@ -183,31 +183,14 @@ void Core::_creatImage(const int &proportion)
 
 void Core::_navigation(const QPoint &point)
 {
-    if(point.isNull()){//关闭导航器
+    if( point.x()<0 || point.y()<0 ){//关闭导航器
         _isNavigationShow = false;
+        _clickBeforePosition = QPoint(-1,-1);
         emit showNavigation(QPixmap());
+        return;
     }
+    _clickBeforePosition = QPoint(-1,-1);
     clickNavigation(point);
-}
-
-void Core::_pictureDeepen(QImage &image , const QSize &hightlightSize ,const QPoint &point)
-{
-    int key = Variable::PICTURE_DEEPEN_KEY;
-    int left = point.x();
-    int right = point.x()+hightlightSize.width();
-    int top = point.y();
-    int bottom = point.y()+hightlightSize.height();
-
-    for(int j = 0 ; j < image.height() ; ++j){
-        for(int i = 0 ; i < image.width() ; ++i){
-            if(i>left && i<right && j>top && j<bottom)continue;//高亮区域不处理
-            QColor color(image.pixel(i, j));
-            color.setRed(color.red()-key);
-            color.setGreen(color.green()-key);
-            color.setBlue(color.blue()-key);
-            image.setPixel(i, j, color.rgb());
-        }
-    }
 }
 
 void Core::clickNavigation(const QPoint &point)
@@ -215,39 +198,44 @@ void Core::clickNavigation(const QPoint &point)
     //导航栏背景
     QSize navigationSize = Variable::NAVIGATION_SIZE;
     QImage navigation = Processing::resizePix(_nowImage,navigationSize).toImage();
-
+qDebug()<<"navigation"<<navigation.size();
+    //待显示图
+    QSize pixSize = _nowImage.size() * _proportion / 100;
+    QPixmap pix = Processing::resizePix(_nowImage,pixSize);
     //高亮区域大小
     QSize hightlightSize;
-    hightlightSize.setWidth(navigationSize.width() * _size.width() / _nowImage.width());
-    hightlightSize.setWidth(navigationSize.height() * _size.height() / _nowImage.height());
-
+    hightlightSize.setWidth(navigationSize.width() * _size.width() /  pix.width());
+    hightlightSize.setHeight(navigationSize.height() * _size.height() /  pix.height());
+    if(hightlightSize.width()>navigation.width())
+        hightlightSize.setWidth(navigation.width());
+    if(hightlightSize.height()>navigation.height())
+        hightlightSize.setHeight(navigation.height());
+qDebug()<<"hightlightSize"<<hightlightSize;
     //计算点击区域
     QSize halfHightlightSize = hightlightSize / 2;
     QPoint startPoint(point.x()-halfHightlightSize.width(),point.y()-halfHightlightSize.height());
     int right = navigation.width()-halfHightlightSize.width();//右侧边缘
     int bottom = navigation.width()-halfHightlightSize.width();//下侧边缘
-
+qDebug()<<"halfHightlightSize"<<halfHightlightSize;
     //过滤无效区域
     if(startPoint.x()<0)startPoint.setX(0);
     if(startPoint.y()<0)startPoint.setY(0);
     if(startPoint.x()>right)startPoint.setX(right);
     if(startPoint.y()>bottom)startPoint.setY(bottom);
-
+qDebug()<<"startPoint"<<startPoint;
     //和上次点击的有效区域一致则不处理
     if(startPoint == _clickBeforePosition)
         return;
     _clickBeforePosition = startPoint;
 
     //处理导航器图片
-    _pictureDeepen(navigation,hightlightSize,startPoint);
+    Processing::_pictureDeepen(navigation,hightlightSize,startPoint);
 
     //发送到导航器
     emit showNavigation(QPixmap::fromImage(navigation));
 
     //处理待显示区域
-    QSize pixSize = _nowImage.size() * _proportion / 100;
-    QPixmap pix = Processing::resizePix(_nowImage,pixSize);
-    QPoint start = startPoint * _nowImage.width() / navigation.width();
+    QPoint start = startPoint * pix.width() / navigation.width();
     QPixmap result = pix.copy(start.x(),start.y(),_size.width(),_size.height());
     _showImage(result);
 }
