@@ -42,7 +42,11 @@ void OpenImage::openimage()
 {
     QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
     //打开文件夹中的图片文件
-    QString file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,"Image Files(*.jpg *.png *.bmp *.jpeg *.gif)");
+    QString format = "Image Files(";
+    for(const QString &str:Variable::SUPPORT_FORMATS )
+        format += "*."+str +" ";
+    format += ")";
+    QString file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,format);
     qDebug() << "file_path " << file_path;
     emit openImage(file_path);
 

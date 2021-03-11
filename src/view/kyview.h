@@ -64,13 +64,13 @@ private:
     void _delayHide();//顶栏工具栏的延时隐藏
     void _showInforWid();//展示或隐藏图片信息窗口
 
+    void _clearImage();//无图片，需要返回默认界面
+    void _hoverChange(int y);//hover态，顶栏和工具栏的状态
 
     void mouseMoveEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);
     void leaveEvent(QEvent *event);
 
-    void _layout();
-    bool _enterWid(QPoint pp, QMenu *wid);
 
 private slots:
 

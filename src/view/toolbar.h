@@ -1,5 +1,6 @@
 #ifndef TOOLBAR_H
 #define TOOLBAR_H
+#define FITTHEMEWINDOW "org.ukui.style"
 
 #include <QWidget>
 #include <QDialog>
@@ -10,6 +11,7 @@
 #include <QMouseEvent>
 #include <QtMath>
 #include <QPainter>
+#include <QGSettings>
 #include <QGraphicsDropShadowEffect>
 #include "src/controller/interaction.h"
 
@@ -22,7 +24,7 @@ public:
 private:
 //    QWidget *tooleWid;//布局
     QHBoxLayout *toolLayout;
-
+    QGSettings *m_pGsettingThemeData = nullptr;
     QPushButton *reduce;//缩小
     QLabel *percentage;//百分比
     QPushButton *enlarge;//放大
@@ -39,6 +41,9 @@ private:
     QPushButton *sidebar;//侧边栏---
     QPushButton *information;//详细信息---
     QPushButton *delImage;//删除图片
+
+    QColor color = QColor(190 ,190, 190, 50);
+    QBrush brush = QBrush(Qt::white);
 
     Interaction *interaction = nullptr;
 
@@ -60,6 +65,9 @@ private:
     void _information();
     void _delImage();
 
+    void _changeStyle();
+    void _initGsetting();
+    void _dealSystemGsettingChange(const QString);
     void _initConnect();
     void paintEvent(QPaintEvent *event);
 

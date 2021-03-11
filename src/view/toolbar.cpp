@@ -7,7 +7,6 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     toolLayout = new QHBoxLayout(this);
     reduce = new QPushButton(this);
     reduce->setFixedSize(24,24);
-
     reduce->setFocusPolicy(Qt::NoFocus);
 
     percentage = new QLabel(this);
@@ -72,6 +71,7 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     this->_initControlQss();
     this->_setstyle();
     this->_initConnect();
+    this->_initGsetting();
 
     interaction=Interaction::getInstance();
 }
@@ -275,6 +275,34 @@ void ToolBar::_delImage()
     interaction->deleteImage();
 }
 
+void ToolBar::_initGsetting(){
+    if(QGSettings::isSchemaInstalled(FITTHEMEWINDOW)){
+        m_pGsettingThemeData = new QGSettings(FITTHEMEWINDOW);
+        connect(m_pGsettingThemeData,&QGSettings::changed,this,&ToolBar::_dealSystemGsettingChange);
+    }
+
+}
+
+void ToolBar::_dealSystemGsettingChange(const QString key){
+    if(key == "styleName"){
+        _changeStyle();
+    }
+}
+void ToolBar::_changeStyle()
+{
+    QString nowThemeStyle = m_pGsettingThemeData->get("styleName").toString();
+    if("ukui-dark" == nowThemeStyle || "ukui-black" == nowThemeStyle)
+    {
+        color = QColor(50,50, 50, 50);
+        brush = QBrush(Qt::black);
+
+    }else{
+        color = QColor(190 ,190, 190, 50);
+        brush = QBrush(Qt::white);
+
+    }
+}
+
 
 
 void ToolBar::paintEvent(QPaintEvent *event)
@@ -282,9 +310,8 @@ void ToolBar::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.fillRect(QRect(4, 4, this->width() - 2 * 4, this->height() - 2 * 4), QBrush(Qt::white));
-
-    QColor color(190 ,190, 190, 50);
+    painter.fillRect(QRect(4, 4, this->width() - 2 * 4, this->height() - 2 * 4), brush);
+//    color = QColor(0 ,0, 0, 50);
     for (int i = 0; i < 4; i++)
     {
         color.setAlpha(120 - qSqrt(i) * 40);
@@ -292,6 +319,8 @@ void ToolBar::paintEvent(QPaintEvent *event)
         // 圆角阴影边框;
         painter.drawRoundedRect(4 - i, 4 - i, this->width() - (4 - i) * 2, this->height() - (4 - i) * 2, 4, 4);
     }
+//    QColor color(190 ,190, 190, 50);
+
 
 
 }

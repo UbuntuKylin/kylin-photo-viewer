@@ -9,7 +9,6 @@ menuModule::menuModule(QWidget *parent = nullptr) : QWidget(parent)
 
 void menuModule::init(){
     initAction();
-    setStyle();
 }
 
 void menuModule::initAction(){
@@ -22,21 +21,28 @@ void menuModule::initAction(){
     iconSize = QSize(30,30);
 
     titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
+    titleBtnClose->setToolTip(tr("close"));
+    titleBtnClose->setFixedSize(30,30);
+    titleBtnClose->setFocusPolicy(Qt::NoFocus);//设置焦点类型
+    titleBtnClose->setProperty("isWindowButton", 0x2);
+    titleBtnClose->setProperty("useIconHighlightEffect", 0x8);
+    titleBtnClose->setFlat(true);
+
     bodySupport->setText(tr("Service & Support Team: ") +
                          "<a href=\"mailto://support@kylinos.cn\""
-                         "style=\"color:rgba(255,255,255,1)\">"
+                         "style=\"color:rgba(0,0,0,1)\">"
                          "support@kylinos.cn</a>");
     bodyAppVersion->setText(tr("Version: ") + appVersion);
 
-    menuButton = new QPushButton;
+    menuButton = new QToolButton;
     menuButton->setToolTip(tr("menu"));
-//    menuButton->setIcon(QIcon::fromTheme("application-menu"));
-    menuButton->setIcon(QIcon(":/res/res/menu_d.png"));
-    menuButton->setIconSize(QSize(30,30));
-    menuButton->setProperty("setIconHighlightEffectDefaultColor", QColor(Qt::white));
-    menuButton->setStyleSheet("color:rgba(255,255,255，1);");
-    menuButton->setFlat(true);
+    menuButton->setIcon(QIcon::fromTheme("open-menu-symbolic"));
+    menuButton->setProperty("isWindowButton", 0x1);
+    menuButton->setProperty("useIconHighlightEffect",0x2);
+    menuButton->setIconSize(QSize(16,16));
+    menuButton->setPopupMode(QToolButton::InstantPopup);
     menuButton->setFixedSize(iconSize);
+    menuButton->setAutoRaise(true);
 
     m_menu = new QMenu();
 
@@ -185,9 +191,15 @@ void menuModule::helpAction(){
 }
 
 void menuModule::initAbout(){
-
+    aboutWindow->deleteLater();
+    aboutWindow = new QWidget();
     aboutWindow->setWindowModality(Qt::ApplicationModal);
     aboutWindow->setWindowFlag(Qt::Tool);
+    if(themeNow == themeBlack)
+        aboutWindow->setStyleSheet(".QWidget{background-color:rgba(0,0,0,1);}");
+    else if(themeNow == themeLight)
+        aboutWindow->setStyleSheet(".QWidget{background-color:rgba(255,255,255,1);}");
+
 
     MotifWmHints hints;
     hints.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
@@ -213,7 +225,6 @@ void menuModule::initAbout(){
 
 QHBoxLayout* menuModule::initTitleBar(){
     QLabel* titleIcon = new QLabel();
-//    titleBtnClose = new QPushButton;
     titleIcon->setFixedSize(QSize(24,24));
     appShowingName = tr("kylin view");
     iconPath = ":/res/res/kyview_logo.png";
@@ -269,13 +280,6 @@ QVBoxLayout* menuModule::initBody(){
     return vlyt;
 }
 
-void menuModule::setStyle(){
-    menuButton->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
-                              "QPushButton:Hover{border:0px;border-radius:4px;background:transparent;background-color:rgba(0,0,0,0.1);}"
-                              "QPushButton:Pressed{border:0px;border-radius:4px;background:transparent;background-color:rgba(0,0,0,0.15);}"
-                              "QPushButton::menu-indicator{image:None;}");
-}
-
 void menuModule::initGsetting(){
     if(QGSettings::isSchemaInstalled(FITTHEMEWINDOW)){
         m_pGsettingThemeData = new QGSettings(FITTHEMEWINDOW);
@@ -301,18 +305,12 @@ void menuModule::refreshThemeBySystemConf(){
 }
 
 void menuModule::setThemeDark(){
-    qDebug()<<"Dark";
-    aboutWindow->setStyleSheet(".QWidget{background-color:rgba(0,0,0,1);}");
+    themeNow = themeBlack;
     titleText->setStyleSheet("color:rgba(255,255,255,1);font-size:14px;");
     bodyAppName->setStyleSheet("color:rgba(255,255,255,1);font-size:18px;");
     bodyAppVersion->setStyleSheet("color:rgba(255,255,255,1);font-size:14px;");
     bodySupport->setStyleSheet("color:rgba(255,255,255,1);font-size:14px;");
-    titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
-    titleBtnClose->setIconSize(QSize(16,16));
-    titleBtnClose->setFixedSize(30,30);
-    titleBtnClose->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
-                               "QPushButton:Hover{border:0px;border-radius:4px;background:transparent;background-color:#F86457;}"
-                               "QPushButton:Pressed{border:0px;border-radius:4px;background:transparent;background-color:#E44C50;}");
+
     bodySupport->setText(tr("Service & Support Team: ") +
                          "<a href=\"mailto://support@kylinos.cn\""
                          "style=\"color:rgba(255,255,255,1)\">"
@@ -320,30 +318,17 @@ void menuModule::setThemeDark(){
 }
 
 void menuModule::setThemeLight(){
-    qDebug()<<"settheme Light";
-    aboutWindow->setStyleSheet(".QWidget{background-color:rgba(255,255,255,1);}");
+    themeNow = themeLight;
     titleText->setStyleSheet("color:rgba(0,0,0,1);font-size:14px;");
     bodyAppName->setStyleSheet("color:rgba(0,0,0,1);font-size:18px;");
     bodyAppVersion->setStyleSheet("color:rgba(0,0,0,1);font-size:14px;");
     bodySupport->setStyleSheet("color:rgba(0,0,0,1);font-size:14px;");
 
-    titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
-    titleBtnClose->setFixedSize(30,30);
-    titleBtnClose->setIconSize(QSize(30,30));
-    titleBtnClose->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
-                               "QPushButton:Hover{border:0px;border-radius:4px;background:transparent;background-color:#F86457;}"
-                               "QPushButton:Pressed{border:0px;border-radius:4px;background:transparent;background-color:#E44C50;}");
     bodySupport->setText(tr("Service & Support Team: ") +
                          "<a href=\"mailto://support@kylinos.cn\""
                          "style=\"color:rgba(0,0,0,1)\">"
                          "support@kylinos.cn</a>");
-
 }
-
-
-
-
-
 
 
 

@@ -46,6 +46,7 @@ signals:
     void showNavi(QPixmap img);
     void changeInfor(QFileInfo info);
     void titleName(QString imageName);
+    void clearImage();
 };
 
 #endif // SHOWIMAGEWIDGET_H
