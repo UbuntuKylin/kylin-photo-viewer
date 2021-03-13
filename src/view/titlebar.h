@@ -1,6 +1,5 @@
 #ifndef TITLEBAR_H
 #define TITLEBAR_H
-
 #include <QWidget>
 #include <QPushButton>
 #include <QToolButton>

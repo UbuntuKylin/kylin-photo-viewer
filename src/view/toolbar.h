@@ -21,6 +21,8 @@ class ToolBar : public QWidget
 public:
     explicit ToolBar(QWidget *parent = nullptr);
     void changePerRate(QString num);
+    void reduceImage();
+    void enlargeImage();
 private:
 //    QWidget *tooleWid;//布局
     QHBoxLayout *toolLayout;
@@ -51,8 +53,7 @@ private:
     void _setstyle();
 //    bool event(QEvent *event);
 
-    void _reduceImage();
-    void _enlargeImage();
+
     void _originalSize();
     void _adaptiveWidget();
     void _rotate();
@@ -70,6 +71,7 @@ private:
     void _dealSystemGsettingChange(const QString);
     void _initConnect();
     void paintEvent(QPaintEvent *event);
+
 
 private slots:
 

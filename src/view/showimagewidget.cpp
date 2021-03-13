@@ -10,6 +10,7 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     showImage->resize(this->width(),this->height());
     showImage->move(int((this->width() - showImage->width())/2),int((this->height() - showImage->height())/2));
     showImage->setMouseTracking(true);
+    showImage->installEventFilter(this);
     showImage->setAlignment(Qt::AlignCenter);
     showImage->setContextMenuPolicy(Qt::ActionsContextMenu);
     showImage->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -21,9 +22,19 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
 //    imageWid->setMouseTracking(true);
 
 
-    action_wallpaper = new QAction(tr("set wallpaper"),this);
+    copy = new QAction(tr("Copy"),this);
+    setDeskPaper = new QAction(tr("Set Desktop Wallpaper"),this);
+    setLockPaper = new QAction(tr("Set Lock Wallpaper"),this);
+    print = new QAction(tr("Print"),this);
+    deleteImage = new QAction(tr("Delete"),this);
+    showInFile = new QAction(tr("Show in File"),this);
     imageMenu = new QMenu(this);
-    imageMenu->addAction(action_wallpaper);
+    imageMenu->addAction(copy);
+    imageMenu->addAction(setDeskPaper);
+    imageMenu->addAction(setLockPaper);
+    imageMenu->addAction(print);
+    imageMenu->addAction(deleteImage);
+    imageMenu->addAction(showInFile);
 
     next = new QPushButton(this);
     next->resize(56,56);
@@ -38,6 +49,7 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     iconSize = QSize(56,56);
     back->setIconSize(iconSize);
     next->setIconSize(iconSize);
+
     back->setFocusPolicy(Qt::NoFocus);
     next->setFocusPolicy(Qt::NoFocus);
     this->_initConnect();
@@ -53,7 +65,13 @@ void ShowImageWidget::_initConnect()
        Q_UNUSED(pos);
        imageMenu->exec(QCursor::pos());
     });
-    connect(action_wallpaper, &QAction::triggered, this,&ShowImageWidget::_setWallpaper);
+    connect(copy, &QAction::triggered, this,&ShowImageWidget::_copy);
+    connect(setDeskPaper, &QAction::triggered, this,&ShowImageWidget::_setDeskPaper);
+    connect(setLockPaper, &QAction::triggered, this,&ShowImageWidget::_setLockPaper);
+    connect(print, &QAction::triggered, this,&ShowImageWidget::_print);
+    connect(deleteImage, &QAction::triggered, this,&ShowImageWidget::_deleteImage);
+    connect(showInFile, &QAction::triggered, this,&ShowImageWidget::_showInFile);
+
 }
 //下一张
 void ShowImageWidget::_nextImage()
@@ -66,9 +84,46 @@ void ShowImageWidget::_backImage()
     interaction->backImage();
 }
 
-void ShowImageWidget::_setWallpaper()
+void ShowImageWidget::_copy()
 {
-    qDebug()<<"设置壁纸";
+//    QClipboard *clipboard = QApplication::clipboard();
+//    qDebug()<<"复制";
+//    if (!copyImage)
+//        return;
+//    else{
+//        clipboard->setPixmap(copyImage);
+//    }
+}
+
+void ShowImageWidget::_setDeskPaper()
+{
+    qDebug()<<"设置为桌面壁纸";
+}
+
+void ShowImageWidget::_setLockPaper()
+{
+    qDebug()<<"设置为锁屏壁纸";
+}
+
+void ShowImageWidget::_print()
+{
+    qDebug()<<"打印";
+}
+
+void ShowImageWidget::_deleteImage()
+{
+    qDebug()<<"删除";
+    interaction->deleteImage();
+}
+
+void ShowImageWidget::_showInFile()
+{
+
+    if (path == "")
+        return;
+    else
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+
 }
 
 void ShowImageWidget::_initInteraction()
@@ -112,8 +167,9 @@ void ShowImageWidget::openFinish(QVariant var)
     emit ToshowImage();
     emit changeInfor(info);
     emit titleName(info.fileName());
-
-   // qDebug()<<info.completeBaseName()<<type<<proportion;
+    path = info.absolutePath();
+    copyImage = pixmap;
+    qDebug()<<info.completeBaseName()<<type<<proportion;
 }
 
 void ShowImageWidget::re_move(int W, int H)
@@ -132,7 +188,7 @@ void ShowImageWidget::albumFinish(QVariant var)
     QFileInfo info = package.info;//详情信息
     QPixmap pixmap = package.image;//图片
     int type = package.type;//在队列中的标签
-   // qDebug()<<pixmap;
+//    qDebug()<<pixmap<<info<<type;
 }
 void ShowImageWidget::resizeEvent(QResizeEvent *event)
 {
@@ -141,4 +197,28 @@ void ShowImageWidget::resizeEvent(QResizeEvent *event)
     this->showImage->resize(KyView::mutual->width(),KyView::mutual->height());
     interaction->changeWidgetSize(this->showImage->size());
 }
+bool ShowImageWidget::eventFilter(QObject *obj, QEvent *event)
+{
+
+    if(obj == showImage)
+    {
+        if(event->type()==QEvent::Wheel)
+        {
+            QWheelEvent *wheelEvent=static_cast<QWheelEvent *>(event);
+            if(wheelEvent->delta()>0)
+            {
+                emit enlargeChange();
+            }
+            else
+            {
+                emit reduceChange();
+            }
+        }
+
+
+    }
+
+    return QObject::eventFilter(obj,event);
+}
+
 

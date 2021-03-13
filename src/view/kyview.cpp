@@ -9,6 +9,10 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
 
     this ->setWindowIcon(QIcon(":/res/res/kyview_logo.png"));
     this ->setWindowTitle(tr("Kylin Photo Viewer"));
+    //毛玻璃
+    this->setProperty("useSystemStyleBlur",true);
+    this->setAttribute(Qt::WA_TranslucentBackground);
+
     this->setMouseTracking(true);
     mutual = this;
 
@@ -27,8 +31,8 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
 
     toolbar = new ToolBar(this);
 //    toolbar->resize(678,40);
-    toolbar->setAutoFillBackground(true);
-    toolbar->setBackgroundRole(QPalette::Base);
+//    toolbar->setAutoFillBackground(true);
+//    toolbar->setBackgroundRole(QPalette::Base);
     toolbar->move( int((this->width()-toolbar->width())/2),this->height() - toolbar->height() + 4);
 
     toolbar->show();
@@ -58,6 +62,7 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
     this->_setstyle();
     this->_initconnect();
     this->_openState();
+    this->_initGsetting();
 
 
 }
@@ -91,6 +96,13 @@ void KyView::_initconnect()
     connect(showImageWidget,&ShowImageWidget::titleName,titlebar,&TitleBar::showImageName);
     //清空相册时，展示的界面
     connect(showImageWidget,&ShowImageWidget::clearImage,this,&KyView::_clearImage);
+    //导航器出现时，位置变化
+    connect(navigator,&Navigator::naviChange,this,&KyView::_naviChange);
+    //右键菜单删除当前图片
+//    connect(showImageWidget,&ShowImageWidget::deleteCurrImage,toolbar,&ToolBar::delImage);
+    //滚轮放大和缩小
+    connect(showImageWidget,&ShowImageWidget::reduceChange,toolbar,&ToolBar::reduceImage);
+    connect(showImageWidget,&ShowImageWidget::enlargeChange,toolbar,&ToolBar::enlargeImage);
 
 }
 //打开首先检测是否需要展示工具栏
@@ -237,14 +249,52 @@ void KyView::_hoverChange(int y)
             }
 
 
-        }
+    }
+}
+
+void KyView::_initGsetting()
+{
+    if(QGSettings::isSchemaInstalled(FITTHEMEWINDOW))
+    {
+        m_pGsettingThemeData = new QGSettings(FITTHEMEWINDOW);
+        connect(m_pGsettingThemeData,&QGSettings::changed,this, [=] (const QString &key){
+            if (key == "styleName")
+                _themeChange();
+
+        });
+
+    }
+    if(QGSettings::isSchemaInstalled(FITCONTROLTRANS))
+    {
+        m_pGsettingControlTrans = new QGSettings(FITCONTROLTRANS);
+        connect(m_pGsettingControlTrans,&QGSettings::changed, this, [=] (const QString &key){
+            if (key == "transparency")
+                _transChange();
+        });
+    }
+    _themeChange();
+    _transChange();
+    return;
+
+}
+
+void KyView::_themeChange()
+{
+    QString themeStyle = m_pGsettingThemeData->get("styleName").toString();
+    qDebug()<<"主题"<<themeStyle;
+}
+
+void KyView::_transChange()
+{
+    int themeStyle = m_pGsettingControlTrans->get("transparency").toInt();
+    qDebug()<<"主题"<<themeStyle;
 }
 
 //设置某些控件的QSS
 void KyView::_setstyle()
 {
 
-//    toolbar->setStyleSheet("background-color:rgba(255, 255, 255, 0.7);");
+    toolbar->setStyleSheet("border-radius:6px;");
 
 }
 //全屏

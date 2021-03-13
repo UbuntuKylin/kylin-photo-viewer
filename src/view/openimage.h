@@ -1,6 +1,6 @@
 #ifndef OPENIMAGE_H
 #define OPENIMAGE_H
-
+#define FITTHEMEWINDOW "org.ukui.style"
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
@@ -9,6 +9,7 @@
 #include <QSize>
 #include <QStandardPaths>
 #include <QFileDialog>
+#include <QGSettings>
 #include "src/global/variable.h"
 #include "src/controller/interaction.h"
 class OpenImage : public QWidget
@@ -18,20 +19,18 @@ public:
     explicit OpenImage(QWidget *parent = nullptr);
 private:
     Interaction *interaction = nullptr;
-
+    QGSettings *m_pGsettingThemeData = nullptr;
     QPushButton *openInCenter;//圆形图标
     QPushButton *addFile;//“+”图标
     QLabel *openText;//下方文字
     QSize iconsize;
 
-    void setstyle();
-    void initconnect();
+    void _setstyle();
+    void _initconnect();
     void openimage();
 
-//    void _initInteraction();
-//    void _startWithOpenImage(QString path);
-//    void _openImage(QString path);
-//    void openFinish(QVariant var);
+    void _initGsettings();
+    void _dealSystemGsettingChange();
 
 private slots:
 

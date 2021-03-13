@@ -8,6 +8,8 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     reduce = new QPushButton(this);
     reduce->setFixedSize(24,24);
     reduce->setFocusPolicy(Qt::NoFocus);
+//    reduce->setAutoRepeat(true);
+//    reduce->setAutoRepeatDelay(ms++);
 
     percentage = new QLabel(this);
     percentage->setFixedSize(43,16);
@@ -17,6 +19,8 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     enlarge = new QPushButton(this);
     enlarge->setFixedSize(24,24);
     enlarge->setFocusPolicy(Qt::NoFocus);
+//    enlarge->setAutoRepeat(true);
+//    enlarge->setAutoRepeatDelay(ms++);
 
     originalSize = new QPushButton(this);
     originalSize->setFixedSize(24,24);
@@ -111,14 +115,14 @@ void ToolBar::_initControlQss()
     toolLayout->setSpacing(20);
     toolLayout->addWidget(delImage,0,Qt::AlignCenter);
 //    toolLayout->setMargin(20);
-    toolLayout->setContentsMargins(20,8,20,8);
+    toolLayout->setContentsMargins(20,10,20,8);
     this->setLayout(toolLayout);
 
 }
 //样式
 void ToolBar::_setstyle()
 {
-    this->setStyleSheet("background-color:white;border-radius:4px;");
+    this->setStyleSheet("QWidget{border-radius:4px;}");
 
     percentage->setStyleSheet("QLabel{background-color:transparent;}");
     line1->setStyleSheet("QLabel{border: 1px solid #393939;background-color: #393939;}");
@@ -181,8 +185,8 @@ void ToolBar::_setstyle()
 void ToolBar::_initConnect()
 {
 
-    connect(reduce,&QPushButton::clicked,this,&ToolBar::_reduceImage);
-    connect(enlarge,&QPushButton::clicked,this,&ToolBar::_enlargeImage);
+    connect(reduce,&QPushButton::clicked,this,&ToolBar::reduceImage);
+    connect(enlarge,&QPushButton::clicked,this,&ToolBar::enlargeImage);
     connect(rotate,&QPushButton::clicked,this,&ToolBar::_rotate);
     connect(originalSize,&QPushButton::clicked,this,&ToolBar::_originalSize);
     connect(adaptiveWidget,&QPushButton::clicked,this,&ToolBar::_adaptiveWidget);
@@ -195,6 +199,7 @@ void ToolBar::_initConnect()
     connect(information,&QPushButton::clicked,this,&ToolBar::_information);
     connect(delImage,&QPushButton::clicked,this,&ToolBar::_delImage);
 
+
 }
 //改变百分比的数值
 void ToolBar::changePerRate(QString num)
@@ -202,18 +207,13 @@ void ToolBar::changePerRate(QString num)
     this->percentage->setText(num);
 }
 
-void ToolBar::_reduceImage()
+void ToolBar::reduceImage()
 {
-//    QString currPer = this->percentage->text();
-//    QString currNum = currPer.mid(0,currPer.lastIndexOf("%"));
-//    int num = currNum.toInt() - 10;
-//    QString per = QString("%1").arg(num) + "%";
-//    changePerRate(per);
-//    qDebug()<<"缩小";
+
     interaction->watchSmallImage();
 }
 
-void ToolBar::_enlargeImage()
+void ToolBar::enlargeImage()
 {
     interaction->watchBigImage();
 }
@@ -265,7 +265,6 @@ void ToolBar::_sidebar()
 
 void ToolBar::_information()
 {
-    qDebug()<<"详细信息";
     emit showInfor();
 
 }
@@ -319,9 +318,6 @@ void ToolBar::paintEvent(QPaintEvent *event)
         // 圆角阴影边框;
         painter.drawRoundedRect(4 - i, 4 - i, this->width() - (4 - i) * 2, this->height() - (4 - i) * 2, 4, 4);
     }
-//    QColor color(190 ,190, 190, 50);
-
-
 
 }
 
