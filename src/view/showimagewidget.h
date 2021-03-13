@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QFileInfo>
+#include <QClipboard>
 #include "src/controller/interaction.h"
 
 class ShowImageWidget : public QWidget
@@ -26,8 +27,16 @@ private:
     QHBoxLayout *imageLayout;
     QSize iconSize;
     QLabel *showImage;//用来展示图片的区域
-    QAction * action_wallpaper;//设置壁纸
+    QAction * copy;//复制
+    QAction * setDeskPaper;//设置为桌面壁纸
+    QAction * setLockPaper;//设置为锁屏壁纸
+    QAction * print;//打印
+    QAction * deleteImage;//删除
+    QAction * showInFile;//在文件夹中显示
     QMenu * imageMenu;//图片右键菜单
+
+    QString path = "";//打开文件夹的路径
+    QPixmap copyImage;
 
     void _initInteraction();
     void openFinish(QVariant var);
@@ -35,10 +44,18 @@ private:
 
     void _nextImage();
     void _backImage();
-    void _setWallpaper();
+
+    //右键菜单的各功能
+    void _copy();
+    void _setDeskPaper();
+    void _setLockPaper();
+    void _print();
+    void _deleteImage();
+    void _showInFile();
 
     void albumFinish(QVariant var);
     void resizeEvent(QResizeEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 signals:
     void perRate(QString num);
@@ -47,6 +64,9 @@ signals:
     void changeInfor(QFileInfo info);
     void titleName(QString imageName);
     void clearImage();
+    void deleteCurrImage();
+    void reduceChange();
+    void enlargeChange();
 };
 
 #endif // SHOWIMAGEWIDGET_H

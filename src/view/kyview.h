@@ -1,6 +1,7 @@
 #ifndef KYVIEW_H
 #define KYVIEW_H
-
+#define FITTHEMEWINDOW "org.ukui.style"
+#define FITCONTROLTRANS "org.ukui.control-center.personalise"
 //#include <QKyView>
 #include <QWidget>
 #include <QApplication>
@@ -13,7 +14,7 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QTimer>
-
+#include <QGSettings>
 #include "toolbar.h"
 #include "titlebar.h"
 #include "openimage.h"
@@ -42,7 +43,8 @@ private:
     OpenImage *openImage = nullptr;//打开图片
     ShowImageWidget *showImageWidget = nullptr;//展示图片
     Information *information = nullptr;//信息窗口
-
+    QGSettings *m_pGsettingThemeData = nullptr;
+    QGSettings *m_pGsettingControlTrans = nullptr;
     QSize widgetSize;
     QSize widgetPosition;
     QPoint p;
@@ -66,6 +68,10 @@ private:
 
     void _clearImage();//无图片，需要返回默认界面
     void _hoverChange(int y);//hover态，顶栏和工具栏的状态
+
+    void _initGsetting();//监听主题和控制面板变化
+    void _themeChange();//主题变化
+    void _transChange();//控制面板变化
 
     void mouseMoveEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);

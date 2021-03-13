@@ -17,8 +17,12 @@ private:
     QLabel *bottomImage;
     void _showNavigation(QPixmap pix);
     Interaction * interaction =nullptr;
+    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 
 signals:
+    void naviChange();
+    void posChange(QPoint pos);
 
 };
 

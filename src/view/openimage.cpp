@@ -5,6 +5,7 @@ OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
 {
     openInCenter = new QPushButton(this);
     addFile = new QPushButton(openInCenter);
+    addFile->setFocusPolicy(Qt::NoFocus);
     openText = new QLabel(this);
     openInCenter->setFixedSize(128,128);
     openInCenter->move(0,0);
@@ -16,14 +17,14 @@ OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
     openText->move(0,128+30);
     iconsize = QSize(30,30);
     this->setFixedSize(128,128+50);
-    this->setstyle();
-    this->initconnect();
+    this->_setstyle();
+    this->_initconnect();
+    this->_initGsettings();
 
-//    _initInteraction();//一定要放到构造函数末尾
 }
 
 //设置样式
-void OpenImage::setstyle()
+void OpenImage::_setstyle()
 {
         openInCenter->setStyleSheet("background-color:rgba(255, 255, 255, 1);border-radius:64;");
 //        addFile->setStyleSheet("background-image: url(:/res/res/addplus.png);");
@@ -31,7 +32,7 @@ void OpenImage::setstyle()
         addFile->setIconSize(QSize(30,30));
 }
 //初始化连接
-void OpenImage::initconnect()
+void OpenImage::_initconnect()
 {
     connect(openInCenter,&QPushButton::clicked,this,&OpenImage::openimage);
     connect(addFile,&QPushButton::clicked,this,&OpenImage::openimage);
@@ -50,4 +51,37 @@ void OpenImage::openimage()
     qDebug() << "file_path " << file_path;
     emit openImage(file_path);
 
+}
+
+void OpenImage::_initGsettings()
+{
+    if(QGSettings::isSchemaInstalled(FITTHEMEWINDOW)){
+        m_pGsettingThemeData = new QGSettings(FITTHEMEWINDOW);
+        connect(m_pGsettingThemeData,&QGSettings::changed,this,[=] (const QString &key)
+        {
+            if(key == "styleName")
+                _dealSystemGsettingChange();
+        });
+    }
+    _dealSystemGsettingChange();
+    return;
+}
+
+void OpenImage::_dealSystemGsettingChange()
+{
+    QString themeStyle = m_pGsettingThemeData->get("styleName").toString();
+    qDebug()<<"主题"<<themeStyle;
+    if("ukui-dark" == themeStyle || "ukui-black" == themeStyle){
+        openInCenter->setStyleSheet("background-color:rgba(0, 0, 0, 0.5);border-radius:64;");
+        openText->setStyleSheet("QLabel{color:rgba(0, 0, 0, 1);}");
+        addFile->setStyleSheet("background-color:transparent;");
+        addFile->setIcon(QIcon(":/res/res/addplus.png"));
+        addFile->setIconSize(QSize(30,30));
+    }else{
+        openInCenter->setStyleSheet("background-color:rgba(255, 255, 255, 1);border-radius:64;");
+        openText->setStyleSheet("QLabel{color:rgba(0, 0, 0, 1);}");
+        addFile->setStyleSheet("background-color:transparent;");
+        addFile->setIcon(QIcon(":/res/res/addplus.png"));
+        addFile->setIconSize(QSize(30,30));
+    }
 }

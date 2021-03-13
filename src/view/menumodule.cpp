@@ -12,7 +12,7 @@ void menuModule::init(){
 }
 
 void menuModule::initAction(){
-    aboutWindow = new QWidget();
+
     bodyAppName = new QLabel();
     titleBtnClose = new QPushButton;
     bodyAppVersion = new QLabel();
@@ -141,7 +141,11 @@ void menuModule::triggerMenu(QAction *act){
         helpAction();
     }else if(tr("Open..") == str){
         QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-        QString file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,"Image Files(*.jpg *.png *.bmp *.pgm *.pbm);;All(*.*)");
+        QString format = "Image Files(";
+        for(const QString &str:Variable::SUPPORT_FORMATS )
+            format += "*."+str +" ";
+        format += ")";
+        QString file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,format);
         emit openSignal(file_path);
     }
 }
@@ -192,13 +196,9 @@ void menuModule::helpAction(){
 
 void menuModule::initAbout(){
     aboutWindow->deleteLater();
-    aboutWindow = new QWidget();
-    aboutWindow->setWindowModality(Qt::ApplicationModal);
-    aboutWindow->setWindowFlag(Qt::Tool);
-    if(themeNow == themeBlack)
-        aboutWindow->setStyleSheet(".QWidget{background-color:rgba(0,0,0,1);}");
-    else if(themeNow == themeLight)
-        aboutWindow->setStyleSheet(".QWidget{background-color:rgba(255,255,255,1);}");
+    aboutWindow = new QDialog();
+//    aboutWindow->setWindowModality(Qt::ApplicationModal);
+//    aboutWindow->setWindowFlag(Qt::Tool);
 
 
     MotifWmHints hints;
@@ -206,6 +206,11 @@ void menuModule::initAbout(){
     hints.functions = MWM_FUNC_ALL;
     hints.decorations = MWM_DECOR_BORDER;
     XAtomHelper::getInstance()->setWindowMotifHint(aboutWindow->winId(), hints);
+
+//    if(themeNow == themeBlack)
+//        aboutWindow->setStyleSheet(".QWidget{background-color:rgba(0,0,0,1);}");
+//    else if(themeNow == themeLight)
+//        aboutWindow->setStyleSheet(".QWidget{background-color:rgba(255,255,255,1);}");
 
     aboutWindow->setFixedSize(420,324);
     aboutWindow->setMinimumHeight(324);
@@ -305,7 +310,11 @@ void menuModule::refreshThemeBySystemConf(){
 }
 
 void menuModule::setThemeDark(){
-    themeNow = themeBlack;
+    qDebug()<<"themenow:"<<themeNow;
+//    themeNow = themeBlack;
+//    if(aboutWindow)
+//        aboutWindow->setStyleSheet("QWidget{background-color:rgba(0,0,0,1);}");
+//    aboutWindow->setStyleSheet("QWidget{background-color:rgba(0,0,0,1);}");
     titleText->setStyleSheet("color:rgba(255,255,255,1);font-size:14px;");
     bodyAppName->setStyleSheet("color:rgba(255,255,255,1);font-size:18px;");
     bodyAppVersion->setStyleSheet("color:rgba(255,255,255,1);font-size:14px;");
@@ -318,7 +327,11 @@ void menuModule::setThemeDark(){
 }
 
 void menuModule::setThemeLight(){
-    themeNow = themeLight;
+    qDebug()<<"themenow:"<<themeNow;
+//    themeNow = themeLight;
+//    if(aboutWindow)
+//        aboutWindow->setStyleSheet("QWidget{background-color:rgba(255,255,255,1);}");
+//    aboutWindow->setStyleSheet("QWidget{background-color:rgba(255,255,255,1);}");
     titleText->setStyleSheet("color:rgba(0,0,0,1);font-size:14px;");
     bodyAppName->setStyleSheet("color:rgba(0,0,0,1);font-size:18px;");
     bodyAppVersion->setStyleSheet("color:rgba(0,0,0,1);font-size:14px;");

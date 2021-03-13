@@ -114,18 +114,5 @@ void TitleBar::fullRecovery()
 
 }
 
-//void TitleBar::leaveEvent(QEvent *event)
-//{
-//    if(!m_menu->m_menu->isHidden()){
-//        this->hide();
-//    }
-//}
-
-//void TitleBar::enterEvent(QEvent *event)
-//{
-//    if(!m_menu->m_menu->isHidden()){
-//        this->show();
-//    }
-//}
 
 
