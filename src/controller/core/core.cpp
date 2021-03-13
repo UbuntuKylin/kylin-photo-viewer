@@ -113,6 +113,7 @@ void ImageShowStatus::_changeImageType(int num)
 {
     if(num == 0)//回滚
     {
+        _imageUrlMap.remove(_nowType);
         _nowType=_backType;
         return;
     }
@@ -127,6 +128,7 @@ QVariant Core::openImage(QString fullPath)
     {
         //如果图片打开失败则回滚
         _changeImageType();
+        changeImage(-1);
         return QVariant();
     }
     //格式转换，记录状态
@@ -144,6 +146,18 @@ void Core::_showImage(const QPixmap &pix)
     package.info = _info;
     package.image = pix;
     package.type = _nowType;
+    package.imageSize = QString::number(_nowImage.width())+"x"+QString::number(_nowImage.height());
+    switch (_nowMat.type()) {
+    case CV_8UC4:
+        package.colorSpace = "RGBA";
+        break;
+    case CV_8UC3:
+        package.colorSpace = "RGB";
+        break;
+    case CV_8UC1:
+        package.colorSpace = "GRAY";
+        break;
+    }
     QVariant var;
     var.setValue<ImageAndInfo>(package);
     emit openFinish(var);
@@ -198,7 +212,7 @@ void Core::clickNavigation(const QPoint &point)
     //导航栏背景
     QSize navigationSize = Variable::NAVIGATION_SIZE;
     QImage navigation = Processing::resizePix(_nowImage,navigationSize).toImage();
-qDebug()<<"navigation"<<navigation.size();
+
     //待显示图
     QSize pixSize = _nowImage.size() * _proportion / 100;
     QPixmap pix = Processing::resizePix(_nowImage,pixSize);
@@ -210,19 +224,19 @@ qDebug()<<"navigation"<<navigation.size();
         hightlightSize.setWidth(navigation.width());
     if(hightlightSize.height()>navigation.height())
         hightlightSize.setHeight(navigation.height());
-qDebug()<<"hightlightSize"<<hightlightSize;
+
     //计算点击区域
     QSize halfHightlightSize = hightlightSize / 2;
     QPoint startPoint(point.x()-halfHightlightSize.width(),point.y()-halfHightlightSize.height());
     int right = navigation.width()-halfHightlightSize.width();//右侧边缘
     int bottom = navigation.width()-halfHightlightSize.width();//下侧边缘
-qDebug()<<"halfHightlightSize"<<halfHightlightSize;
+
     //过滤无效区域
     if(startPoint.x()<0)startPoint.setX(0);
     if(startPoint.y()<0)startPoint.setY(0);
     if(startPoint.x()>right)startPoint.setX(right);
     if(startPoint.y()>bottom)startPoint.setY(bottom);
-qDebug()<<"startPoint"<<startPoint;
+
     //和上次点击的有效区域一致则不处理
     if(startPoint == _clickBeforePosition)
         return;

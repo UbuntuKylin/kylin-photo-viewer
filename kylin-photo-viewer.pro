@@ -1,4 +1,5 @@
 QT       += core gui
+QT       += svg
 QT       += dbus
 QT       += x11extras KWindowSystem
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

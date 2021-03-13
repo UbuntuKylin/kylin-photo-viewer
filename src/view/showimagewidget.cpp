@@ -113,7 +113,7 @@ void ShowImageWidget::openFinish(QVariant var)
     emit changeInfor(info);
     emit titleName(info.fileName());
 
-    qDebug()<<info.completeBaseName()<<type<<proportion;
+   // qDebug()<<info.completeBaseName()<<type<<proportion;
 }
 
 void ShowImageWidget::re_move(int W, int H)
@@ -132,7 +132,7 @@ void ShowImageWidget::albumFinish(QVariant var)
     QFileInfo info = package.info;//详情信息
     QPixmap pixmap = package.image;//图片
     int type = package.type;//在队列中的标签
-//    qDebug()<<pixmap<<info<<type;
+   // qDebug()<<pixmap;
 }
 void ShowImageWidget::resizeEvent(QResizeEvent *event)
 {

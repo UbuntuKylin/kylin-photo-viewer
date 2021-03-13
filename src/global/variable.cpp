@@ -6,7 +6,14 @@ const QString Variable::PHOTO_VIEW_DBUS_PARH = QString("/"); //DBUS路径
 const QString Variable::PHOTO_VIEW_DBUS_INTERFACE = QString("kylin_photo_viewer.commands");//DBUS接口
 const QString Variable::ENV_LOGLEVEL = QString("UKPV_DEBUG"); //日志级别环境变量名
 const QMap<QString,QString> Variable::SUPPORT_CMD = Variable::_getSupportCmd(); //支持的命令列表
-const QStringList Variable::SUPPORT_FORMATS={"jpg","jpeg","png","gif","bmp"}; //支持的格式列表
+const QStringList Variable::SUPPORT_FORMATS={
+    //opencv支持的格式列表
+    "JPG","JPE","JPEG","JP2","EXR","PBM","PGM","PPM","SR","RAS","PNG","BMP","DIB","TIFF","TIF","TGA"
+    ,"jpg","jpe","jpeg","jp2","exr","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","tga"
+    //opencv不支持的格式列表
+    ,"SVG"//,"GIF"
+    ,"svg"//,"gif"
+    };
 const QSize Variable::ALBUM_IMAGE_SIZE = QSize(94,58); //相册缩略图尺寸
 const QSize Variable::NAVIGATION_SIZE = QSize(200,133); //导航器尺寸
 const int Variable::PICTURE_DEEPEN_KEY = 50; //图片加深值

@@ -4,7 +4,11 @@
 #include <QObject>
 #include <QFileInfo>
 #include <QVariant>
+#include <QSvgRenderer>
+#include <QSvgGenerator>
+#include <QPainter>
 #include "src/global/variable.h"
+#include "src/model/processing/processing.h"
 
 using namespace cv;
 
@@ -25,6 +29,7 @@ public:
 
 private:
     static void processStart(const QString &cmd , QStringList arguments = QStringList());
+    static bool save(const Mat &mat , const QString &savepath , const QString &type);
 };
 
 #endif // FILE_H

@@ -17,6 +17,8 @@ struct ImageAndInfo
     QPixmap image; //图片
     unsigned int type; //标签
     unsigned int proportion; //比例
+    QString colorSpace;//图片空间
+    QString imageSize;//图片尺寸
 };
 Q_DECLARE_METATYPE(ImageAndInfo)//QVarant 注册自定义类型
 

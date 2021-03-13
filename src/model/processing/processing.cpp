@@ -15,22 +15,20 @@ QPixmap Processing::converFormat(const Mat &mat)
 {
     switch ( mat.type() )
     {
-    // 8-bit, 4 channel
     case CV_8UC4:
     {
-        QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB32);
+        QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
         return QPixmap::fromImage(image);
     }
 
-    // 8-bit, 3 channel
     case CV_8UC3:
     {
         QImage tmp(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888 );
-        QImage image =tmp.rgbSwapped();QPixmap::fromImage(image);
+        QImage image =tmp.rgbSwapped();
+        QPixmap::fromImage(image);
         return QPixmap::fromImage(image);
     }
 
-    // 8-bit, 1 channel
     case CV_8UC1:
     {
         static QVector<QRgb>  sColorTable;
@@ -58,24 +56,31 @@ QPixmap Processing::resizePix(const QPixmap &pixmap , const QSize &size)
 
 void Processing::_pictureDeepen(QImage &image , const QSize &hightlightSize ,const QPoint &point)
 {
-    qDebug()<<"==="<<image;
     int key = Variable::PICTURE_DEEPEN_KEY;
     int left = point.x();
     int right = point.x()+hightlightSize.width();
     int top = point.y();
     int bottom = point.y()+hightlightSize.height();
+    //如果有透明通道
+    bool hasAlpha = false;
+    if(image.format() == QImage::Format_ARGB32 || image.format() == QImage::Format_ARGB32_Premultiplied)
+        hasAlpha=true;
 
     for(int j = 0 ; j < image.height() ; ++j){
         for(int i = 0 ; i < image.width() ; ++i){
-            if(i>left && i<right && j>top && j<bottom)continue;//高亮区域不处理
+            if(i>=left && i<right && j>=top && j<bottom)continue;//高亮区域不处理
             QColor color(image.pixel(i, j));
+            if(hasAlpha && color.red()+color.green()+color.blue() == 0){//透明区域40%透明度的黑色
+                color.setAlphaF(0.4);
+                image.setPixel(i, j, color.rgba());
+                continue;
+            }
             color.setRed(minNumIsZero(color.red(),key));
             color.setGreen(minNumIsZero(color.green(),key));
             color.setBlue(minNumIsZero(color.blue(),key));
             image.setPixel(i, j, color.rgb());
         }
     }
-    qDebug()<<"==="<<image;
 }
 
 int Processing::minNumIsZero(const int &num1 ,const int &num2)
