@@ -1,8 +1,11 @@
 #include "kyview.h"
 #include "xatom-helper.h"
 KyView *KyView::mutual = nullptr;
-KyView::KyView(QWidget *parent) : QWidget(parent)
+KyView::KyView(const QStringList &args)
 {
+    Interaction *interaction =Interaction::getInstance();
+    interaction->creatCore(args);
+
     int WIDTH = 1080;
     int HEIGHT = 720;
     this->resize(1080, 720);

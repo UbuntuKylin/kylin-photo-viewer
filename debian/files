@@ -1,1 +1,3 @@
-kylin-photo-viewer_1.0.0-1~rc4_source.buildinfo utils optional
+kylin-photo-viewer-dbgsym_1.0.0-1~rc4_amd64.ddeb debug optional automatic=yes
+kylin-photo-viewer_1.0.0-1~rc4_amd64.buildinfo utils optional
+kylin-photo-viewer_1.0.0-1~rc4_amd64.deb utils optional

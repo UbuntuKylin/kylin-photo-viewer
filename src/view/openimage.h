@@ -10,8 +10,8 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QGSettings>
-#include "src/global/variable.h"
-#include "src/controller/interaction.h"
+#include "global/variable.h"
+#include "controller/interaction.h"
 class OpenImage : public QWidget
 {
     Q_OBJECT

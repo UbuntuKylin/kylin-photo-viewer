@@ -19,15 +19,30 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     maf.info=info;
 
     //svg、gif等opencv不支持的格式
-//    if(info.suffix().toLower() == "gif"){
-//        QSvgRenderer svgRender(path);
-//        QPixmap pix(svgRender.defaultSize());
-//        pix.fill(Qt::transparent);
-//        QPainter p(&pix);
-//        svgRender.render(&p);
-//        QImage image = pix.toImage();
-//        mat = Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone();
-//    }
+    if(info.suffix().toLower() == "png"){
+//        int err;
+//        GifFileType *gif = DGifOpenFileName(path.toLocal8Bit().data(),&err);
+//        int transparent = gif->SBackGroundColor;
+//        delete gif;
+
+        VideoCapture capture;
+        Mat frame;
+        frame= capture.open(path.toStdString()); //读取gif文件
+        if(!capture.isOpened()){
+            printf("can not open ...\n");
+            capture.release();
+            return maf;
+        }
+        QList<Mat> frames;  //存放gif的所有帧，每个frame都是Mat格式
+        while (capture.read(frame))
+            frames.push_back(frame);
+        capture.release();
+        qDebug()<<frames.length();
+        if(frames.length()>0){
+            maf.matList=frames;
+            mat = frames.first();
+        }
+    }
 
     if(info.suffix().toLower() == "svg"){
         QSvgRenderer svgRender(path);

@@ -16,15 +16,11 @@ void Core::_initCore()
     qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
     qRegisterMetaType<Processing::FlipWay>("Processing::FlipWay");
 
+    _clickBeforeStartPosition = QPoint(-1,-1);
     _clickBeforePosition = QPoint(-1,-1);
 }
 
-void Core::loadCoreModel(QStringList arguments)
-{
-    _initDbus(arguments);
-}
-
-void Core::_initDbus(const QStringList &arguments)
+QString Core::initDbus(const QStringList &arguments)
 {
     _dbus = new Dbus;
 
@@ -37,7 +33,7 @@ void Core::_initDbus(const QStringList &arguments)
 
     //没有参数不处理
     if(arguments.length() <2)
-        return;
+        return "";
 
     //帮助命令则打印
     if(arguments[1]=="-help" || arguments[1]=="--help" ){
@@ -45,7 +41,7 @@ void Core::_initDbus(const QStringList &arguments)
             qInfo()<<key<<"   "<<Variable::SUPPORT_CMD.value(key);
         }
         exit(0);
-        return;
+        return "";
     }
 
     //如果是地址且文件存在则打开
@@ -54,20 +50,20 @@ void Core::_initDbus(const QStringList &arguments)
         QString format =arguments[1];
         format=format.split(".").last();
         if(!Variable::SUPPORT_FORMATS.contains(format))
-            return;
-        emit needOpenImage(arguments[1]);
-        return;
+            return "";
+        return arguments[1];
     }
 
     //如果是命令
     if(Variable::SUPPORT_CMD.keys().contains(arguments[1])){
         if(connectSeccess)//如果为首个实例不响应
-            return;
+            return "";
         _dbus->argumentsCommand(arguments);
-        return;
+        return "";
     }
 
     qDebug()<<"参数异常";
+    return "";
 }
 
 void Core::_processingCommand(const QStringList &cmd)
@@ -197,39 +193,50 @@ void Core::_creatImage(const int &proportion)
 
 void Core::_navigation(const QPoint &point)
 {
+    _clickBeforeStartPosition = QPoint(-1,-1);
     if( point.x()<0 || point.y()<0 ){//关闭导航器
-        _isNavigationShow = false;
         _clickBeforePosition = QPoint(-1,-1);
+        _isNavigationShow = false;
         emit showNavigation(QPixmap());
         return;
     }
-    _clickBeforePosition = QPoint(-1,-1);
-    clickNavigation(point);
+
+    _creatNavigation();
+    //记录位置会晃，原因待排查，暂时禁掉
+    //clickNavigation(_clickBeforePosition);
+    clickNavigation(QPoint(0,0));
+}
+
+void NavigationStatus::_creatNavigation()
+{
+    //导航栏背景
+    QSize navigationSize = Variable::NAVIGATION_SIZE;
+    _navigationImage = Processing::resizePix(_nowImage,navigationSize).toImage();
+
+    //记录空白区域
+    _spaceWidth = (navigationSize.width()-_navigationImage.width())/2;
+    _spaceHeight = (navigationSize.height()-_navigationImage.height())/2;
+
+    //待显示图
+    QSize pixSize = _nowImage.size() * _proportion / 100;
+    _showPix = Processing::resizePix(_nowImage,pixSize);
+
+    //高亮区域大小
+    _hightlightSize.setWidth(_navigationImage.width() * _size.width() /  _showPix.width());
+    _hightlightSize.setHeight(_navigationImage.height() * _size.height() /  _showPix.height());
+    if(_hightlightSize.width()>_navigationImage.width())
+        _hightlightSize.setWidth(_navigationImage.width());
+    if(_hightlightSize.height()>_navigationImage.height())
+        _hightlightSize.setHeight(_navigationImage.height());
 }
 
 void Core::clickNavigation(const QPoint &point)
 {
-    //导航栏背景
-    QSize navigationSize = Variable::NAVIGATION_SIZE;
-    QImage navigation = Processing::resizePix(_nowImage,navigationSize).toImage();
-
-    //待显示图
-    QSize pixSize = _nowImage.size() * _proportion / 100;
-    QPixmap pix = Processing::resizePix(_nowImage,pixSize);
-    //高亮区域大小
-    QSize hightlightSize;
-    hightlightSize.setWidth(navigationSize.width() * _size.width() /  pix.width());
-    hightlightSize.setHeight(navigationSize.height() * _size.height() /  pix.height());
-    if(hightlightSize.width()>navigation.width())
-        hightlightSize.setWidth(navigation.width());
-    if(hightlightSize.height()>navigation.height())
-        hightlightSize.setHeight(navigation.height());
-
-    //计算点击区域
-    QSize halfHightlightSize = hightlightSize / 2;
-    QPoint startPoint(point.x()-halfHightlightSize.width(),point.y()-halfHightlightSize.height());
-    int right = navigation.width()-halfHightlightSize.width();//右侧边缘
-    int bottom = navigation.width()-halfHightlightSize.width();//下侧边缘
+    _clickBeforePosition = point;
+    //计算点击区域——鼠标要在高亮区域中央，且要减去导航栏窗口与图片边缘的距离
+    QPoint startPoint(point.x() - _hightlightSize.width() / 2 - _spaceWidth,point.y() - _hightlightSize.height() / 2 - _spaceHeight);
+    int right = _navigationImage.width() - _hightlightSize.width();//右侧边缘
+    int bottom = _navigationImage.height() - _hightlightSize.height();//下侧边缘
 
     //过滤无效区域
     if(startPoint.x()<0)startPoint.setX(0);
@@ -238,19 +245,19 @@ void Core::clickNavigation(const QPoint &point)
     if(startPoint.y()>bottom)startPoint.setY(bottom);
 
     //和上次点击的有效区域一致则不处理
-    if(startPoint == _clickBeforePosition)
+    if(startPoint == _clickBeforeStartPosition)
         return;
-    _clickBeforePosition = startPoint;
+    _clickBeforeStartPosition = startPoint;
 
     //处理导航器图片
-    Processing::_pictureDeepen(navigation,hightlightSize,startPoint);
+    QImage image = Processing::_pictureDeepen(_navigationImage,_hightlightSize,startPoint);
 
     //发送到导航器
-    emit showNavigation(QPixmap::fromImage(navigation));
+    emit showNavigation(QPixmap::fromImage(image));
 
     //处理待显示区域
-    QPoint start = startPoint * pix.width() / navigation.width();
-    QPixmap result = pix.copy(start.x(),start.y(),_size.width(),_size.height());
+    QPoint start = startPoint * _showPix.width() / _navigationImage.width();
+    QPixmap result = _showPix.copy(start.x(),start.y(),_size.width(),_size.height());
     _showImage(result);
 }
 

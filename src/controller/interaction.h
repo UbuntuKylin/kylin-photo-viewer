@@ -46,7 +46,6 @@ class _Interaction : public Interaction
     Q_OBJECT
 
 signals:
-    void _loadCoreModel(const QStringList &list);//初始化核心模块
     QVariant _openImage(const QString &path);//打开图片  QVariant -> QHash<int,QList<int>>
     void _changeImage(const int &type); //切换图片
     void _changeWidgetSize(const QSize &size);//切换窗口大小
@@ -57,7 +56,6 @@ signals:
 
 public:
     _Interaction();
-    void needOpenImage(const QString &path);//处理启动时立即打开图片的场景
 
 protected:
     virtual void creatCore(const QStringList &list);//初始化核心模块
@@ -81,7 +79,6 @@ private:
     void _initConnect(Core *core);//初始化绑定
     bool _operateTooOften();//操作过于频繁
     bool _isCoreInit = false;//防止多次初始化核心
-    bool _initUiFinish = false;//UI初始化完成
     QString _needStartWithOpenImagePath = "";//UI未初始化时设置，使其初始化完成立即加载图片
     QTimer *_canResize = nullptr;//限制修改大小频率，降低cpu占用
 

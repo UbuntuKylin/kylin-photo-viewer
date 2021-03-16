@@ -14,7 +14,7 @@
 #include <QPainter>
 #include <QGSettings>
 #include <QGraphicsDropShadowEffect>
-#include "src/controller/interaction.h"
+#include "controller/interaction.h"
 
 class ToolBar : public QWidget
 {

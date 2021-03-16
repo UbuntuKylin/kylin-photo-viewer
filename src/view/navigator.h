@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QDebug>
-#include "src/controller/interaction.h"
+#include "controller/interaction.h"
 
 class Navigator : public QWidget
 {

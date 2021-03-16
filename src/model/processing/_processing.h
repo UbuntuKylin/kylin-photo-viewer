@@ -1,7 +1,7 @@
 #ifndef _PROCESSING_H
 #define _PROCESSING_H
 
-#include "src/global/variable.h"
+#include "global/variable.h"
 using namespace cv;
 
 class _Processing

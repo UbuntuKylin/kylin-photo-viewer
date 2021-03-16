@@ -23,15 +23,15 @@
 #include "navigator.h"
 #include "information.h"
 
-#include "src/global/variable.h"
-#include "src/controller/interaction.h"
-#include "src/global/variable.h"
+#include "global/variable.h"
+#include "controller/interaction.h"
+#include "global/variable.h"
 
 class KyView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit KyView(QWidget *parent = nullptr);
+    explicit KyView(const QStringList &args);
     ~KyView();
     static KyView *mutual;//指针类型静态成员变量
     void menuopen(QString path);

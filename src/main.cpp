@@ -8,23 +8,20 @@
 #include "view/xatom-helper.h"
 
 int main(int argc, char *argv[])
-{
-    /*
-     * 添加4K 屏幕支持。
-     */
-    #if(QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
-            QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-            QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    #else
-        // do not support 4K.
-    #endif
+{ 
+    //添加4K 屏幕支持。
+#if(QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#else
+    // do not support 4K.
+#endif
     QApplication a(argc, argv);
 
-//    qInstallMessageHandler(Log::msgHandler);//注册MessageHandler
+    //注册MessageHandler
+    qInstallMessageHandler(Log::msgHandler);
 
-    Interaction *interaction =Interaction::getInstance();
-    interaction->creatCore(a.arguments());
-
+    //翻译
     QTranslator app_trans;
     QTranslator qt_trans;
     QString locale = QLocale::system().name();
@@ -50,7 +47,8 @@ int main(int argc, char *argv[])
             a.installTranslator(&qt_trans);
     }
 
-    KyView w;
+    //主题框架
+    KyView w(a.arguments());
     MotifWmHints hints;
     hints.flags = MWM_HINTS_FUNCTIONS|MWM_HINTS_DECORATIONS;
     hints.functions = MWM_FUNC_ALL;

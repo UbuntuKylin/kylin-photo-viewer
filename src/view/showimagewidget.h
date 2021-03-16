@@ -8,7 +8,7 @@
 #include <QHBoxLayout>
 #include <QFileInfo>
 #include <QClipboard>
-#include "src/controller/interaction.h"
+#include "controller/interaction.h"
 
 class ShowImageWidget : public QWidget
 {

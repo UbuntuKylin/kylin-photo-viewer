@@ -11,8 +11,8 @@ const QStringList Variable::SUPPORT_FORMATS={
     "JPG","JPE","JPEG","JP2","EXR","PBM","PGM","PPM","SR","RAS","PNG","BMP","DIB","TIFF","TIF","TGA"
     ,"jpg","jpe","jpeg","jp2","exr","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","tga"
     //opencv不支持的格式列表
-    ,"SVG"//,"GIF"
-    ,"svg"//,"gif"
+    ,"SVG","GIF"
+    ,"svg","gif"
     };
 const QSize Variable::ALBUM_IMAGE_SIZE = QSize(94,58); //相册缩略图尺寸
 const QSize Variable::NAVIGATION_SIZE = QSize(200,133); //导航器尺寸
@@ -20,7 +20,7 @@ const int Variable::PICTURE_DEEPEN_KEY = 50; //图片加深值
 const int Variable::REFRESH_RATE = 15; //刷新间隔
 const int Variable::RESIZE_KEY = 10; //每次放大缩小的值
 const int Variable::RESIZE_KEY_MAX = 1000; //能够放大的最大值
-const int Variable::RESIZE_KEY_MIN = 10; //能够缩小的最小值
+const int Variable::RESIZE_KEY_MIN = 5; //能够缩小的最小值
 
 const int Variable::BAR_HEIGHT = 40;
 

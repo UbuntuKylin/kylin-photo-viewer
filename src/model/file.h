@@ -7,8 +7,9 @@
 #include <QSvgRenderer>
 #include <QSvgGenerator>
 #include <QPainter>
-#include "src/global/variable.h"
-#include "src/model/processing/processing.h"
+#include <gif_lib.h>
+#include "global/variable.h"
+#include "model/processing/processing.h"
 
 using namespace cv;
 
@@ -16,6 +17,7 @@ class MatAndFileinfo
 {
 public:
     Mat mat;
+    QList<Mat> matList;
     QFileInfo info;
 };
 

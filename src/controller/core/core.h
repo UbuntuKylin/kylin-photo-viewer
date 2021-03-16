@@ -6,9 +6,9 @@
 #include <QVariant>
 #include <QPixmap>
 #include <QColor>
-#include "src/model/dbus.h"
-#include "src/model/file.h"
-#include "src/model/processing/processing.h"
+#include "model/dbus.h"
+#include "model/file.h"
+#include "model/processing/processing.h"
 #include "albumthumbnail.h"
 
 class ImageShowStatus //记录显示图片状态
@@ -30,7 +30,21 @@ public:
     bool _isNavigationShow;//是否显示导航器
 };
 
-class Core : public QObject , ImageShowStatus
+class NavigationStatus : public ImageShowStatus//记录显示图片状态
+{
+public:
+    QPoint _clickBeforePosition;//记录上次点击区域，用于提升体验
+    QPoint _clickBeforeStartPosition;//记录上次点击区域，用于节省算力
+    void _creatNavigation();//创建导航器图片等数据，用于节省算力
+
+    QPixmap _showPix;//待显示图
+    QImage _navigationImage;//导航栏背景
+    QSize _hightlightSize; //高亮区域大小;
+    int _spaceWidth;//导航栏窗口与缩略图左边缘距离
+    int _spaceHeight;//导航栏窗口与缩略图上边缘距离
+};
+
+class Core : public QObject , NavigationStatus
 {
     Q_OBJECT
 
@@ -42,7 +56,7 @@ signals:
 
 public:
     Core();
-    void loadCoreModel(QStringList arguments);//初始化核心功能
+    QString initDbus(const QStringList &arguments);//初始化Dbus模块
     QVariant findAllImageFromeDir(QString fullPath);//寻找目录下所有支持的图片
     QVariant openImage(QString fullPath);//打开图片
     void changeImage(const int &type); //切换图片
@@ -54,14 +68,13 @@ public:
 
 private:
     void _initCore();//初始化核心
-    void _initDbus(const QStringList &arguments);//初始化Dbus模块
     Dbus *_dbus = nullptr;//DBus模块对象
     void _showImage(const QPixmap &pix);//显示图片
     void _creatImage(const int &proportion = -1);//生成图像
-    void _navigation(const QPoint &point = QPoint(-1,-1));//导航器
     void _processingCommand(const QStringList &cmd);//处理终端命令
     void _loadAlbum();//加载相册
-    QPoint _clickBeforePosition;//记录上次点击区域，用于节省算力
+    void _navigation(const QPoint &point = QPoint(-1,-1));//导航器
+
 };
 
 #endif // CORE_H

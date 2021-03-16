@@ -10,6 +10,7 @@ Build-Depends: debhelper (>=9),
                libopencv-core-dev,
                libopencv-imgproc-dev,
                libopencv-imgcodecs-dev,
+               libopencv-highgui-dev,
                libqt5svg5-dev,
                pkgconf,
 Standards-Version: 4.4.0

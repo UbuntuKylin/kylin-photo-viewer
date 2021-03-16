@@ -2,9 +2,9 @@
 #define ALBUMTHUMBNAIL_H
 
 #include <QThread>
-#include "../../global/variable.h"
-#include "../../model/processing/processing.h"
-#include "src/model/file.h"
+#include "global/variable.h"
+#include "model/processing/processing.h"
+#include "model/file.h"
 
 class AlbumThumbnail : public QThread
 {

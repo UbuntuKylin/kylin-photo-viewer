@@ -54,8 +54,9 @@ QPixmap Processing::resizePix(const QPixmap &pixmap , const QSize &size)
     return pixmap.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);  // 按比例缩放
 }
 
-void Processing::_pictureDeepen(QImage &image , const QSize &hightlightSize ,const QPoint &point)
+QImage Processing::_pictureDeepen(const QImage &img , const QSize &hightlightSize , const QPoint &point)
 {
+    QImage image = img.copy();
     int key = Variable::PICTURE_DEEPEN_KEY;
     int left = point.x();
     int right = point.x()+hightlightSize.width();
@@ -81,6 +82,7 @@ void Processing::_pictureDeepen(QImage &image , const QSize &hightlightSize ,con
             image.setPixel(i, j, color.rgb());
         }
     }
+    return image;
 }
 
 int Processing::minNumIsZero(const int &num1 ,const int &num2)
