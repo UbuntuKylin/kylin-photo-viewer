@@ -61,7 +61,7 @@ signals:
     void perRate(QString num);
     void ToshowImage();//告诉主界面需要show和hide的控件
     void showNavi(QPixmap img);
-    void changeInfor(QFileInfo info);
+    void changeInfor(QFileInfo info, QString imageSize,QString colorSpace);
     void titleName(QString imageName);
     void clearImage();
     void deleteCurrImage();

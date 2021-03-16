@@ -31,5 +31,6 @@
         <file>res/originalSize_hover.png</file>
         <file>res/menu_d.png</file>
         <file>res/kyview_logo.png</file>
+        <file>res/close_black.png</file>
     </qresource>
 </RCC>

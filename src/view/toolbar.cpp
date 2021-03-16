@@ -4,7 +4,13 @@
 ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
 {
 
+    this->resize(678 +4 ,40 + 4);
+    setWindowFlags(Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+//    this->resize(479 +4 ,40 + 4);
+    tooleWid = new QFrame(this);
     toolLayout = new QHBoxLayout(this);
+
     reduce = new QPushButton(this);
     reduce->setFixedSize(24,24);
     reduce->setFocusPolicy(Qt::NoFocus);
@@ -14,7 +20,6 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     percentage = new QLabel(this);
     percentage->setFixedSize(43,16);
     percentage->setText("98%");
-    percentage->setAlignment(Qt::AlignCenter);
 
     enlarge = new QPushButton(this);
     enlarge->setFixedSize(24,24);
@@ -72,10 +77,17 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     delImage->setFixedSize(24,24);
     delImage->setFocusPolicy(Qt::NoFocus);
 
+    QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
+    effect->setOffset(0, 0);          //设置向哪个方向产生阴影效果(dx,dy)，特别地，(0,0)代表向四周发散
+    effect->setColor(QColor(54,54,54));       //设置阴影颜色，也可以setColor(QColor(220,220,220))
+    effect->setBlurRadius(10);        //设定阴影的模糊半径，数值越大越模糊
+    tooleWid->setGraphicsEffect(effect);
+
+    this->_initGsetting();
     this->_initControlQss();
     this->_setstyle();
     this->_initConnect();
-    this->_initGsetting();
+
 
     interaction=Interaction::getInstance();
 }
@@ -85,7 +97,7 @@ void ToolBar::_initControlQss()
 
     toolLayout->addWidget(reduce,0,Qt::AlignCenter);
     toolLayout->setSpacing(10);
-    toolLayout->addWidget(percentage,0,Qt::AlignLeft);
+    toolLayout->addWidget(percentage,0,Qt::AlignCenter);
     toolLayout->setSpacing(10);
     toolLayout->addWidget(enlarge,0,Qt::AlignCenter);
     toolLayout->setSpacing(20);
@@ -115,15 +127,17 @@ void ToolBar::_initControlQss()
     toolLayout->setSpacing(20);
     toolLayout->addWidget(delImage,0,Qt::AlignCenter);
 //    toolLayout->setMargin(20);
-    toolLayout->setContentsMargins(20,10,20,8);
-    this->setLayout(toolLayout);
+    toolLayout->setContentsMargins(18,8,18,12);
+    tooleWid->setLayout(toolLayout);
+    tooleWid->move(4,4);
+    tooleWid->resize(this->width()-8,this->height()-2);
 
 }
 //样式
 void ToolBar::_setstyle()
 {
     this->setStyleSheet("QWidget{border-radius:4px;}");
-
+    tooleWid->setStyleSheet("background-color:white;border-radius:4px;");
     percentage->setStyleSheet("QLabel{background-color:transparent;}");
     line1->setStyleSheet("QLabel{border: 1px solid #393939;background-color: #393939;}");
     line2->setStyleSheet("QLabel{border: 1px solid #393939;background-color: #393939;}");
@@ -292,33 +306,10 @@ void ToolBar::_changeStyle()
     QString nowThemeStyle = m_pGsettingThemeData->get("styleName").toString();
     if("ukui-dark" == nowThemeStyle || "ukui-black" == nowThemeStyle)
     {
-        color = QColor(50,50, 50, 50);
-        brush = QBrush(Qt::black);
 
     }else{
-        color = QColor(190 ,190, 190, 50);
-        brush = QBrush(Qt::white);
 
     }
-}
-
-
-
-void ToolBar::paintEvent(QPaintEvent *event)
-{
-
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.fillRect(QRect(4, 4, this->width() - 2 * 4, this->height() - 2 * 4), brush);
-//    color = QColor(0 ,0, 0, 50);
-    for (int i = 0; i < 4; i++)
-    {
-        color.setAlpha(120 - qSqrt(i) * 40);
-        painter.setPen(color);
-        // 圆角阴影边框;
-        painter.drawRoundedRect(4 - i, 4 - i, this->width() - (4 - i) * 2, this->height() - (4 - i) * 2, 4, 4);
-    }
-
 }
 
 

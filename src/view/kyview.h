@@ -15,6 +15,7 @@
 #include <QMouseEvent>
 #include <QTimer>
 #include <QGSettings>
+#include <QStyleOption>
 #include "toolbar.h"
 #include "titlebar.h"
 #include "openimage.h"
@@ -35,10 +36,11 @@ public:
     static KyView *mutual;//指针类型静态成员变量
     void menuopen(QString path);
     ToolBar *toolbar = nullptr;//工具栏
+    TitleBar *titlebar = nullptr;//顶栏
 
 private:
     Interaction *interaction = nullptr;
-    TitleBar *titlebar = nullptr;//顶栏
+
     Navigator *navigator = nullptr;//导航器
     OpenImage *openImage = nullptr;//打开图片
     ShowImageWidget *showImageWidget = nullptr;//展示图片
@@ -50,6 +52,7 @@ private:
     QPoint p;
 
     QTimer *timer;
+
 
     bool inforState = true;
 
@@ -76,6 +79,7 @@ private:
     void mouseMoveEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);
     void leaveEvent(QEvent *event);
+    void paintEvent(QPaintEvent *event);
 
 
 private slots:
