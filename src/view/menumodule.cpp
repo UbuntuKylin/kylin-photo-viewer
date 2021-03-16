@@ -7,6 +7,7 @@ menuModule::menuModule(QWidget *parent = nullptr) : QWidget(parent)
     init();
 }
 
+
 void menuModule::init(){
     initAction();
 }
@@ -14,19 +15,12 @@ void menuModule::init(){
 void menuModule::initAction(){
 
     bodyAppName = new QLabel();
-    titleBtnClose = new QPushButton;
+
     bodyAppVersion = new QLabel();
     bodySupport = new QLabel();
     titleText = new QLabel();
     iconSize = QSize(30,30);
 
-    titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
-    titleBtnClose->setToolTip(tr("close"));
-    titleBtnClose->setFixedSize(30,30);
-    titleBtnClose->setFocusPolicy(Qt::NoFocus);//设置焦点类型
-    titleBtnClose->setProperty("isWindowButton", 0x2);
-    titleBtnClose->setProperty("useIconHighlightEffect", 0x8);
-    titleBtnClose->setFlat(true);
 
     bodySupport->setText(tr("Service & Support Team: ") +
                          "<a href=\"mailto://support@kylinos.cn\""
@@ -81,50 +75,21 @@ void menuModule::initAction(){
     connect(m_menu,&QMenu::triggered,this,&menuModule::triggerMenu);
     connect(this,&menuModule::openSignal,KyView::mutual,&KyView::menuopen);
     connect(this,&menuModule::menuModuleClose,KyView::mutual,&KyView::close);
-//    connect()
+
     initGsetting();
-//    setThemeFromLocalThemeSetting(themeActions);
-//    themeUpdate();
-//    connect(themeMenu,&QMenu::triggered,this,&menuModule::triggerThemeMenu);
 }
 
-//void menuModule::setThemeFromLocalThemeSetting(QList<QAction* > themeActions)
-//{
-//#if DEBUG_MENUMODULE
-////    confPath = "org.kylin-usb-creator-data.settings";
-//#endif
-//    m_pGsettingThemeStatus = new QGSettings(APPDATA);
-//    QString appConf = m_pGsettingThemeStatus->get("thememode").toString();
-//    if("lightonly" == appConf){
-//        themeStatus = themeLightOnly;
-//        themeActions[1]->setChecked(true);   //程序gsetting中为浅色only的时候就给浅色按钮设置checked
-//    }else if("darkonly" == appConf){
-//        themeStatus = themeBlackOnly;
-//        themeActions[2]->setChecked(true);
-//    }else{
-//        themeStatus = themeAuto;
-//        themeActions[0]->setChecked(true);
-//    }
-//}    0301-cancel
 
-//void menuModule::themeUpdate(){
-//    if(themeStatus == themeLightOnly)
-//    {
-//        setThemeLight();
-//    }else if(themeStatus == themeBlackOnly){
-//        setThemeDark();
-//    }else{
-//        setStyleByThemeGsetting();
-//    }
-//}    ---0301-cancel
 
 void menuModule::setStyleByThemeGsetting(){
     QString nowThemeStyle = m_pGsettingThemeData->get("styleName").toString();
     if("ukui-dark" == nowThemeStyle || "ukui-black" == nowThemeStyle)
     {
         setThemeDark();
-    }else{
+    }else if("ukui-default" == nowThemeStyle || "ukui-light" == nowThemeStyle || "ukui-white" == nowThemeStyle){
         setThemeLight();
+    }else{
+        return;
     }
 }
 
@@ -150,34 +115,9 @@ void menuModule::triggerMenu(QAction *act){
     }
 }
 
-//void menuModule::triggerThemeMenu(QAction *act){
-//    if(!m_pGsettingThemeStatus)
-//    {
-//        m_pGsettingThemeStatus = new QGSettings(APPDATA);  //m_pGsettingThemeStatus指针重复使用避免占用栈空间
-//    }
-//    QString str = act->text();
-//    if("Light" == str){
-//        themeStatus = themeLightOnly;
-//        disconnect(m_pGsettingThemeData,&QGSettings::changed,this,&menuModule::dealSystemGsettingChange);
-//        m_pGsettingThemeStatus->set("thememode","lightonly");
-////        disconnect()
-//        setThemeLight();
-//    }else if("Dark" == str){
-//        themeStatus = themeBlackOnly;
-//        disconnect(m_pGsettingThemeData,&QGSettings::changed,this,&menuModule::dealSystemGsettingChange);
-//        m_pGsettingThemeStatus->set("thememode","darkonly");
-//        setThemeDark();
-//    }else{
-//        themeStatus = themeAuto;
-//        m_pGsettingThemeStatus->set("thememode","auto");
-//        initGsetting();
-////        updateTheme();
-//        themeUpdate();
-//    }
-//}   0301-cancel
-
 void menuModule::aboutAction(){
 //    关于点击事件处理
+
     initAbout();
 }
 
@@ -195,10 +135,15 @@ void menuModule::helpAction(){
 }
 
 void menuModule::initAbout(){
+    KyView::mutual->titlebar->hide();
+    KyView::mutual->toolbar->hide();
     aboutWindow->deleteLater();
     aboutWindow = new QDialog();
-//    aboutWindow->setWindowModality(Qt::ApplicationModal);
-//    aboutWindow->setWindowFlag(Qt::Tool);
+    aboutWindow->installEventFilter(this);
+    aboutWindow->setWindowModality(Qt::ApplicationModal);
+    aboutWindow->setWindowFlag(Qt::Tool);
+    aboutWindow->setAutoFillBackground(true);
+    aboutWindow->setBackgroundRole(QPalette::Base);
 
 
     MotifWmHints hints;
@@ -206,11 +151,6 @@ void menuModule::initAbout(){
     hints.functions = MWM_FUNC_ALL;
     hints.decorations = MWM_DECOR_BORDER;
     XAtomHelper::getInstance()->setWindowMotifHint(aboutWindow->winId(), hints);
-
-//    if(themeNow == themeBlack)
-//        aboutWindow->setStyleSheet(".QWidget{background-color:rgba(0,0,0,1);}");
-//    else if(themeNow == themeLight)
-//        aboutWindow->setStyleSheet(".QWidget{background-color:rgba(255,255,255,1);}");
 
     aboutWindow->setFixedSize(420,324);
     aboutWindow->setMinimumHeight(324);
@@ -231,16 +171,24 @@ void menuModule::initAbout(){
 QHBoxLayout* menuModule::initTitleBar(){
     QLabel* titleIcon = new QLabel();
     titleIcon->setFixedSize(QSize(24,24));
-    appShowingName = tr("kylin view");
-    iconPath = ":/res/res/kyview_logo.png";
 
+    appShowingName = tr("kylin photo view");
+    iconPath = ":/res/res/kyview_logo.png";
     titleIcon->setPixmap(QPixmap::fromImage(QImage(iconPath)));
     titleIcon->setScaledContents(true);
 
-
+    QPushButton *titleBtnClose = new QPushButton;
+    titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
+    titleBtnClose->setToolTip(tr("close"));
+    titleBtnClose->setFixedSize(30,30);
+    titleBtnClose->setFocusPolicy(Qt::NoFocus);//设置焦点类型
+    titleBtnClose->setProperty("isWindowButton", 0x2);
+    titleBtnClose->setProperty("useIconHighlightEffect", 0x8);
+    titleBtnClose->setFlat(true);
     connect(titleBtnClose,&QPushButton::clicked,[=](){aboutWindow->close();});
+
     QHBoxLayout *hlyt = new QHBoxLayout;
-    titleText->setText(tr("Kylin View"));
+    titleText->setText(tr("Kylin Photo View"));
     hlyt->setSpacing(0);
     hlyt->setMargin(4);
     hlyt->addSpacing(4);
@@ -301,7 +249,7 @@ void menuModule::dealSystemGsettingChange(const QString key){
 
 void menuModule::refreshThemeBySystemConf(){
     QString themeNow = m_pGsettingThemeData->get("styleName").toString();
-    qDebug()<<"themenow:"<<themeNow;
+//    qDebug()<<"themenow:"<<themeNow;
     if("ukui-dark" == themeNow || "ukui-black" == themeNow){
         setThemeDark();
     }else{
@@ -310,11 +258,8 @@ void menuModule::refreshThemeBySystemConf(){
 }
 
 void menuModule::setThemeDark(){
-    qDebug()<<"themenow:"<<themeNow;
-//    themeNow = themeBlack;
-//    if(aboutWindow)
-//        aboutWindow->setStyleSheet("QWidget{background-color:rgba(0,0,0,1);}");
-//    aboutWindow->setStyleSheet("QWidget{background-color:rgba(0,0,0,1);}");
+
+
     titleText->setStyleSheet("color:rgba(255,255,255,1);font-size:14px;");
     bodyAppName->setStyleSheet("color:rgba(255,255,255,1);font-size:18px;");
     bodyAppVersion->setStyleSheet("color:rgba(255,255,255,1);font-size:14px;");
@@ -327,11 +272,8 @@ void menuModule::setThemeDark(){
 }
 
 void menuModule::setThemeLight(){
-    qDebug()<<"themenow:"<<themeNow;
-//    themeNow = themeLight;
-//    if(aboutWindow)
-//        aboutWindow->setStyleSheet("QWidget{background-color:rgba(255,255,255,1);}");
-//    aboutWindow->setStyleSheet("QWidget{background-color:rgba(255,255,255,1);}");
+
+
     titleText->setStyleSheet("color:rgba(0,0,0,1);font-size:14px;");
     bodyAppName->setStyleSheet("color:rgba(0,0,0,1);font-size:18px;");
     bodyAppVersion->setStyleSheet("color:rgba(0,0,0,1);font-size:14px;");
@@ -343,5 +285,61 @@ void menuModule::setThemeLight(){
                          "support@kylinos.cn</a>");
 }
 
+//bool menuModule::nativeEvent(const QByteArray &eventType, void *message, long *result)
+//{
+
+//    Q_UNUSED(result);
+//    if(eventType != "xcb_generic_event_t")
+//    {
+//        return false;
+//    }
+
+//    xcb_generic_event_t *event = (xcb_generic_event_t*)message;
+//    switch (event->response_type & ~0x80)
+//    {
+//        case XCB_FOCUS_OUT:
+//            QRect rect(volunmPosX, volunmPosY, volunmPosWidth, volunmPosHeight);
+//            qDebug()<<"3"<<" "<<volunmPosX<<" "<<volunmPosY<<" "<<" "<<volunmPosWidth<<" "<<volunmPosHeight;
+//            if(rect.contains(QCursor::pos(), false))
+//            {
+//                return 0;
+//            }
+//            else
+//            {
+//                aboutWindow->hide();
+//                break;
+//            }
+//    }
+//    return false;
+//}
+//int i = 1;
+//bool menuModule::eventFilter(QObject *obj, QEvent *event)
+//{
+//    if (obj == aboutWindow){
+//         qDebug()<<i++;
+//    moveVolSliderWid();
+//    }
+//    return QObject::eventFilter(obj,event);
+//}
+//void menuModule::moveVolSliderWid()
+//{
+//    QPoint Pos = aboutWindow->mapToGlobal(aboutWindow->rect().center());
+//    aboutWindow->adjustSize();
+//    QSize size = aboutWindow->size();
+////    volumePos.setX(volumePos.x() - size.width() / 2);
+////    volumePos.setY(volumePos.y() - size.height() - 25);
+////    QSize volumSize = aboutWindow->size();
+////    int newPosX = volumePos.x() + size.width() / 2 - volumSize.width() / 2 + 1;
+////    int newPosY = volumePos.y() + 25 + size.height() - volumSize.height() / 2 + 1;
+////    qDebug()<<"4"<<" "<<newPosX<<" "<<newPosY<<" "<<" "<<volumSize.width()<<" "<<volumSize.height();
+//    this->changeVolumePos(Pos.x(), Pos.y(), size.width(), size.height());
+//}
 
 
+//void menuModule::changeVolumePos(int posX, int posY, int width, int height)
+//{
+//    volunmPosX = posX;
+//    volunmPosY = posY;
+//    volunmPosWidth = width;
+//    volunmPosHeight = height;
+//}

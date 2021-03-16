@@ -52,6 +52,8 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
 
     back->setFocusPolicy(Qt::NoFocus);
     next->setFocusPolicy(Qt::NoFocus);
+    back->setStyleSheet("background-color:transparent;border-radius:4px;");
+    next->setStyleSheet("background-color:transparent;border-radius:4px;");
     this->_initConnect();
     _initInteraction();//一定要放到构造函数末尾
 }
@@ -160,12 +162,14 @@ void ShowImageWidget::openFinish(QVariant var)
     QFileInfo info = package.info;//详情信息
     QPixmap pixmap = package.image;//图片
     int proportion = package.proportion;//比例
+    QString imageSize = package.imageSize;
+    QString colorSpace = package.colorSpace;
     QString num;
     num = QString("%1").arg(proportion) + "%";
     this->showImage->setPixmap(pixmap);
     emit perRate(num);
     emit ToshowImage();
-    emit changeInfor(info);
+    emit changeInfor(info,imageSize,colorSpace);
     emit titleName(info.fileName());
     path = info.absolutePath();
     copyImage = pixmap;

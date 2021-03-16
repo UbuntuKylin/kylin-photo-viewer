@@ -13,7 +13,7 @@ class Information : public QWidget
     Q_OBJECT
 public:
     explicit Information(QWidget *parent = nullptr);
-    void contentText(QFileInfo info);
+    void contentText(QFileInfo info,QString sizeImage,QString spaceColor);
 private:
     QLabel *widName;//窗口名--信息
     QLabel *name;//名称
@@ -39,6 +39,7 @@ private:
 
     void _setstyle();
     void _layout();
+    void _longText(QLabel *nameC, QString text);
 
 signals:
 

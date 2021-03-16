@@ -22,7 +22,6 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
     titlebar = new TitleBar(this);
     titlebar->setAutoFillBackground(true);
     titlebar->setBackgroundRole(QPalette::Base);
-//    titlebar->resize(this->width(),Variable::BAR_HEIGHT);
     titlebar->move(0,0);
 
     openImage = new OpenImage(this);
@@ -30,16 +29,12 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
     openImage->move(int((this->width()-openImage->width())/2),int((this->height()-openImage->height())/2));
 
     toolbar = new ToolBar(this);
-//    toolbar->resize(678,40);
-//    toolbar->setAutoFillBackground(true);
-//    toolbar->setBackgroundRole(QPalette::Base);
     toolbar->move( int((this->width()-toolbar->width())/2),this->height() - toolbar->height() + 4);
 
     toolbar->show();
     titlebar->show();
 
     showImageWidget = new ShowImageWidget(this,WIDTH,HEIGHT);
-//    showImageWidget->resize(WIDTH,HEIGHT);
     showImageWidget->setMouseTracking(true);
     showImageWidget->move(int((this->width() - showImageWidget->width())/2),int((this->height() - showImageWidget->height())/2));
     showImageWidget->hide();
@@ -51,9 +46,7 @@ KyView::KyView(QWidget *parent) : QWidget(parent)
 
     information = new Information(this);
     information->resize(207,197 + 18);
-    information->move(this->width()-information->width(),Variable::BAR_HEIGHT);
-    information->setAutoFillBackground(true);
-    information->setBackgroundRole(QPalette::Base);
+    information->move(this->width()-information->width() +2,Variable::BAR_HEIGHT);
     information->hide();
 
     timer = new QTimer(this);
@@ -174,9 +167,9 @@ void KyView::_inforChange()
         return;
     }else{
         if(titlebar->isHidden()){
-            information->move(this->width()-information->width(),0);
+            information->move(this->width()-information->width() +2,0);
         }else{
-            information->move(this->width()-information->width(),Variable::BAR_HEIGHT);
+            information->move(this->width()-information->width() +2,Variable::BAR_HEIGHT);
         }
 
     }
@@ -234,7 +227,7 @@ void KyView::_hoverChange(int y)
             if(information->isHidden()){
                 return;
             }else{
-               information->move(this->width()-information->width(),Variable::BAR_HEIGHT);
+               information->move(this->width()-information->width()+2,Variable::BAR_HEIGHT);
             }
         }else{
 
@@ -245,7 +238,7 @@ void KyView::_hoverChange(int y)
             if(information->isHidden()){
                 return;
             }else{
-               information->move(this->width()-information->width(),0);
+               information->move(this->width()-information->width() +2,0);
             }
 
 
@@ -281,20 +274,29 @@ void KyView::_initGsetting()
 void KyView::_themeChange()
 {
     QString themeStyle = m_pGsettingThemeData->get("styleName").toString();
-    qDebug()<<"主题"<<themeStyle;
+    if ("ukui-dark" == themeStyle || "ukui-black" == themeStyle)
+    {
+        information->setStyleSheet("background-color:rgba(0,0,0,0.66);border-radius:4px;");
+        toolbar->tooleWid->setStyleSheet("background-color:rgba(0,0,0,0.66);");
+    }else{
+        toolbar->tooleWid->setStyleSheet("background-color:rgba(255,255,255,1);");
+        information->setStyleSheet("background-color:rgba(255,255,255,0.66);");
+    }
 }
 
 void KyView::_transChange()
 {
-    int themeStyle = m_pGsettingControlTrans->get("transparency").toInt();
-    qDebug()<<"主题"<<themeStyle;
+    double transRate = m_pGsettingControlTrans->get("transparency").toDouble();
+    this->setWindowOpacity(transRate);
 }
 
 //设置某些控件的QSS
 void KyView::_setstyle()
 {
 
-    toolbar->setStyleSheet("border-radius:6px;");
+    toolbar->setStyleSheet("border-radius:4px;");
+
+    information->setStyleSheet("border-radius:4px;");
 
 }
 //全屏
@@ -321,7 +323,7 @@ void KyView::_Toshowimage()
     if(information->isHidden()){
         return;
     }else{
-       information->move(this->width()-information->width(),0);
+       information->move(this->width()-information->width()+2,0);
     }
 
 }
@@ -364,4 +366,27 @@ void KyView::leaveEvent(QEvent *event)
         showImageWidget->back->hide();
     }
     _inforChange();
+}
+void KyView::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
+    QPainterPath rectPath;
+    rectPath.addRoundedRect(this->rect(), 0, 0); // 左上右下
+
+    QPainter painter(this);
+    QStyleOption opt;
+    opt.init(this);
+    painter.setBrush(opt.palette.color(QPalette::Base));
+
+    QColor mainColor;
+    if(QColor(255,255,255) == opt.palette.color(QPalette::Base) || QColor(248,248,248) == opt.palette.color(QPalette::Base))
+    {
+        mainColor = QColor(255, 255, 255,100);
+    }else{
+        mainColor = QColor(26, 26, 26,198);
+    }
+
+    p.fillPath(rectPath,QBrush(mainColor));
 }

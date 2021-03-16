@@ -3,6 +3,7 @@
 #define FITTHEMEWINDOW "org.ukui.style"
 
 #include <QWidget>
+#include <QFrame>
 #include <QDialog>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -23,8 +24,9 @@ public:
     void changePerRate(QString num);
     void reduceImage();
     void enlargeImage();
+    QFrame *tooleWid;//布局
 private:
-//    QWidget *tooleWid;//布局
+
     QHBoxLayout *toolLayout;
     QGSettings *m_pGsettingThemeData = nullptr;
     QPushButton *reduce;//缩小
@@ -44,7 +46,7 @@ private:
     QPushButton *information;//详细信息---
     QPushButton *delImage;//删除图片
 
-    QColor color = QColor(190 ,190, 190, 50);
+    QColor color = QColor(190 ,190, 190);
     QBrush brush = QBrush(Qt::white);
 
     Interaction *interaction = nullptr;
@@ -70,7 +72,7 @@ private:
     void _initGsetting();
     void _dealSystemGsettingChange(const QString);
     void _initConnect();
-    void paintEvent(QPaintEvent *event);
+//    void paintEvent(QPaintEvent *event);
 
 
 private slots:

@@ -1,6 +1,8 @@
 #include "view/kyview.h"
 
 #include <QApplication>
+#include <QLibraryInfo>
+#include <QTranslator>
 #include "global/log.h"
 #include "controller/interaction.h"
 #include "view/xatom-helper.h"
@@ -22,6 +24,31 @@ int main(int argc, char *argv[])
 
     Interaction *interaction =Interaction::getInstance();
     interaction->creatCore(a.arguments());
+
+    QTranslator app_trans;
+    QTranslator qt_trans;
+    QString locale = QLocale::system().name();
+    QString trans_path;
+    if (QDir("/usr/share/kylin-photo-viewer/translations").exists()) {
+        trans_path = "/usr/share/kylin-photo-viewer/translations";
+    }
+    else {
+        trans_path = qApp->applicationDirPath() + "/translations";
+    }
+    QString qt_trans_path;
+    qt_trans_path = QLibraryInfo::location(QLibraryInfo::TranslationsPath);// /usr/share/qt5/translations
+
+    if (locale == "zh_CN") {
+        if(!app_trans.load("kylin-photo-viewer_" + locale + ".qm", trans_path))
+            qDebug() << "Load translation file："<< "kylin-photo-viewer_" + locale + ".qm from" << trans_path << "failed!";
+        else
+            a.installTranslator(&app_trans);
+
+        if(!qt_trans.load("qt_" + locale + ".qm", qt_trans_path))
+            qDebug() << "Load translation file："<< "qt_" + locale + ".qm from" << qt_trans_path << "failed!";
+        else
+            a.installTranslator(&qt_trans);
+    }
 
     KyView w;
     MotifWmHints hints;

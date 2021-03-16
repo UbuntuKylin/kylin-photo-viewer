@@ -73,13 +73,13 @@ void OpenImage::_dealSystemGsettingChange()
     qDebug()<<"主题"<<themeStyle;
     if("ukui-dark" == themeStyle || "ukui-black" == themeStyle){
         openInCenter->setStyleSheet("background-color:rgba(0, 0, 0, 0.5);border-radius:64;");
-        openText->setStyleSheet("QLabel{color:rgba(0, 0, 0, 1);}");
+        openText->setStyleSheet("QLabel{background-color:transparent;color:rgba(255, 255, 255, 1);}");
         addFile->setStyleSheet("background-color:transparent;");
         addFile->setIcon(QIcon(":/res/res/addplus.png"));
         addFile->setIconSize(QSize(30,30));
     }else{
         openInCenter->setStyleSheet("background-color:rgba(255, 255, 255, 1);border-radius:64;");
-        openText->setStyleSheet("QLabel{color:rgba(0, 0, 0, 1);}");
+        openText->setStyleSheet("QLabel{background-color:transparent;color:rgba(0, 0, 0, 1);}");
         addFile->setStyleSheet("background-color:transparent;");
         addFile->setIcon(QIcon(":/res/res/addplus.png"));
         addFile->setIconSize(QSize(30,30));

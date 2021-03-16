@@ -31,6 +31,7 @@ class menuModule : public QWidget
 public:
     explicit menuModule(QWidget *);
     void themeUpdate();
+//    void changeVolumePos(int posX, int posY, int width, int height);
 signals:
     void menuModuleClose();
     void openSignal(QString path);
@@ -47,6 +48,10 @@ public:
     QString confPath = "org.china-weather-data.settings";
 
 private:
+//    int volunmPosX;
+//    int volunmPosY;
+//    int volunmPosWidth;
+//    int volunmPosHeight;
 
     QMenu *themeMenu = nullptr;
     QSize iconSize;
@@ -60,10 +65,11 @@ private:
         themeBlackOnly = 1,
         themeLightOnly = 2
     } themeStatus;
-    enum typeTheme {
-        themeBlack,
-        themeLight
-    } themeNow;
+
+protected:
+//    bool nativeEvent(const QByteArray &eventType, void *message, long *result)override;
+//    bool eventFilter(QObject *obj, QEvent *event)override;
+
 public slots:
     void dealSystemGsettingChange(const QString);
 private:
@@ -84,7 +90,10 @@ private:
     void setThemeDark();
 
     void refreshThemeBySystemConf();    //通过系统配置更改主题
-    QPushButton *titleBtnClose = nullptr;
+
+//    void moveVolSliderWid();
+
+
     QLabel* titleText = nullptr;
     QLabel* bodyAppVersion = nullptr;
     QLabel* bodySupport = nullptr;

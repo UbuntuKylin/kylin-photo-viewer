@@ -8,6 +8,28 @@ CONFIG += c++11
 # 适配窗口管理器圆角阴影
 LIBS +=-lpthread
 LIBS +=-lX11
+TARGET = kylin-photo-viewer
+TEMPLATE = app
+
+TRANSLATIONS += \
+    translations/kylin-photo-viewer_zh_CN.ts
+
+qm_files.files = translations/*.qm
+qm_files.path = /usr/share/kylin-photo-viewer/translations/
+
+target.path = /usr/bin
+target.source +=$$TARGET
+
+desktop.files = kylin-photo-viewer.desktop
+desktop.path = /usr/share/applications/
+
+appdesktop.files += kylin-photo-viewer.desktop
+appdesktop.path = /usr/share/applications/
+
+icons.files = res/kyview_logo.png
+icons.path = /usr/share/pixmaps/
+
+INSTALLS += target desktop appdesktop icons qm_files
 
 CONFIG += link_pkgconfig
 PKGCONFIG += gsettings-qt
@@ -73,14 +95,12 @@ HEADERS += \
     src/view/toolbar.h \
     src/view/xatom-helper.h
 
-TRANSLATIONS += \
-    translations/kylin-photo-viewer_zh_CN.ts
 
 
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+#qnx: target.path = /tmp/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+#!isEmpty(target.path): INSTALLS += target
 
 #DISTFILES += \
 #    src/res/侧边缩略图.png \
