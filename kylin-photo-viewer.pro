@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 SUBDIRS = \
-    plugins \
+   # plugins \
     src \
 
 TRANSLATIONS += \
