@@ -233,7 +233,6 @@ void KyView::_hoverChange(int y)
                information->move(this->width()-information->width()+2,Variable::BAR_HEIGHT);
             }
         }else{
-
             toolbar->hide();
             titlebar->hide();
             this->showImageWidget->next->show();
@@ -320,7 +319,6 @@ void KyView::changOrigSize()
 //显示图片
 void KyView::_Toshowimage()
 {
-    this->titlebar->hide();
     this->openImage->hide();
     this->showImageWidget->show();
     if(information->isHidden()){
@@ -333,7 +331,6 @@ void KyView::_Toshowimage()
 //检测鼠标位置--顶栏和工具栏的出现和隐藏
 void KyView::mouseMoveEvent(QMouseEvent *event)
 {
-
     int y =this->mapFromGlobal(QCursor().pos()).y();
     if (openImage->isHidden()) {
         _hoverChange(y);
@@ -341,7 +338,6 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
         toolbar->hide();
         titlebar->show();
     }
-
 }
 
 void KyView::resizeEvent(QResizeEvent *event){

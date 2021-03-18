@@ -41,7 +41,7 @@ void _Interaction::_initConnect(Core *core)
     connect(core,&Core::openFinish,this,&_Interaction::openFinish);//图片打开完成，将数据返回给UI层
     connect(core,&Core::albumFinish,this,&Interaction::albumFinish);//相册缩略图打开完成，获取数据
     connect(this,&_Interaction::_changeImage,core,&Core::changeImage);//切换图片
-    connect(this,&_Interaction::_changeWidgetSize,core,&Core::changeWidgetSize);//切换图片_changeImageShowSize
+    connect(this,&_Interaction::_changeWidgetSize,core,&Core::changeWidgetSize);//改变窗口大小
     connect(this,&_Interaction::_changeImageShowSize,core,&Core::changeImageShowSize);//图片显示状态（放大缩小）
     connect(core,&Core::showNavigation,this,&_Interaction::showNavigation);//显示导航器
     connect(this,&_Interaction::_clickNavigation,core,&Core::clickNavigation);//导航器点击

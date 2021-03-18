@@ -4,7 +4,6 @@
 #include <opencv4/opencv2/core.hpp>
 #include <opencv4/opencv2/imgcodecs.hpp>
 #include <opencv4/opencv2/imgproc.hpp>
-#include <opencv4/opencv2/highgui.hpp>
 #include <QString>
 #include <QSettings>
 #include <QDir>
@@ -29,6 +28,7 @@ class Variable
 public:
     static const QString PROGRAM_NAME; //项目名称
     static const QString PHOTO_VIEW_DBUS_SERVICENAME; //DBUS服务名称
+    //static const QString TEMP_PATH; //临时文件路径
     static const QString PHOTO_VIEW_DBUS_PARH; //DBUS路径
     static const QString PHOTO_VIEW_DBUS_INTERFACE;//DBUS接口
     enum LOGLEVEL{ NOLOG , FATAL , CRITICAL , INFO , DEBUG , WARNING }; //日志级别
@@ -43,11 +43,13 @@ public:
     static const int RESIZE_KEY; //每次放大缩小的值
     static const int RESIZE_KEY_MAX; //能够放大的最大值
     static const int RESIZE_KEY_MIN; //能够缩小的最小值
+    static const int DEFAULT_MOVIE_TIME_INTERVAL; //默认动图时间间隔
 
 static const int BAR_HEIGHT;//顶栏和工具栏的高度
 
 private:
     static QSettings *_getSettings();
+    //static const QString _creatTempPath();
     static QSettings *_settings;
     static QMap<QString,QString> _getSupportCmd();
 

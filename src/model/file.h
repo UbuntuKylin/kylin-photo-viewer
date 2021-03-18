@@ -7,7 +7,7 @@
 #include <QSvgRenderer>
 #include <QSvgGenerator>
 #include <QPainter>
-#include <gif_lib.h>
+#include <QMovie>
 #include "global/variable.h"
 #include "model/processing/processing.h"
 
@@ -17,7 +17,8 @@ class MatAndFileinfo
 {
 public:
     Mat mat;
-    QList<Mat> matList;
+    QList<Mat> *matList = nullptr;
+    unsigned int fps =Variable::DEFAULT_MOVIE_TIME_INTERVAL;
     QFileInfo info;
 };
 

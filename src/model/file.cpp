@@ -19,32 +19,35 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     maf.info=info;
 
     //svg、gif等opencv不支持的格式
-    if(info.suffix().toLower() == "png"){
-//        int err;
-//        GifFileType *gif = DGifOpenFileName(path.toLocal8Bit().data(),&err);
-//        int transparent = gif->SBackGroundColor;
-//        delete gif;
-
-        VideoCapture capture;
-        Mat frame;
-        frame= capture.open(path.toStdString()); //读取gif文件
-        if(!capture.isOpened()){
-            printf("can not open ...\n");
-            capture.release();
+    QString suffix = info.suffix().toLower();
+    if(suffix == "gif" || suffix == "apng" || suffix == "png"){
+        //如果是缩略图节则省资源
+        if(modes == IMREAD_REDUCED_COLOR_8){
+            QImage img(path, "apng");
+            mat = Mat(img.height(),img.width(),CV_8UC4,const_cast<uchar*>(img.bits()),static_cast<size_t>(img.bytesPerLine())).clone();
+            if(!mat.data) qDebug()<< "读取缩略图失败："<< path;
             return maf;
         }
-        QList<Mat> frames;  //存放gif的所有帧，每个frame都是Mat格式
-        while (capture.read(frame))
-            frames.push_back(frame);
-        capture.release();
-        qDebug()<<frames.length();
-        if(frames.length()>0){
+        auto tmpMovie = new QMovie(path, "apng");
+        //获取帧率
+        tmpMovie->start();
+        int fps=tmpMovie->nextFrameDelay();
+        tmpMovie->stop();
+        if(fps>0)
+            maf.fps = fps;
+        QList<Mat> *frames = new QList<Mat>;  //存放gif的所有帧，每个frame都是Mat格式
+        for (int i =0; i< tmpMovie->frameCount(); ++i) {
+            tmpMovie->jumpToFrame(i);
+            QImage image = tmpMovie->currentImage();
+            frames->push_back(Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone());
+        }
+        tmpMovie->deleteLater();
+        if(frames->length()>0){
             maf.matList=frames;
-            mat = frames.first();
+            mat = frames->first();
         }
     }
-
-    if(info.suffix().toLower() == "svg"){
+    if(suffix == "svg"){
         QSvgRenderer svgRender(path);
         QPixmap pix(svgRender.defaultSize());
         pix.fill(Qt::transparent);

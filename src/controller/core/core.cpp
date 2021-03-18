@@ -7,17 +7,16 @@ Core::Core()
 
 void Core::_initCore()
 {
-    _imageUrlMap.clear();
-    _maxType = 0;
-    _nowType = 0;
-    _backType = 0;
-    _proportion = 0;
-    _isNavigationShow = false;
+    _matList = nullptr;
+
     qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
     qRegisterMetaType<Processing::FlipWay>("Processing::FlipWay");
 
     _clickBeforeStartPosition = QPoint(-1,-1);
     _clickBeforePosition = QPoint(-1,-1);
+
+    _playMovieTimer = new QTimer(this);
+    connect(_playMovieTimer,&QTimer::timeout,this,&Core::_playMovie);
 }
 
 QString Core::initDbus(const QStringList &arguments)
@@ -102,19 +101,38 @@ Mat ImageShowStatus::_changeImage(Mat mat)
         _backMat.release();
     _backMat = _nowMat;
     _nowMat = mat;
+    _imageSize = QString::number(_nowImage.width())+"x"+QString::number(_nowImage.height());
+    switch (_nowMat.type()) {
+    case CV_8UC4:
+        _colorSpace = "RGBA";
+        break;
+    case CV_8UC3:
+        _colorSpace = "RGB";
+        break;
+    case CV_8UC1:
+        _colorSpace = "GRAY";
+        break;
+    }
+    //gif走的是apng流程，所以这里要单独判断
+    if(QFileInfo(_nowpath).suffix().toLower() == "gif")
+        _colorSpace = "RGB";
     return _nowMat;
 }
 
 void ImageShowStatus::_changeImageType(int num)
 {
+    _matListIndex = 0;
     if(num == 0)//回滚
     {
         _imageUrlMap.remove(_nowType);
         _nowType=_backType;
+        _nowpath = _backpath;
         return;
     }
     _backType = _nowType;
     _nowType = num;
+    _backpath = _nowpath;
+    _nowpath = _imageUrlMap.value(num);
 }
 
 QVariant Core::openImage(QString fullPath)
@@ -127,10 +145,18 @@ QVariant Core::openImage(QString fullPath)
         changeImage(-1);
         return QVariant();
     }
-    //格式转换，记录状态
+    //记录状态
     Mat mat = _changeImage(maf.mat);
     _nowImage = Processing::converFormat(mat);
     _info = maf.info;
+    if(_matList!=nullptr){
+        for(Mat &tmpMat : *_matList){
+            tmpMat.release();
+        }
+        delete _matList;
+    }
+    _matList = maf.matList;
+    _fps = maf.fps;
     _creatImage();
     return QVariant();
 }
@@ -142,18 +168,8 @@ void Core::_showImage(const QPixmap &pix)
     package.info = _info;
     package.image = pix;
     package.type = _nowType;
-    package.imageSize = QString::number(_nowImage.width())+"x"+QString::number(_nowImage.height());
-    switch (_nowMat.type()) {
-    case CV_8UC4:
-        package.colorSpace = "RGBA";
-        break;
-    case CV_8UC3:
-        package.colorSpace = "RGB";
-        break;
-    case CV_8UC1:
-        package.colorSpace = "GRAY";
-        break;
-    }
+    package.imageSize = _imageSize;
+    package.colorSpace = _colorSpace;
     QVariant var;
     var.setValue<ImageAndInfo>(package);
     emit openFinish(var);
@@ -167,16 +183,18 @@ void Core::_creatImage(const int &proportion)
     int defaultProportion  = 100 * _size.width() / _nowImage.width();
     if(_nowImage.height() * defaultProportion / 100 > _size.height())
         defaultProportion = 100 * _size.height() / _nowImage.height();
+
     //自适应窗口大小显示
     if(proportion <= 0){
-        QPixmap pix = Processing::resizePix(_nowImage,_size);
         _proportion  = defaultProportion;
+        _tmpSize = _nowImage.size() * _proportion / 100;
         _navigation(); //关闭导航器
-        _showImage(pix);
+        _showImageOrMovie();
         return;
     }
 
     _proportion = proportion;
+    _tmpSize = _nowImage.size() * _proportion / 100;
     //如果显示比例大于默认比例
     if(_proportion > defaultProportion){
         _navigation(QPoint(0,0));
@@ -185,9 +203,38 @@ void Core::_creatImage(const int &proportion)
 
     //如果显示比例小于或等于默认比例
     _navigation(); //关闭导航器
-    QSize tmpSize = _nowImage.size() * _proportion / 100;;
 
-    QPixmap pix = Processing::resizePix(_nowImage,tmpSize);
+    _showImageOrMovie();
+}
+
+void Core::_showImageOrMovie()
+{
+    //动画类格式循环播放
+    if(_matList!=nullptr)
+        if(_matList->length()>2){
+            _playMovie();//立即播放第一帧
+            _playMovieTimer->start(_fps);
+            return;
+        }
+    //非动画类格式
+    QPixmap pix = Processing::resizePix(_nowImage,_tmpSize);
+    _showImage(pix);
+}
+
+void Core::_playMovie()
+{
+    if(_matListIndex >= _matList->length())
+        _matListIndex=0;
+
+    QPixmap nowIndexPix = Processing::converFormat(_matList->at(_matListIndex));
+    _matListIndex++;
+
+    QPixmap pix = Processing::resizePix(nowIndexPix,_tmpSize);
+    if(_isNavigationShow){
+        QPixmap result = pix.copy(_startShowPoint.x(),_startShowPoint.y(),_size.width(),_size.height());
+        _showImage(result);
+        return;
+    }
     _showImage(pix);
 }
 
@@ -200,9 +247,9 @@ void Core::_navigation(const QPoint &point)
         emit showNavigation(QPixmap());
         return;
     }
-
+    _isNavigationShow = true;
     _creatNavigation();
-    //记录位置会晃，原因待排查，暂时禁掉
+    //记录上次放大位置会晃，原因待排查，暂时禁掉
     //clickNavigation(_clickBeforePosition);
     clickNavigation(QPoint(0,0));
 }
@@ -256,8 +303,12 @@ void Core::clickNavigation(const QPoint &point)
     emit showNavigation(QPixmap::fromImage(image));
 
     //处理待显示区域
-    QPoint start = startPoint * _showPix.width() / _navigationImage.width();
-    QPixmap result = _showPix.copy(start.x(),start.y(),_size.width(),_size.height());
+    _startShowPoint = startPoint * _showPix.width() / _navigationImage.width();
+
+    //如果是动图，则交给动图显示事件去处理，避免闪屏
+    if(_playMovieTimer->isActive())
+        return;
+    QPixmap result = _showPix.copy(_startShowPoint.x(),_startShowPoint.y(),_size.width(),_size.height());
     _showImage(result);
 }
 
@@ -266,7 +317,7 @@ void Core::flipImage(const Processing::FlipWay &way)
     Mat mat = Processing::processingImage(Processing::flip,_nowMat,QVariant(way));
     if(!mat.data)
         return;
-    File::saveImage(mat,_imageUrlMap.value(_nowType));
+    File::saveImage(mat,_nowpath);
     mat = _changeImage(mat);
     _nowImage = Processing::converFormat(mat);
     _creatImage();
@@ -274,7 +325,7 @@ void Core::flipImage(const Processing::FlipWay &way)
 
 void Core::deleteImage()
 {
-    File::deleteImage(_imageUrlMap.value(_nowType));
+    File::deleteImage(_nowpath);
 
     //切换到下一张
     changeImage(-1);
@@ -292,16 +343,21 @@ void Core::deleteImage()
     }
 }
 
-void Core::changeImage(const int &mat)
+void Core::changeImage(const int &type)
 {
     //如果图片队列小于2，不处理
     if(_imageUrlMap.size()<2){
         _backType = _nowType;
+        _backpath = _nowpath;
         return;
     }
 
+    //如果正在播放动图，则停止
+    if(_playMovieTimer->isActive())
+        _playMovieTimer->stop();
+
     QList<int> list = _imageUrlMap.keys();
-    if(mat == -1){
+    if(type == -1){
         if(_nowType == list.last()){
             //最后一张切下一张时，回到队列开头
             _changeImageType(list.first());
@@ -310,10 +366,10 @@ void Core::changeImage(const int &mat)
         }
         int key =list[list.indexOf(_nowType)+1];
         _changeImageType(key);
-        openImage(_imageUrlMap.value(key));
+        openImage(_nowpath);
         return;
     }
-    if(mat == -2){
+    if(type == -2){
         if(_nowType == list.first()){
             //第一张切上一张时，回到队列结尾
             _changeImageType(list.last());
@@ -322,14 +378,14 @@ void Core::changeImage(const int &mat)
         }
         int key =list[list.indexOf(_nowType)-1];
         _changeImageType(key);
-        openImage(_imageUrlMap.value(key));
+        openImage(_nowpath);
         return;
     }
     //如果队列中无此关键值，不处理
-    if(list.indexOf(mat)<0)
+    if(list.indexOf(type)<0)
         return;
-    _changeImageType(mat);
-    openImage(_imageUrlMap.value(mat));
+    _changeImageType(type);
+    openImage(_nowpath);
 }
 
 void Core::changeWidgetSize(const QSize &size)
@@ -418,6 +474,7 @@ QVariant Core::findAllImageFromeDir(QString fullPath)
         if(tmpFullPath == filepath)
         {
             _backType = _nowType;
+            _backpath = _nowpath;
             _nowType = _maxType;
         }
     }

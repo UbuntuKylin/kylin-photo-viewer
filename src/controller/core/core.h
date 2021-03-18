@@ -6,45 +6,55 @@
 #include <QVariant>
 #include <QPixmap>
 #include <QColor>
+#include <QTimer>
 #include "model/dbus.h"
 #include "model/file.h"
 #include "model/processing/processing.h"
 #include "albumthumbnail.h"
 
-class ImageShowStatus //记录显示图片状态
+class ImageShowStatus //显示图片细节相关，记录显示图片状态
 {
 public:
     enum ChangeShowSizeType{Big,Small,Origin,Auto};//放大、缩小、原图、自适应
     QMap<int,QString> _imageUrlMap;//图片队列
     QSize _size;//记录当前窗口大小
     QFileInfo _info;
-    int _maxType;//记录动态分配标签的最大值
-    int _nowType;//记录当前打开
-    int _backType;//记录上次打开
+    unsigned int _maxType;//记录动态分配标签的最大值
+    unsigned int _nowType;//记录当前打开
+    unsigned int _backType;//记录上次打开
+    QString _nowpath;//记录当前路径
+    QString _backpath;//记录上次路径
     Mat _nowMat;//记录当前打开
     Mat _backMat;//记录上次打开
     QPixmap _nowImage;
     Mat _changeImage(Mat mat);
     void _changeImageType(int num = 0);
-    int _proportion;//默认图片显示比例
+    unsigned int _proportion;//图片显示比例
+    QSize _tmpSize;//按比例缩放后的图片大小
+    QString _imageSize;//原图大小
+    QString _colorSpace;//颜色域
     bool _isNavigationShow;//是否显示导航器
+    QTimer *_playMovieTimer;//播放动图的计时器
+    QList<Mat> *_matList;//存储动图的每一帧
+    unsigned int _matListIndex;//当前播放到哪一帧
+    QPoint _startShowPoint;
+    unsigned int _fps;//帧率
 };
 
-class NavigationStatus : public ImageShowStatus//记录显示图片状态
+class NavigationStatus : public ImageShowStatus//导航器相关单独写，提高可读性
 {
 public:
     QPoint _clickBeforePosition;//记录上次点击区域，用于提升体验
     QPoint _clickBeforeStartPosition;//记录上次点击区域，用于节省算力
     void _creatNavigation();//创建导航器图片等数据，用于节省算力
-
     QPixmap _showPix;//待显示图
     QImage _navigationImage;//导航栏背景
     QSize _hightlightSize; //高亮区域大小;
-    int _spaceWidth;//导航栏窗口与缩略图左边缘距离
-    int _spaceHeight;//导航栏窗口与缩略图上边缘距离
+    unsigned int _spaceWidth;//导航栏窗口与缩略图左边缘距离
+    unsigned int _spaceHeight;//导航栏窗口与缩略图上边缘距离
 };
 
-class Core : public QObject , NavigationStatus
+class Core : public QObject , public NavigationStatus
 {
     Q_OBJECT
 
@@ -70,10 +80,12 @@ private:
     void _initCore();//初始化核心
     Dbus *_dbus = nullptr;//DBus模块对象
     void _showImage(const QPixmap &pix);//显示图片
+    void _showImageOrMovie();//显示图片或动图
     void _creatImage(const int &proportion = -1);//生成图像
     void _processingCommand(const QStringList &cmd);//处理终端命令
     void _loadAlbum();//加载相册
     void _navigation(const QPoint &point = QPoint(-1,-1));//导航器
+    void _playMovie();//播放动图的槽函数
 
 };
 

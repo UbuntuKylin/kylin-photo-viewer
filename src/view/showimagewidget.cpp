@@ -173,7 +173,7 @@ void ShowImageWidget::openFinish(QVariant var)
     emit titleName(info.fileName());
     path = info.absolutePath();
     copyImage = pixmap;
-    qDebug()<<info.completeBaseName()<<type<<proportion;
+    //qDebug()<<info.completeBaseName()<<type<<proportion;
 }
 
 void ShowImageWidget::re_move(int W, int H)
