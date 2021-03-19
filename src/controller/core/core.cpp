@@ -93,6 +93,10 @@ void Core::_processingCommand(const QStringList &cmd)
         changeImageShowSize(ImageShowStatus::Auto);
         return;
     }
+    if(cmd[0] == "-rotate"){
+        flipImage(Processing::FlipWay::clockwise);
+        return;
+    }
 }
 
 Mat ImageShowStatus::_changeImage(Mat mat)
@@ -122,8 +126,7 @@ Mat ImageShowStatus::_changeImage(Mat mat)
 void ImageShowStatus::_changeImageType(int num)
 {
     _matListIndex = 0;
-    if(num == 0)//回滚
-    {
+    if(num == 0){//回滚
         _imageUrlMap.remove(_nowType);
         _nowType=_backType;
         _nowpath = _backpath;
@@ -138,11 +141,16 @@ void ImageShowStatus::_changeImageType(int num)
 QVariant Core::openImage(QString fullPath)
 {
     MatAndFileinfo maf = File::loadImage(fullPath);
-    if(!maf.mat.data)
-    {
+    if(!maf.mat.data){
         //如果图片打开失败则回滚
+        int nextOrBack = 0;//判断向前还是向后切换
+        if(_imageUrlMap.values().indexOf(fullPath) > _imageUrlMap.keys().indexOf(_backType))
+            nextOrBack = -1;//下一张
+        else
+            nextOrBack = -2;//上一张
+        qDebug()<<"nextOrBack"<<nextOrBack<<_imageUrlMap.values().indexOf(fullPath)<<_imageUrlMap.keys().indexOf(_backType);
         _changeImageType();
-        changeImage(-1);
+        changeImage(nextOrBack);
         return QVariant();
     }
     //记录状态
@@ -157,6 +165,7 @@ QVariant Core::openImage(QString fullPath)
     }
     _matList = maf.matList;
     _fps = maf.fps;
+    _nowpath = fullPath;
     _creatImage();
     return QVariant();
 }
@@ -180,7 +189,7 @@ void Core::_creatImage(const int &proportion)
     if(_nowImage.isNull())
         return;
 
-    int defaultProportion  = 100 * _size.width() / _nowImage.width();
+    unsigned int defaultProportion  = 100 * _size.width() / _nowImage.width();
     if(_nowImage.height() * defaultProportion / 100 > _size.height())
         defaultProportion = 100 * _size.height() / _nowImage.height();
 
@@ -226,7 +235,8 @@ void Core::_playMovie()
     if(_matListIndex >= _matList->length())
         _matListIndex=0;
 
-    QPixmap nowIndexPix = Processing::converFormat(_matList->at(_matListIndex));
+    Mat mat =_matList->at(_matListIndex);
+    QPixmap nowIndexPix = Processing::converFormat(mat);
     _matListIndex++;
 
     QPixmap pix = Processing::resizePix(nowIndexPix,_tmpSize);
@@ -249,9 +259,8 @@ void Core::_navigation(const QPoint &point)
     }
     _isNavigationShow = true;
     _creatNavigation();
-    //记录上次放大位置会晃，原因待排查，暂时禁掉
-    //clickNavigation(_clickBeforePosition);
-    clickNavigation(QPoint(0,0));
+    //记录上次放大位置
+    clickNavigation();
 }
 
 void NavigationStatus::_creatNavigation()
@@ -279,9 +288,17 @@ void NavigationStatus::_creatNavigation()
 
 void Core::clickNavigation(const QPoint &point)
 {
-    _clickBeforePosition = point;
+    bool hasArg = true;
+    //无参输入则使用上次的位置
+    if(point==QPoint(-1,-1))
+        hasArg=false;
+
+    //有参则记录，无参使用上一次的点
+    if(hasArg)
+        _clickBeforePosition = point;
+
     //计算点击区域——鼠标要在高亮区域中央，且要减去导航栏窗口与图片边缘的距离
-    QPoint startPoint(point.x() - _hightlightSize.width() / 2 - _spaceWidth,point.y() - _hightlightSize.height() / 2 - _spaceHeight);
+    QPoint startPoint(_clickBeforePosition.x() - _hightlightSize.width() / 2 - _spaceWidth,_clickBeforePosition.y() - _hightlightSize.height() / 2 - _spaceHeight);
     int right = _navigationImage.width() - _hightlightSize.width();//右侧边缘
     int bottom = _navigationImage.height() - _hightlightSize.height();//下侧边缘
 
@@ -291,8 +308,8 @@ void Core::clickNavigation(const QPoint &point)
     if(startPoint.x()>right)startPoint.setX(right);
     if(startPoint.y()>bottom)startPoint.setY(bottom);
 
-    //和上次点击的有效区域一致则不处理
-    if(startPoint == _clickBeforeStartPosition)
+    //有参情况下，和上次点击的有效区域一致则不处理
+    if(startPoint == _clickBeforeStartPosition && hasArg)
         return;
     _clickBeforeStartPosition = startPoint;
 
@@ -314,6 +331,18 @@ void Core::clickNavigation(const QPoint &point)
 
 void Core::flipImage(const Processing::FlipWay &way)
 {
+    //如果是动图，则批量处理
+    if(_playMovieTimer->isActive()){
+        for(int i=0;i<_matList->length();i++){
+            Mat mat = Processing::processingImage(Processing::flip,_matList->at(i),QVariant(way));
+            _matList->replace(i,mat);
+        }
+        //刷新导航栏
+        _nowImage = Processing::converFormat(_matList->first());
+        _navigationImage = Processing::resizePix(_nowImage,Variable::NAVIGATION_SIZE).toImage();
+        clickNavigation();
+        return;
+    }
     Mat mat = Processing::processingImage(Processing::flip,_nowMat,QVariant(way));
     if(!mat.data)
         return;
@@ -343,6 +372,18 @@ void Core::deleteImage()
     }
 }
 
+void Core::setAsBackground()
+{
+    //设置为背景图
+    if(QGSettings::isSchemaInstalled(SET_BACKGROUND_PICTURE_GSETTINGS_PATH)){
+        QGSettings *background = new QGSettings(SET_BACKGROUND_PICTURE_GSETTINGS_PATH);
+        QStringList keyList = background->keys();
+        if (keyList.contains(SET_BACKGROUND_PICTURE_GSETTINGS_NAME))
+            background->set(SET_BACKGROUND_PICTURE_GSETTINGS_NAME,_nowpath);
+        background->deleteLater();
+    }
+}
+
 void Core::changeImage(const int &type)
 {
     //如果图片队列小于2，不处理
@@ -356,7 +397,7 @@ void Core::changeImage(const int &type)
     if(_playMovieTimer->isActive())
         _playMovieTimer->stop();
 
-    QList<int> list = _imageUrlMap.keys();
+    QList<unsigned int> list = _imageUrlMap.keys();
     if(type == -1){
         if(_nowType == list.last()){
             //最后一张切下一张时，回到队列开头
@@ -465,14 +506,13 @@ QVariant Core::findAllImageFromeDir(QString fullPath)
         nameFilters<<"*."+format;//构造格式过滤列表
     QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);//获取所有支持的图片
     //将所有图片打上唯一标签并存入队列
-    QMap<int,QString> tmpImageUrlMap;
+    QMap<unsigned int,QString> tmpImageUrlMap;
     for(QString &filename : images){
         QString tmpFullPath = path+"/"+filename;
         _maxType++;
         tmpImageUrlMap.insert(_maxType,tmpFullPath);
         //记录需要显示的图片
-        if(tmpFullPath == filepath)
-        {
+        if(tmpFullPath == filepath){
             _backType = _nowType;
             _backpath = _nowpath;
             _nowType = _maxType;
@@ -482,14 +522,14 @@ QVariant Core::findAllImageFromeDir(QString fullPath)
     _imageUrlMap.swap(tmpImageUrlMap);
     _imageUrlMap.unite(tmpImageUrlMap);
     QVariant var;
-    var.setValue<QList<int>>(_imageUrlMap.keys());
+    var.setValue<QList<unsigned int>>(_imageUrlMap.keys());
     _loadAlbum();
     return var;
 }
 
 void Core::_loadAlbum()
 {
-    for(int &type : _imageUrlMap.keys()){
+    for(unsigned int &type : _imageUrlMap.keys()){
         AlbumThumbnail* thread= new AlbumThumbnail(type,_imageUrlMap.value(type));
         connect(thread,&AlbumThumbnail::finished,thread,&AlbumThumbnail::deleteLater);
         connect(thread,&AlbumThumbnail::albumFinish,this,&Core::albumFinish);

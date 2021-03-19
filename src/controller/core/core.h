@@ -7,16 +7,20 @@
 #include <QPixmap>
 #include <QColor>
 #include <QTimer>
+#include <QGSettings>
 #include "model/dbus.h"
 #include "model/file.h"
 #include "model/processing/processing.h"
 #include "albumthumbnail.h"
 
+#define SET_BACKGROUND_PICTURE_GSETTINGS_PATH "org.mate.background"
+#define SET_BACKGROUND_PICTURE_GSETTINGS_NAME "pictureFilename"
+
 class ImageShowStatus //显示图片细节相关，记录显示图片状态
 {
 public:
     enum ChangeShowSizeType{Big,Small,Origin,Auto};//放大、缩小、原图、自适应
-    QMap<int,QString> _imageUrlMap;//图片队列
+    QMap<unsigned int,QString> _imageUrlMap;//图片队列
     QSize _size;//记录当前窗口大小
     QFileInfo _info;
     unsigned int _maxType;//记录动态分配标签的最大值
@@ -72,9 +76,10 @@ public:
     void changeImage(const int &type); //切换图片
     void changeWidgetSize(const QSize &size);//切换窗口大小
     void changeImageShowSize(ImageShowStatus::ChangeShowSizeType type);//图片显示状态（放大缩小）
-    void clickNavigation(const QPoint &point);//导航器点击
+    void clickNavigation(const QPoint &point = QPoint(-1,-1));//导航器点击
     void flipImage(const Processing::FlipWay &way);//翻转处理
     void deleteImage();//删除图片
+    void setAsBackground();//设置为背景图
 
 private:
     void _initCore();//初始化核心

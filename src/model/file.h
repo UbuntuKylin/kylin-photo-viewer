@@ -18,7 +18,7 @@ class MatAndFileinfo
 public:
     Mat mat;
     QList<Mat> *matList = nullptr;
-    unsigned int fps =Variable::DEFAULT_MOVIE_TIME_INTERVAL;
+    unsigned int fps;
     QFileInfo info;
 };
 

@@ -36,19 +36,24 @@ public:
     static const bool LOGTOFILE; //日志写入文件
     static const QMap<QString,QString> SUPPORT_CMD; //支持的命令列表
     static const QStringList SUPPORT_FORMATS; //支持的格式列表
+    static const QStringList BACKGROUND_SUPPORT_FORMATS; //壁纸支持的格式列表
     static const QSize ALBUM_IMAGE_SIZE; //相册缩略图尺寸
     static const QSize NAVIGATION_SIZE; //导航器尺寸
     static const int PICTURE_DEEPEN_KEY; //图片加深值
     static const int REFRESH_RATE; //刷新间隔
     static const int RESIZE_KEY; //每次放大缩小的值
-    static const int RESIZE_KEY_MAX; //能够放大的最大值
-    static const int RESIZE_KEY_MIN; //能够缩小的最小值
+    static const unsigned int RESIZE_KEY_MAX; //能够放大的最大值
+    static const unsigned int RESIZE_KEY_MIN; //能够缩小的最小值
     static const int DEFAULT_MOVIE_TIME_INTERVAL; //默认动图时间间隔
 
 static const int BAR_HEIGHT;//顶栏和工具栏的高度
 
 private:
+    static const QStringList _OPENCV_CAN_SUPPORT_FORMATS; //opencv支持的格式列表
+    static const QStringList _OPENCV_CANNOT_SUPPORT_FORMATS; //opencv不支持的格式列表
+
     static QSettings *_getSettings();
+    static QStringList _creatSupportFormats();
     //static const QString _creatTempPath();
     static QSettings *_settings;
     static QMap<QString,QString> _getSupportCmd();

@@ -280,7 +280,6 @@ void ToolBar::_sidebar()
 void ToolBar::_information()
 {
     emit showInfor();
-
 }
 
 void ToolBar::_delImage()

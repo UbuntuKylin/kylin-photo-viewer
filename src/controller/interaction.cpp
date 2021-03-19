@@ -47,6 +47,7 @@ void _Interaction::_initConnect(Core *core)
     connect(this,&_Interaction::_clickNavigation,core,&Core::clickNavigation);//导航器点击
     connect(this,&_Interaction::_flip,core,&Core::flipImage);//翻转
     connect(this,&_Interaction::_deleteImage,core,&Core::deleteImage);//删除图片
+    connect(this,&_Interaction::_setAsBackground,core,&Core::setAsBackground);//设置为背景图
 }
 
 bool _Interaction::_operateTooOften()
@@ -147,6 +148,12 @@ void _Interaction::deleteImage()
 {
     if(_operateTooOften())return;
     emit _deleteImage();
+}
+
+void _Interaction::setAsBackground()
+{
+    if(_operateTooOften())return;
+    emit _setAsBackground();
 }
 
 

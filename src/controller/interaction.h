@@ -34,6 +34,7 @@ public:
     virtual void flipH()=0;//水平翻转
     virtual void flipV()=0;//垂直翻转
     virtual void deleteImage()=0;//删除图片
+    virtual void setAsBackground()=0;//设置为背景图
 private:
     static Interaction *m_interaction;//单例指针
 };
@@ -53,6 +54,7 @@ signals:
     void _clickNavigation(const QPoint &point);//导航器点击
     void _flip(const Processing::FlipWay &way);//翻转处理
     void _deleteImage();//删除图片
+    void _setAsBackground();//设置为背景图
 
 public:
     _Interaction();
@@ -74,6 +76,7 @@ protected:
     virtual void flipH();//水平翻转
     virtual void flipV();//垂直翻转
     virtual void deleteImage();//删除图片
+    virtual void setAsBackground();//设置为背景图
 
 private:
     void _initConnect(Core *core);//初始化绑定

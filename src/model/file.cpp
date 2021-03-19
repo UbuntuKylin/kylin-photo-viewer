@@ -29,12 +29,16 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             return maf;
         }
         auto tmpMovie = new QMovie(path, "apng");
-        //获取帧率
-        tmpMovie->start();
-        int fps=tmpMovie->nextFrameDelay();
-        tmpMovie->stop();
-        if(fps>0)
-            maf.fps = fps;
+        //获取帧率//QMovie没有现成的方法，为求稳定，每次打开新动图的时候循环5次取最大值，此处待优化
+        if(tmpMovie->frameCount()>1){
+            int fps = 0;
+            for(int i=0;i<5;i++){
+                tmpMovie->start();
+                tmpMovie->stop();
+                fps=tmpMovie->nextFrameDelay()>fps?tmpMovie->nextFrameDelay():fps;
+            }
+            maf.fps = fps == 0 ? Variable::DEFAULT_MOVIE_TIME_INTERVAL : fps;
+        }
         QList<Mat> *frames = new QList<Mat>;  //存放gif的所有帧，每个frame都是Mat格式
         for (int i =0; i< tmpMovie->frameCount(); ++i) {
             tmpMovie->jumpToFrame(i);
@@ -101,6 +105,12 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
         paint.drawImage(QPoint(0,0),pix.toImage());
         paint.end();
         return true;
+    }
+    if(type == "tga"){
+        return false;
+    }
+    if(type == "gif"){
+        return false;
     }
     //非特殊情况
     return imwrite(savepath.toStdString(),mat);
