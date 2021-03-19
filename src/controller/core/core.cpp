@@ -148,7 +148,6 @@ QVariant Core::openImage(QString fullPath)
             nextOrBack = -1;//下一张
         else
             nextOrBack = -2;//上一张
-        qDebug()<<"nextOrBack"<<nextOrBack<<_imageUrlMap.values().indexOf(fullPath)<<_imageUrlMap.keys().indexOf(_backType);
         _changeImageType();
         changeImage(nextOrBack);
         return QVariant();

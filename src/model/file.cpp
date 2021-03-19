@@ -107,6 +107,7 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
         return true;
     }
     if(type == "tga"){
+
         return false;
     }
     if(type == "gif"){
