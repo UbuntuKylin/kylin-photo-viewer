@@ -13,27 +13,20 @@ Mat Processing::processingImage(const ProcessingType &type,const Mat &mat, const
 
 QPixmap Processing::converFormat(const Mat &mat)
 {
-    switch ( mat.type() )
-    {
-    case CV_8UC4:
-    {
+    switch ( mat.type() ){
+    case CV_8UC4:{
         QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
         return QPixmap::fromImage(image);
     }
-
-    case CV_8UC3:
-    {
+    case CV_8UC3:{
         QImage tmp(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888 );
         QImage image =tmp.rgbSwapped();
         QPixmap::fromImage(image);
         return QPixmap::fromImage(image);
     }
-
-    case CV_8UC1:
-    {
-        static QVector<QRgb>  sColorTable;
-        if ( sColorTable.isEmpty() )
-        {
+    case CV_8UC1:{
+        QVector<QRgb>  sColorTable;
+        if ( sColorTable.isEmpty() ){
             for ( int i = 0; i < 256; ++i )
                 sColorTable.push_back( qRgb( i, i, i ) );
         }
@@ -41,11 +34,14 @@ QPixmap Processing::converFormat(const Mat &mat)
         image.setColorTable( sColorTable );
         return QPixmap::fromImage(image);
     }
-
-    default:
-        qDebug("Image format is not supported: depth=%d and %d channels\n", mat.depth(), mat.channels());
-        break;
+    case CV_32FC3:
+        Mat tmpMat;
+        mat.convertTo(tmpMat,CV_8UC3,255.0/1);
+        return converFormat(tmpMat);
     }
+
+    qDebug("Image format is not supported: depth=%d and %d channels\n", mat.depth(), mat.channels());
+    qDebug()<<CV_8UC3<<CV_8SC3<<CV_16UC3<<CV_16SC3<<CV_32SC3<<CV_32FC3<<CV_64FC3<<CV_16FC3<<"||"<<mat.type();
     return QPixmap();
 }
 

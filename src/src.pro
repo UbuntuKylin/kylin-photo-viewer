@@ -22,12 +22,16 @@ LIBS += -lopencv_core \
         -lopencv_imgcodecs \
         -lopencv_imgproc \
 
+#stb
+LIBS += -lstb \
+
 target.path = /usr/bin
 target.source +=$$TARGET
 INSTALLS += target
 
 SOURCES += main.cpp \
     controller/core/albumthumbnail.cpp \
+    controller/core/base.cpp \
     global/log.cpp \
     model/dbus.cpp \
     controller/interaction.cpp \
@@ -50,6 +54,7 @@ SOURCES += main.cpp \
 
 HEADERS += \
     controller/core/albumthumbnail.h \
+    controller/core/base.h \
     global/log.h \
     model/dbus.h \
     controller/interaction.h \

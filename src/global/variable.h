@@ -1,6 +1,8 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
+//#include <opencv4/opencv2/opencv.hpp>
+
 #include <opencv4/opencv2/core.hpp>
 #include <opencv4/opencv2/imgcodecs.hpp>
 #include <opencv4/opencv2/imgproc.hpp>
@@ -10,17 +12,6 @@
 #include <QSize>
 #include <QPixmap>
 #include <QDebug>
-
-struct ImageAndInfo
-{
-    QFileInfo info; //信息
-    QPixmap image; //图片
-    unsigned int type; //标签
-    unsigned int proportion; //比例
-    QString colorSpace;//图片空间
-    QString imageSize;//图片尺寸
-};
-Q_DECLARE_METATYPE(ImageAndInfo)//QVarant 注册自定义类型
 
 class Variable
 {
@@ -42,8 +33,8 @@ public:
     static const int PICTURE_DEEPEN_KEY; //图片加深值
     static const int REFRESH_RATE; //刷新间隔
     static const int RESIZE_KEY; //每次放大缩小的值
-    static const unsigned int RESIZE_KEY_MAX; //能够放大的最大值
-    static const unsigned int RESIZE_KEY_MIN; //能够缩小的最小值
+    static const int RESIZE_KEY_MAX; //能够放大的最大值
+    static const int RESIZE_KEY_MIN; //能够缩小的最小值
     static const int DEFAULT_MOVIE_TIME_INTERVAL; //默认动图时间间隔
 
 static const int BAR_HEIGHT;//顶栏和工具栏的高度

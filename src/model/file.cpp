@@ -1,6 +1,6 @@
 #include "file.h"
 #include <QDebug>
-
+int qwe = 0;
 MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
 {
     MatAndFileinfo maf;
@@ -20,6 +20,7 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
 
     //svg、gif等opencv不支持的格式
     QString suffix = info.suffix().toLower();
+    //qDebug()<<"suffix"<<suffix<<qwe++;
     if(suffix == "gif" || suffix == "apng" || suffix == "png"){
         //如果是缩略图节则省资源
         if(modes == IMREAD_REDUCED_COLOR_8){
@@ -60,7 +61,20 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
         QImage image = pix.toImage();
         mat = Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone();
     }
-
+    if(suffix == "tga"){
+        int w,h,a;
+        unsigned char *data =stbi_load(path.toLocal8Bit().data(),&w,&h,&a,0);
+        Mat tmpMat = Mat(h,w,CV_8UC4,const_cast<uchar*>(data)).clone();
+        stbi_image_free(data);
+        cvtColor(tmpMat,mat,cv::COLOR_BGRA2RGBA);
+    }
+//    if(suffix == "hdr"){
+//        int w,h,a;
+//        unsigned char *data =stbi_load(path.toLocal8Bit().data(),&w,&h,&a,0);
+//        Mat tmpMat = Mat(h,w,CV_8UC3,const_cast<uchar*>(data)).clone();
+//        stbi_image_free(data);
+//        cvtColor(tmpMat,mat,cv::COLOR_BGRA2RGBA);
+//    }
     //其他情况下尝试正常读取图像
     if(!mat.data)
         mat = imread(path.toLocal8Bit().data(), modes);
@@ -107,9 +121,21 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
         return true;
     }
     if(type == "tga"){
-
-        return false;
+        Mat tmpMat;
+        cvtColor(mat,tmpMat,cv::COLOR_RGBA2BGRA);
+        stbi_write_tga(savepath.toLocal8Bit().data(),tmpMat.cols,tmpMat.rows,4,tmpMat.data);
+        return true;
     }
+//    if(type == "hdr"){
+//        Mat tmpMat;
+//        cvtColor(mat,tmpMat,cv::COLOR_RGB2BGR);
+//        auto img_array = tmpMat.data;
+//        float *img_pt = new float[tmpMat.rows*tmpMat.cols];
+//        for (int i = 0; i < tmpMat.rows*tmpMat.cols; i++)
+//            img_pt[i] = (float)img_array[i];
+//        stbi_write_hdr(savepath.toLocal8Bit().data(),tmpMat.cols,tmpMat.rows,3,img_pt);
+//        return true;
+//    }
     if(type == "gif"){
         return false;
     }

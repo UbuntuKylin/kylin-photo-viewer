@@ -70,11 +70,11 @@ void Core::_processingCommand(const QStringList &cmd)
     qDebug()<<"响应外部命令"<<cmd;
 
     if(cmd[0] == "-next"){
-        changeImage(-1);
+        changeImage(nextImage);
         return;
     }
     if(cmd[0] == "-back"){
-        changeImage(-2);
+        changeImage(backImage);
         return;
     }
     if(cmd[0] == "-big"){
@@ -99,57 +99,16 @@ void Core::_processingCommand(const QStringList &cmd)
     }
 }
 
-Mat ImageShowStatus::_changeImage(Mat mat)
-{
-    if(_backMat.data)
-        _backMat.release();
-    _backMat = _nowMat;
-    _nowMat = mat;
-    _imageSize = QString::number(_nowImage.width())+"x"+QString::number(_nowImage.height());
-    switch (_nowMat.type()) {
-    case CV_8UC4:
-        _colorSpace = "RGBA";
-        break;
-    case CV_8UC3:
-        _colorSpace = "RGB";
-        break;
-    case CV_8UC1:
-        _colorSpace = "GRAY";
-        break;
-    }
-    //gif走的是apng流程，所以这里要单独判断
-    if(QFileInfo(_nowpath).suffix().toLower() == "gif")
-        _colorSpace = "RGB";
-    return _nowMat;
-}
-
-void ImageShowStatus::_changeImageType(int num)
-{
-    _matListIndex = 0;
-    if(num == 0){//回滚
-        _imageUrlMap.remove(_nowType);
-        _nowType=_backType;
-        _nowpath = _backpath;
-        return;
-    }
-    _backType = _nowType;
-    _nowType = num;
-    _backpath = _nowpath;
-    _nowpath = _imageUrlMap.value(num);
-}
-
 QVariant Core::openImage(QString fullPath)
 {
+    if(fullPath.isEmpty())return QVariant();
+
     MatAndFileinfo maf = File::loadImage(fullPath);
     if(!maf.mat.data){
         //如果图片打开失败则回滚
-        int nextOrBack = 0;//判断向前还是向后切换
-        if(_imageUrlMap.values().indexOf(fullPath) > _imageUrlMap.keys().indexOf(_backType))
-            nextOrBack = -1;//下一张
-        else
-            nextOrBack = -2;//上一张
+        ChamgeImageType type = _imageUrlList.nextOrBack(_backpath,fullPath);
         _changeImageType();
-        changeImage(nextOrBack);
+        changeImage(type);
         return QVariant();
     }
     //记录状态
@@ -188,7 +147,7 @@ void Core::_creatImage(const int &proportion)
     if(_nowImage.isNull())
         return;
 
-    unsigned int defaultProportion  = 100 * _size.width() / _nowImage.width();
+    int defaultProportion  = 100 * _size.width() / _nowImage.width();
     if(_nowImage.height() * defaultProportion / 100 > _size.height())
         defaultProportion = 100 * _size.height() / _nowImage.height();
 
@@ -262,29 +221,6 @@ void Core::_navigation(const QPoint &point)
     clickNavigation();
 }
 
-void NavigationStatus::_creatNavigation()
-{
-    //导航栏背景
-    QSize navigationSize = Variable::NAVIGATION_SIZE;
-    _navigationImage = Processing::resizePix(_nowImage,navigationSize).toImage();
-
-    //记录空白区域
-    _spaceWidth = (navigationSize.width()-_navigationImage.width())/2;
-    _spaceHeight = (navigationSize.height()-_navigationImage.height())/2;
-
-    //待显示图
-    QSize pixSize = _nowImage.size() * _proportion / 100;
-    _showPix = Processing::resizePix(_nowImage,pixSize);
-
-    //高亮区域大小
-    _hightlightSize.setWidth(_navigationImage.width() * _size.width() /  _showPix.width());
-    _hightlightSize.setHeight(_navigationImage.height() * _size.height() /  _showPix.height());
-    if(_hightlightSize.width()>_navigationImage.width())
-        _hightlightSize.setWidth(_navigationImage.width());
-    if(_hightlightSize.height()>_navigationImage.height())
-        _hightlightSize.setHeight(_navigationImage.height());
-}
-
 void Core::clickNavigation(const QPoint &point)
 {
     bool hasArg = true;
@@ -356,14 +292,14 @@ void Core::deleteImage()
     File::deleteImage(_nowpath);
 
     //切换到下一张
-    changeImage(-1);
+    changeImage(nextImage);
 
     //从队列中去除
-    _imageUrlMap.remove(_backType);
+    _imageUrlList.remove(_backType);
 
     //删除后队列中无图片，返回状态
-    if(_imageUrlMap.isEmpty()){
-        _imageUrlMap.clear();
+    if(_imageUrlList.isEmpty()){
+        _imageUrlList.clear();
         _maxType = 0;//重置计数
         _nowType = 0;//显示添加图片按钮
         _navigation();//关闭导航器
@@ -384,9 +320,9 @@ void Core::setAsBackground()
 }
 
 void Core::changeImage(const int &type)
-{
+{qDebug()<<"_imageUrlList.length()"<<_imageUrlList.length();
     //如果图片队列小于2，不处理
-    if(_imageUrlMap.size()<2){
+    if(_imageUrlList.length()<2){
         _backType = _nowType;
         _backpath = _nowpath;
         return;
@@ -396,34 +332,24 @@ void Core::changeImage(const int &type)
     if(_playMovieTimer->isActive())
         _playMovieTimer->stop();
 
-    QList<unsigned int> list = _imageUrlMap.keys();
-    if(type == -1){
-        if(_nowType == list.last()){
-            //最后一张切下一张时，回到队列开头
-            _changeImageType(list.first());
-            openImage(_imageUrlMap.first());
-            return;
-        }
-        int key =list[list.indexOf(_nowType)+1];
+    if(type == nextImage){
+        int key = _imageUrlList.nextKey(_nowType);
         _changeImageType(key);
         openImage(_nowpath);
         return;
     }
-    if(type == -2){
-        if(_nowType == list.first()){
-            //第一张切上一张时，回到队列结尾
-            _changeImageType(list.last());
-            openImage(_imageUrlMap.last());
-            return;
-        }
-        int key =list[list.indexOf(_nowType)-1];
+    if(type == backImage){
+        int key = _imageUrlList.backKey(_nowType);
         _changeImageType(key);
         openImage(_nowpath);
         return;
     }
+
     //如果队列中无此关键值，不处理
+    QList<int> list = _imageUrlList.keys();
     if(list.indexOf(type)<0)
         return;
+
     _changeImageType(type);
     openImage(_nowpath);
 }
@@ -505,11 +431,11 @@ QVariant Core::findAllImageFromeDir(QString fullPath)
         nameFilters<<"*."+format;//构造格式过滤列表
     QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);//获取所有支持的图片
     //将所有图片打上唯一标签并存入队列
-    QMap<unsigned int,QString> tmpImageUrlMap;
+    ImageUrlList tmpImageUrlList;
     for(QString &filename : images){
         QString tmpFullPath = path+"/"+filename;
         _maxType++;
-        tmpImageUrlMap.insert(_maxType,tmpFullPath);
+        tmpImageUrlList.append(_maxType,tmpFullPath);
         //记录需要显示的图片
         if(tmpFullPath == filepath){
             _backType = _nowType;
@@ -518,18 +444,17 @@ QVariant Core::findAllImageFromeDir(QString fullPath)
         }
     }
     //新路径中的所有文件靠前排序
-    _imageUrlMap.swap(tmpImageUrlMap);
-    _imageUrlMap.unite(tmpImageUrlMap);
+    _imageUrlList.append(tmpImageUrlList);
     QVariant var;
-    var.setValue<QList<unsigned int>>(_imageUrlMap.keys());
+    var.setValue<QList<int>>(_imageUrlList.keys());
     _loadAlbum();
     return var;
 }
 
 void Core::_loadAlbum()
 {
-    for(unsigned int &type : _imageUrlMap.keys()){
-        AlbumThumbnail* thread= new AlbumThumbnail(type,_imageUrlMap.value(type));
+    for(int &k : _imageUrlList.keys()){
+        AlbumThumbnail* thread= new AlbumThumbnail(k,_imageUrlList.getPath(k));
         connect(thread,&AlbumThumbnail::finished,thread,&AlbumThumbnail::deleteLater);
         connect(thread,&AlbumThumbnail::albumFinish,this,&Core::albumFinish);
         thread->start();

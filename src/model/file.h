@@ -8,10 +8,23 @@
 #include <QSvgGenerator>
 #include <QPainter>
 #include <QMovie>
+#include <stb/stb_image_write.h>
+#include <stb/stb_image.h>
 #include "global/variable.h"
 #include "model/processing/processing.h"
 
 using namespace cv;
+
+struct ImageAndInfo
+{
+    QFileInfo info; //信息
+    QPixmap image; //图片
+    unsigned int type; //标签
+    unsigned int proportion; //比例
+    QString colorSpace;//图片空间
+    QString imageSize;//图片尺寸
+};
+Q_DECLARE_METATYPE(ImageAndInfo)//QVarant 注册自定义类型
 
 class MatAndFileinfo
 {

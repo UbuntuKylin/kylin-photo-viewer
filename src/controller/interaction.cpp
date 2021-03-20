@@ -78,13 +78,13 @@ void _Interaction::changeImage(const int &type)
 void _Interaction::nextImage()
 {
     if(_operateTooOften())return;
-    emit _changeImage(-1);
+    emit _changeImage(Enums::nextImage);
 }
 
 void _Interaction::backImage()
 {
     if(_operateTooOften())return;
-    emit _changeImage(-2);
+    emit _changeImage(Enums::backImage);
 }
 
 void _Interaction::changeWidgetSize(const QSize &size)
