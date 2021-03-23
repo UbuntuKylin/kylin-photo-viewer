@@ -8,6 +8,7 @@
 #include <QHBoxLayout>
 #include <QFileInfo>
 #include <QClipboard>
+#include <QProcess>
 #include "controller/interaction.h"
 
 class ShowImageWidget : public QWidget
@@ -15,12 +16,14 @@ class ShowImageWidget : public QWidget
     Q_OBJECT
 public:
     ShowImageWidget(QWidget *parent,int w, int h);
-    void _openImage(QString path);
-    void _startWithOpenImage(QString path);
+
     QPushButton *next; //下一张
     QPushButton *back; //上一张
+    bool buttonState = true; //用来判断只有一张图片时隐藏左右滑动按钮
 
     void re_move(int w, int h);
+    void _openImage(QString path);
+    void _startWithOpenImage(QString path);
 private:
     Interaction *interaction = nullptr;
     QWidget *imageWid;
@@ -37,7 +40,7 @@ private:
 
     QString path = "";//打开文件夹的路径
     QPixmap copyImage;
-
+    QString paperFormat;
     void _initInteraction();
     void openFinish(QVariant var);
     void _initConnect();
@@ -53,6 +56,9 @@ private:
     void _deleteImage();
     void _showInFile();
 
+    void _checkWallpaper();//检查当前图片是否可设置为壁纸
+    bool canSet = true;
+
     void albumFinish(QVariant var);
     void resizeEvent(QResizeEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
@@ -67,6 +73,7 @@ signals:
     void deleteCurrImage();
     void reduceChange();
     void enlargeChange();
+    void hideButton();
 };
 
 #endif // SHOWIMAGEWIDGET_H

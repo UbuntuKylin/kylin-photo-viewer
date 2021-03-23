@@ -105,13 +105,7 @@ void menuModule::triggerMenu(QAction *act){
     }else if(tr("Help") == str){
         helpAction();
     }else if(tr("Open..") == str){
-        QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-        QString format = "Image Files(";
-        for(const QString &str:Variable::SUPPORT_FORMATS )
-            format += "*."+str +" ";
-        format += ")";
-        QString file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,format);
-        emit openSignal(file_path);
+        emit openSignal();
     }
 }
 

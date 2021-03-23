@@ -26,7 +26,7 @@ LIBS += -lopencv_core \
 LIBS += -lstb \
 
 #gif
-LIBS += -lgif \
+#LIBS += -lgif \
 
 target.path = /usr/bin
 target.source +=$$TARGET

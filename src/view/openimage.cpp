@@ -41,15 +41,35 @@ void OpenImage::_initconnect()
 //打开图片
 void OpenImage::openimage()
 {
-    QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-    //打开文件夹中的图片文件
-    QString format = "Image Files(";
-    for(const QString &str:Variable::SUPPORT_FORMATS )
-        format += "*."+str +" ";
-    format += ")";
-    QString file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,format);
-    qDebug() << "file_path " << file_path;
-    emit openImage(file_path);
+    QString file_path;
+    QString pathChange;
+    QString format;
+    if(Variable::IMAGEPATH == ""){
+        QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+        //打开文件夹中的图片文件
+        format = "Image Files(";
+        for(const QString &str:Variable::SUPPORT_FORMATS )
+            format += "*."+str +" ";
+        format += ")";
+        file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,format);
+        pathChange =file_path.mid(0,file_path.lastIndexOf("/"));
+        Variable::_settings->setValue("imagePath",pathChange);
+
+    }else{
+        format = "Image Files(";
+        for(const QString &str:Variable::SUPPORT_FORMATS )
+            format += "*."+str +" ";
+        format += ")";
+        pathChange = Variable::_settings->value("imagePath").toString();
+        file_path = QFileDialog::getOpenFileName(this,"打开图片",pathChange,format);
+
+    }
+    if(file_path != "")
+    {
+        emit openImage(file_path);
+    }
+    else
+        return;
 
 }
 
@@ -70,7 +90,6 @@ void OpenImage::_initGsettings()
 void OpenImage::_dealSystemGsettingChange()
 {
     QString themeStyle = m_pGsettingThemeData->get("styleName").toString();
-    qDebug()<<"主题"<<themeStyle;
     if("ukui-dark" == themeStyle || "ukui-black" == themeStyle){
         openInCenter->setStyleSheet("background-color:rgba(0, 0, 0, 0.5);border-radius:64;");
         openText->setStyleSheet("QLabel{background-color:transparent;color:rgba(255, 255, 255, 1);}");

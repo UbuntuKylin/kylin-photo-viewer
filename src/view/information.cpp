@@ -56,6 +56,7 @@ Information::Information(QWidget *parent) : QWidget(parent)
     inforWid = new QWidget(this);
     gdLayout =new QGridLayout(this);
     this->_layout();
+    this->setMouseTracking(true);
 
 }
 
@@ -122,5 +123,15 @@ void Information::_longText(QLabel *nameC, QString text)
     if(elideNote.contains("…",Qt::CaseInsensitive))
     {
          nameC->setToolTip(text);//设置tooltips
+    }
+}
+//检测鼠标位置--顶栏和工具栏的出现和隐藏
+void Information::mouseMoveEvent(QMouseEvent *event)
+{
+    int y =this->mapFromGlobal(QCursor().pos()).y();
+     qDebug()<<"ff"<<y;
+    if (y <= 40){
+
+        emit twoBarShow();
     }
 }
