@@ -12,7 +12,7 @@
 #include <stb/stb_image.h>
 #include "model/processing/processing.h"
 #include "savemovie.h"
-#include <gif_lib.h>
+//#include <gif_lib.h>
 
 struct ImageAndInfo
 {
