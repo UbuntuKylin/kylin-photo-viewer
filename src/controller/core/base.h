@@ -9,7 +9,7 @@
 #include <QTimer>
 #include <QGSettings>
 #include "model/dbus.h"
-#include "model/file.h"
+#include "model/file/file.h"
 #include "model/processing/processing.h"
 #include "albumthumbnail.h"
 

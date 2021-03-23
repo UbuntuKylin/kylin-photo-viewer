@@ -1,6 +1,6 @@
 #include "file.h"
 #include <QDebug>
-int qwe = 0;
+
 MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
 {
     MatAndFileinfo maf;
@@ -17,10 +17,8 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     //获取文件信息
     QFileInfo info(path);
     maf.info=info;
-
     //svg、gif等opencv不支持的格式
     QString suffix = info.suffix().toLower();
-    //qDebug()<<"suffix"<<suffix<<qwe++;
     if(suffix == "gif" || suffix == "apng" || suffix == "png"){
         //如果是缩略图节则省资源
         if(modes == IMREAD_REDUCED_COLOR_8){
@@ -29,15 +27,20 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             if(!mat.data) qDebug()<< "读取缩略图失败："<< path;
             return maf;
         }
+//        auto reader = new QImageReader(path, "apng");
+//        qDebug()<<"********"<< reader->supportsOption(QImageIOHandler::Name);
+//        qDebug()<<"********"<< reader->nextImageDelay();
         auto tmpMovie = new QMovie(path, "apng");
-        //获取帧率//QMovie没有现成的方法，为求稳定，每次打开新动图的时候循环5次取最大值，此处待优化
+//        qDebug()<<"********"<<tmpMovie->nextFrameDelay();
         if(tmpMovie->frameCount()>1){
+            //获取帧率//QMovie没有现成的方法，为求稳定，每次打开新动图的时候循环5次取最大值，此处待优化
             int fps = 0;
-            for(int i=0;i<5;i++){
-                tmpMovie->start();
-                tmpMovie->stop();
-                fps=tmpMovie->nextFrameDelay()>fps?tmpMovie->nextFrameDelay():fps;
-            }
+            if(fps == 0)
+                for(int i=0;i<5;i++){
+                    tmpMovie->start();
+                    tmpMovie->stop();
+                    fps=tmpMovie->nextFrameDelay()>fps?tmpMovie->nextFrameDelay():fps;
+                }
             maf.fps = fps == 0 ? Variable::DEFAULT_MOVIE_TIME_INTERVAL : fps;
         }
         QList<Mat> *frames = new QList<Mat>;  //存放gif的所有帧，每个frame都是Mat格式
@@ -64,6 +67,7 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     if(suffix == "tga"){
         int w,h,a;
         unsigned char *data =stbi_load(path.toLocal8Bit().data(),&w,&h,&a,0);
+        if(!data) return maf;
         Mat tmpMat = Mat(h,w,CV_8UC4,const_cast<uchar*>(data)).clone();
         stbi_image_free(data);
         cvtColor(tmpMat,mat,cv::COLOR_BGRA2RGBA);
@@ -92,7 +96,7 @@ bool File::saveImage(const Mat &mat, const QString &savepath, bool replace)
     QFileInfo tmpFileInfo(savepath);
     //覆盖保存
     if(replace)
-        return save(mat,savepath,tmpFileInfo.suffix());
+        return _save(mat,savepath,tmpFileInfo.suffix());
 
     //备份保存
     QString tmpPath = savepath;
@@ -104,10 +108,30 @@ bool File::saveImage(const Mat &mat, const QString &savepath, bool replace)
                 tmpFileInfo.completeSuffix();
         num++;
     }
-    return save(mat,savepath,tmpFileInfo.suffix());
+    return _save(mat,savepath,tmpFileInfo.suffix());
 }
 
-bool File::save(const Mat &mat, const QString &savepath, const QString &type)
+bool File::saveImage(QList<Mat> *list, const int &fps, const QString &savepath, bool replace)
+{
+    QFileInfo tmpFileInfo(savepath);
+    //覆盖保存
+    if(replace)
+        return _save(list,fps,savepath,tmpFileInfo.suffix());
+
+    //备份保存
+    QString tmpPath = savepath;
+    int num = 1;
+    while (QFileInfo::exists(tmpPath)) {
+        tmpPath = tmpFileInfo.absolutePath() + "/" +
+                tmpFileInfo.completeBaseName()+
+                "(" + QString::number(num) + ")" + "." +
+                tmpFileInfo.completeSuffix();
+        num++;
+    }
+    return _save(list,fps,savepath,tmpFileInfo.suffix());
+}
+
+bool File::_save(const Mat &mat, const QString &savepath, const QString &type)
 {
     if(type == "svg"){
         QPixmap pix = Processing::converFormat(mat);
@@ -136,19 +160,51 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
 //        stbi_write_hdr(savepath.toLocal8Bit().data(),tmpMat.cols,tmpMat.rows,3,img_pt);
 //        return true;
 //    }
+    //单帧gif的场景
     if(type == "gif"){
-        return false;
+        QList<Mat> *list = new QList<Mat>;
+        list->append(mat);
+        return _save(list,0,savepath,type,true);
     }
     //非特殊情况
     return imwrite(savepath.toStdString(),mat);
 }
 
-void File::deleteImage(const QString &savepath)
+bool File::_save(QList<Mat> *list, const int &fps, const QString &savepath, const QString &type, bool special)
 {
-    processStart("gio",QStringList() << "trash" << savepath);
+    if(list->length()<1)
+        return false;
+
+    return _saveMovie(list,fps,savepath,type,special);
 }
 
-void File::processStart(const QString &cmd, QStringList arguments)
+bool File::_saveMovie(QList<Mat> *list,const int &fps, const QString &savepath, const QString &type ,bool special)
+{
+
+    SaveMovie *saveMovie = new SaveMovie(list,fps,savepath,type,special);
+    saveMovie->start();
+
+//    Gif_H m_Gif;
+//    Gif_H::GifWriter m_GifWriter;
+//    for (int i=0; i<list->length(); ++i){
+//        Mat tmpMat;
+//        cvtColor(list->at(i),tmpMat,cv::COLOR_RGBA2BGRA);
+//        if(i == 0)
+//            if (!m_Gif.GifBegin(&m_GifWriter, savepath.toLocal8Bit().data(), tmpMat.cols, tmpMat.rows, fps))
+//                return false;
+//        // 写入图片信息
+//        m_Gif.GifWriteFrame(&m_GifWriter, tmpMat.data, tmpMat.cols, tmpMat.rows, fps);
+//    }
+//    m_Gif.GifEnd(&m_GifWriter);
+    return true;
+}
+
+void File::deleteImage(const QString &savepath)
+{
+    _processStart("gio",QStringList() << "trash" << savepath);
+}
+
+void File::_processStart(const QString &cmd, QStringList arguments)
 {
     QString cmdTmp = cmd;
     for(QString &x : arguments){

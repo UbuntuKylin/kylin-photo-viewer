@@ -48,6 +48,7 @@ void _Interaction::_initConnect(Core *core)
     connect(this,&_Interaction::_flip,core,&Core::flipImage);//翻转
     connect(this,&_Interaction::_deleteImage,core,&Core::deleteImage);//删除图片
     connect(this,&_Interaction::_setAsBackground,core,&Core::setAsBackground);//设置为背景图
+    connect(core,&Core::deleteImageOnAlbum,this,&_Interaction::deleteImageOnAlbum);//从相册中删除
 }
 
 bool _Interaction::_operateTooOften()

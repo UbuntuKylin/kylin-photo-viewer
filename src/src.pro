@@ -25,6 +25,9 @@ LIBS += -lopencv_core \
 #stb
 LIBS += -lstb \
 
+#gif
+LIBS += -lgif \
+
 target.path = /usr/bin
 target.source +=$$TARGET
 INSTALLS += target
@@ -36,7 +39,8 @@ SOURCES += main.cpp \
     model/dbus.cpp \
     controller/interaction.cpp \
     controller/core/core.cpp \
-    model/file.cpp \
+    model/file/file.cpp \
+    model/file/savemovie.cpp \
     model/processing/flip.cpp \
     model/processing/processing.cpp \
     view/daemondbus.cpp \
@@ -59,7 +63,8 @@ HEADERS += \
     model/dbus.h \
     controller/interaction.h \
     controller/core/core.h \
-    model/file.h \
+    model/file/file.h \
+    model/file/savemovie.h \
     model/processing/_processing.h \
     model/processing/flip.h \
     model/processing/processing.h \

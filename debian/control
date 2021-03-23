@@ -20,7 +20,9 @@ Vcs-Browser: https://github.com/ubuntukylin/kylin-photo-viewer
 
 Package: kylin-photo-viewer
 Architecture: any
-Depends: ${misc:Depends},${shlibs:Depends}
+Depends: 
+               apngasm,
+               ${misc:Depends},${shlibs:Depends}
 Description: Indicator that displays China weather information
  Kylin Weather displays detail weather information for one place,
  including weather forecast and observe weather, and you can

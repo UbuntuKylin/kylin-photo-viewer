@@ -31,6 +31,10 @@ void ImageShowStatus::_changeImageType(int num)
         _imageUrlList.remove(_nowType);
         _nowType=_backType;
         _nowpath = _backpath;
+        if(_imageUrlList.isEmpty()){
+            _nowType=0;
+            _nowpath = "";
+        }
         return;
     }
     _backType = _nowType;

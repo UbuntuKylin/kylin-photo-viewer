@@ -3,7 +3,7 @@
 //项目名称
 const QString Variable::PROGRAM_NAME = QString("kylin-photo-viewer");
 //临时文件路径
-//const QString Variable::TEMP_PATH = Variable::_creatTempPath();
+const QString Variable::TEMP_PATH = Variable::_creatTempPath();
 
 //配置文件
 QSettings * Variable::_settings = Variable::_getSettings();
@@ -84,14 +84,14 @@ QMap<QString, QString> Variable::_getSupportCmd()
     return cmds;
 }
 
-//const QString Variable::_creatTempPath()
-//{
-//    const QString filePath = "/tmp/."+PROGRAM_NAME+"/";
-//    QDir dir;
-//    if(!dir.exists(filePath))
-//        dir.mkdir(filePath);
-//    return filePath;
-//}
+const QString Variable::_creatTempPath()
+{
+    const QString filePath = "/tmp/."+PROGRAM_NAME+"/";
+    QDir dir;
+    if(!dir.exists(filePath))
+        dir.mkdir(filePath);
+    return filePath;
+}
 
 QStringList Variable::_creatSupportFormats()
 {

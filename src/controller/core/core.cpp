@@ -107,7 +107,13 @@ QVariant Core::openImage(QString fullPath)
     if(!maf.mat.data){
         //如果图片打开失败则回滚
         ChamgeImageType type = _imageUrlList.nextOrBack(_backpath,fullPath);
+        emit deleteImageOnAlbum(_nowType);
         _changeImageType();
+        //全部图片都被删除了
+        if(_nowType == 0){
+            _showImage(QPixmap());
+            return QVariant();
+        }
         changeImage(type);
         return QVariant();
     }
@@ -275,7 +281,9 @@ void Core::flipImage(const Processing::FlipWay &way)
         //刷新导航栏
         _nowImage = Processing::converFormat(_matList->first());
         _navigationImage = Processing::resizePix(_nowImage,Variable::NAVIGATION_SIZE).toImage();
-        clickNavigation();
+        if(_isNavigationShow)
+            clickNavigation();
+        File::saveImage(_matList,_fps,_nowpath);
         return;
     }
     Mat mat = Processing::processingImage(Processing::flip,_nowMat,QVariant(way));
@@ -295,6 +303,7 @@ void Core::deleteImage()
     changeImage(nextImage);
 
     //从队列中去除
+    emit deleteImageOnAlbum(_backType);
     _imageUrlList.remove(_backType);
 
     //删除后队列中无图片，返回状态
@@ -320,9 +329,9 @@ void Core::setAsBackground()
 }
 
 void Core::changeImage(const int &type)
-{qDebug()<<"_imageUrlList.length()"<<_imageUrlList.length();
+{
     //如果图片队列小于2，不处理
-    if(_imageUrlList.length()<2){
+    if(_imageUrlList.length()<1){
         _backType = _nowType;
         _backpath = _nowpath;
         return;
@@ -346,8 +355,7 @@ void Core::changeImage(const int &type)
     }
 
     //如果队列中无此关键值，不处理
-    QList<int> list = _imageUrlList.keys();
-    if(list.indexOf(type)<0)
+    if(_imageUrlList.keys().indexOf(type)<0)
         return;
 
     _changeImageType(type);

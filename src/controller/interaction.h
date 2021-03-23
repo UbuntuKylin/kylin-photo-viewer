@@ -15,6 +15,7 @@ signals:
     void openFinish(QVariant var);
     void albumFinish(QVariant var);
     void showNavigation(QPixmap pix);
+    void deleteImageOnAlbum(int type);
 
 public:
     static Interaction *getInstance();//单例取指针

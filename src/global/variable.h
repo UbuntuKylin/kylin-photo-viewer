@@ -19,7 +19,7 @@ class Variable
 public:
     static const QString PROGRAM_NAME; //项目名称
     static const QString PHOTO_VIEW_DBUS_SERVICENAME; //DBUS服务名称
-    //static const QString TEMP_PATH; //临时文件路径
+    static const QString TEMP_PATH; //临时文件路径
     static const QString PHOTO_VIEW_DBUS_PARH; //DBUS路径
     static const QString PHOTO_VIEW_DBUS_INTERFACE;//DBUS接口
     enum LOGLEVEL{ NOLOG , FATAL , CRITICAL , INFO , DEBUG , WARNING }; //日志级别
@@ -45,7 +45,7 @@ private:
 
     static QSettings *_getSettings();
     static QStringList _creatSupportFormats();
-    //static const QString _creatTempPath();
+    static const QString _creatTempPath();
     static QSettings *_settings;
     static QMap<QString,QString> _getSupportCmd();
 

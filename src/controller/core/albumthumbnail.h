@@ -4,7 +4,7 @@
 #include <QThread>
 #include "global/variable.h"
 #include "model/processing/processing.h"
-#include "model/file.h"
+#include "model/file/file.h"
 
 class AlbumThumbnail : public QThread
 {
