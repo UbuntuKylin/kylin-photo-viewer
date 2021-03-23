@@ -27,22 +27,11 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             if(!mat.data) qDebug()<< "读取缩略图失败："<< path;
             return maf;
         }
-//        auto reader = new QImageReader(path, "apng");
-//        qDebug()<<"********"<< reader->supportsOption(QImageIOHandler::Name);
-//        qDebug()<<"********"<< reader->nextImageDelay();
+        //获取帧率
+        maf.fps =_getDelay(path,suffix);
         auto tmpMovie = new QMovie(path, "apng");
-//        qDebug()<<"********"<<tmpMovie->nextFrameDelay();
-        if(tmpMovie->frameCount()>1){
-            //获取帧率//QMovie没有现成的方法，为求稳定，每次打开新动图的时候循环5次取最大值，此处待优化
-            int fps = 0;
-            if(fps == 0)
-                for(int i=0;i<5;i++){
-                    tmpMovie->start();
-                    tmpMovie->stop();
-                    fps=tmpMovie->nextFrameDelay()>fps?tmpMovie->nextFrameDelay():fps;
-                }
-            maf.fps = fps == 0 ? Variable::DEFAULT_MOVIE_TIME_INTERVAL : fps;
-        }
+//        if(tmpMovie->frameCount()>1)
+//            maf.fps =_getDelay(path,suffix);
         QList<Mat> *frames = new QList<Mat>;  //存放gif的所有帧，每个frame都是Mat格式
         for (int i =0; i< tmpMovie->frameCount(); ++i) {
             tmpMovie->jumpToFrame(i);
@@ -89,6 +78,36 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     }
     maf.mat = mat;
     return maf;
+}
+
+int File::_getDelay(const QString &path, const QString &suffix)
+{
+    int fps = 0;
+
+    if(suffix == "gif"){
+//        int err = 0;
+//        GifFileType *gif = DGifOpenFileName(path.toLocal8Bit().data(),&err);
+//        qDebug()<<"========="<<gif->SWidth;
+//        GraphicsControlBlock gcb;
+//        err = DGifSavedExtensionToGCB(gif,0,&gcb);
+//        err = EGifGCBToSavedExtension(gcb,gif,0);
+//        if(err == 0) qDebug()<<"*******"<<gcb.TransparentColor;
+    }
+
+    if(fps != 0)
+        return fps;
+
+    //QMovie没有现成的方法，为求稳定，每次打开新动图的时候循环5次取最大值，此处待优化
+    QMovie tmpMovie(path);
+    if(fps == 0)
+        for(int i=0;i<5;i++){
+            tmpMovie.start();
+            tmpMovie.stop();
+            fps=tmpMovie.nextFrameDelay()>fps?tmpMovie.nextFrameDelay():fps;
+        }
+    //qDebug()<<"========"<<fps;
+
+    return fps == 0 ? Variable::DEFAULT_MOVIE_TIME_INTERVAL : fps;
 }
 
 bool File::saveImage(const Mat &mat, const QString &savepath, bool replace)

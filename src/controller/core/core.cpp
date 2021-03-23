@@ -107,8 +107,8 @@ QVariant Core::openImage(QString fullPath)
     if(!maf.mat.data){
         //如果图片打开失败则回滚
         ChamgeImageType type = _imageUrlList.nextOrBack(_backpath,fullPath);
-        emit deleteImageOnAlbum(_nowType);
         _changeImageType();
+        emit deleteImageOnAlbum(_imageUrlList.keys(),_nowType);
         //全部图片都被删除了
         if(_nowType == 0){
             _showImage(QPixmap());
@@ -117,9 +117,9 @@ QVariant Core::openImage(QString fullPath)
         changeImage(type);
         return QVariant();
     }
+    _nowImage = Processing::converFormat(maf.mat);
     //记录状态
-    Mat mat = _changeImage(maf.mat);
-    _nowImage = Processing::converFormat(mat);
+    _changeImage(maf.mat);
     _info = maf.info;
     if(_matList!=nullptr){
         for(Mat &tmpMat : *_matList){
@@ -303,8 +303,8 @@ void Core::deleteImage()
     changeImage(nextImage);
 
     //从队列中去除
-    emit deleteImageOnAlbum(_backType);
     _imageUrlList.remove(_backType);
+    emit deleteImageOnAlbum(_imageUrlList.keys(),_backType);
 
     //删除后队列中无图片，返回状态
     if(_imageUrlList.isEmpty()){

@@ -11,11 +11,11 @@ class Interaction : public QObject
 {
     Q_OBJECT
 signals:
-    void startWithOpenImage(QString);
-    void openFinish(QVariant var);
-    void albumFinish(QVariant var);
-    void showNavigation(QPixmap pix);
-    void deleteImageOnAlbum(int type);
+    void startWithOpenImage(QString);//启动时打开图片
+    void openFinish(QVariant var);//图片打开完成
+    void albumFinish(QVariant var);//相册缩略图加载完成
+    void showNavigation(QPixmap pix);//显示或隐藏导航栏事件
+    void deleteImageOnAlbum(QList<int> list,int type);//从相册中删除图片事件（删除图片/图片打开失败）
 
 public:
     static Interaction *getInstance();//单例取指针

@@ -12,7 +12,8 @@
 #include <stb/stb_image.h>
 #include "model/processing/processing.h"
 #include "savemovie.h"
-#include <png.h>
+#include <gif_lib.h>
+
 struct ImageAndInfo
 {
     QFileInfo info; //信息
@@ -47,6 +48,7 @@ private:
     static bool _save(const Mat &mat , const QString &savepath , const QString &type);
     static bool _save(QList<Mat> *list ,const int &fps, const QString &savepath , const QString &type, bool special = false);
     static bool _saveMovie(QList<Mat> *list, const int &fps, const QString &savepath, const QString &type , bool special = false);
+    static int _getDelay(const QString &path,const QString &suffix);
 };
 
 #endif // FILE_H

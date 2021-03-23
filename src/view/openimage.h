@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QIcon>
 #include <QSize>
-#include <QStandardPaths>
 #include <QFileDialog>
 #include <QGSettings>
 #include "global/variable.h"

@@ -50,8 +50,7 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     next->setFocusPolicy(Qt::NoFocus);
     back->setStyleSheet("background-color:transparent;border-radius:4px;");
     next->setStyleSheet("background-color:transparent;border-radius:4px;");
-    next->hide();
-    back->hide();
+
     this->_initConnect();
     _initInteraction();//一定要放到构造函数末尾
 }
@@ -175,7 +174,17 @@ void ShowImageWidget::_startWithOpenImage(QString path)
 void ShowImageWidget::_openImage(QString path)
 {
     QVariant var= interaction->openImage(path);
-
+    QList<int> list = var.value<QList<int>>();
+    if(list.length() < 2){
+            next->hide();
+            back->hide();
+            buttonState = false;
+            emit hideButton();
+        }else{
+            next->show();
+            back->show();
+            buttonState = true;
+        }
     //创建相册列表
 //    qDebug()<<var.value<QList<int>>();
 }
@@ -189,11 +198,6 @@ void ShowImageWidget::openFinish(QVariant var)
     if(type == 0){
         emit clearImage();
         return;
-    }else if(type == 1){
-        buttonState = false;
-        emit hideButton();
-    }else{
-        buttonState = true;
     }
     QFileInfo info = package.info;//详情信息
     QPixmap pixmap = package.image;//图片

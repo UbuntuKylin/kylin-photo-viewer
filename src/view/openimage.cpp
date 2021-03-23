@@ -42,35 +42,21 @@ void OpenImage::_initconnect()
 void OpenImage::openimage()
 {
     QString file_path;
-    QString pathChange;
     QString format;
-    if(Variable::IMAGEPATH == ""){
-        QString defaultPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-        //打开文件夹中的图片文件
-        format = "Image Files(";
-        for(const QString &str:Variable::SUPPORT_FORMATS )
-            format += "*."+str +" ";
-        format += ")";
-        file_path = QFileDialog::getOpenFileName(this,"打开图片",defaultPath,format);
-        pathChange =file_path.mid(0,file_path.lastIndexOf("/"));
-        Variable::_settings->setValue("imagePath",pathChange);
-
-    }else{
-        format = "Image Files(";
-        for(const QString &str:Variable::SUPPORT_FORMATS )
-            format += "*."+str +" ";
-        format += ")";
-        pathChange = Variable::_settings->value("imagePath").toString();
-        file_path = QFileDialog::getOpenFileName(this,"打开图片",pathChange,format);
-
-    }
-    if(file_path != "")
-    {
-        emit openImage(file_path);
-    }
-    else
+    //构造打开条件
+    format = "Image Files(";
+    for(const QString &str:Variable::SUPPORT_FORMATS )
+        format += "*."+str +" ";
+    format += ")";
+    //打开文件夹中的图片文件
+    file_path = QFileDialog::getOpenFileName(this,"打开图片",Variable::getSettings("imagePath"),format);
+    //空校验，点击“取消”
+    if(file_path.isEmpty())
         return;
-
+    //写入配置
+    QFileInfo info(file_path);
+    Variable::setSettings("imagePath",info.absolutePath());
+    emit openImage(file_path);
 }
 
 void OpenImage::_initGsettings()

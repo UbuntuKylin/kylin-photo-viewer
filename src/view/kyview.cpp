@@ -221,8 +221,8 @@ void KyView::_delayHide_infor()
 
 void KyView::_delayHide_navi()
 {
-    if(!navigator->isHidden())
-        navigator->hide();
+//    if(!navigator->isHidden())
+//        navigator->hide();
     titlebar->hide();
     toolbar->hide();
     timer_navi->stop();

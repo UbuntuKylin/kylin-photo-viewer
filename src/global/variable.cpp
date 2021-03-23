@@ -19,7 +19,6 @@ const QString Variable::PHOTO_VIEW_DBUS_INTERFACE = QString("kylin_photo_viewer.
 const QString Variable::ENV_LOGLEVEL = QString("UKPV_DEBUG");
 //日志是否写入文件
 const bool Variable::LOGTOFILE = Variable::_settings->value("logToFile").toBool();
-const QString Variable::IMAGEPATH = Variable::_settings->value("imagePath").toString();
 //支持的命令列表
 const QMap<QString,QString> Variable::SUPPORT_CMD = Variable::_getSupportCmd();
 
@@ -101,4 +100,18 @@ QStringList Variable::_creatSupportFormats()
     list.append(Variable::_OPENCV_CAN_SUPPORT_FORMATS);
     list.append(Variable::_OPENCV_CANNOT_SUPPORT_FORMATS);
     return list;
+}
+
+//写入配置文件
+void Variable::setSettings(const QString &key,const QString &vlue)
+{
+    _settings->setValue(key,vlue);
+}
+//读取配置文件
+QString Variable::getSettings(const QString &key)
+{
+    QString path=_settings->value(key).toString();
+    if(path.isEmpty())
+        return QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+    return path;
 }

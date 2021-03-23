@@ -11,6 +11,7 @@
 #include <QDir>
 #include <QSize>
 #include <QPixmap>
+#include <QStandardPaths>
 #include <QDebug>
 
 class Variable
@@ -36,14 +37,15 @@ public:
     static const int RESIZE_KEY_MAX; //能够放大的最大值
     static const int RESIZE_KEY_MIN; //能够缩小的最小值
     static const int DEFAULT_MOVIE_TIME_INTERVAL; //默认动图时间间隔
-    static QSettings *_settings;
-    static const QString IMAGEPATH;
     static const int BAR_HEIGHT;//顶栏和工具栏的高度
+    static void setSettings(const QString &key,const QString &vlue);//写入配置文件
+    static QString getSettings(const QString &key);//读取配置文件
 
 private:
     static const QStringList _OPENCV_CAN_SUPPORT_FORMATS; //opencv支持的格式列表
     static const QStringList _OPENCV_CANNOT_SUPPORT_FORMATS; //opencv不支持的格式列表
 
+    static QSettings *_settings;
     static QSettings *_getSettings();
     static QStringList _creatSupportFormats();
     static const QString _creatTempPath();
