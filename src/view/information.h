@@ -40,9 +40,10 @@ private:
     void _setstyle();
     void _layout();
     void _longText(QLabel *nameC, QString text);
+    void mouseMoveEvent(QMouseEvent *event);
 
 signals:
-
+    void twoBarShow();
 };
 
 #endif // INFORMATION_H

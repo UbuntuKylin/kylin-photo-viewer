@@ -34,7 +34,7 @@ public:
 //    void changeVolumePos(int posX, int posY, int width, int height);
 signals:
     void menuModuleClose();
-    void openSignal(QString path);
+    void openSignal();
 //    void menuModuleSetThemeStyle(QString);
 public:
     QToolButton *menuButton = nullptr;

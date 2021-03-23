@@ -47,9 +47,21 @@
 <context>
     <name>KyView</name>
     <message>
-        <location filename="../src/view/kyview.cpp" line="11"/>
+        <location filename="../src/view/kyview.cpp" line="14"/>
         <source>Kylin Photo Viewer</source>
         <translation>麒麟看图</translation>
+    </message>
+    <message>
+        <location filename="../src/view/kyview.cpp" line="367"/>
+        <location filename="../src/view/kyview.cpp" line="417"/>
+        <source>full srceen</source>
+        <translation>最大化</translation>
+    </message>
+    <message>
+        <location filename="../src/view/kyview.cpp" line="372"/>
+        <location filename="../src/view/kyview.cpp" line="414"/>
+        <source>recovery</source>
+        <translation>还原</translation>
     </message>
 </context>
 <context>
@@ -57,7 +69,7 @@
     <message>
         <location filename="../src/view/openimage.cpp" line="14"/>
         <source>Load picture</source>
-        <translation>载入图片或文件夹</translation>
+        <translation>载入图片</translation>
     </message>
 </context>
 <context>
@@ -116,28 +128,26 @@
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="107"/>
         <source>full srceen</source>
-        <translation>最大化</translation>
+        <translation type="vanished">最大化</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="111"/>
         <source>recovery</source>
-        <translation>还原</translation>
+        <translation type="vanished">还原</translation>
     </message>
 </context>
 <context>
     <name>menuModule</name>
     <message>
         <location filename="../src/view/menumodule.cpp" line="25"/>
-        <location filename="../src/view/menumodule.cpp" line="268"/>
-        <location filename="../src/view/menumodule.cpp" line="282"/>
+        <location filename="../src/view/menumodule.cpp" line="262"/>
+        <location filename="../src/view/menumodule.cpp" line="276"/>
         <source>Service &amp; Support Team: </source>
         <translation>服务与支持团队： </translation>
     </message>
     <message>
         <location filename="../src/view/menumodule.cpp" line="29"/>
-        <location filename="../src/view/menumodule.cpp" line="213"/>
+        <location filename="../src/view/menumodule.cpp" line="207"/>
         <source>Version: </source>
         <translation>版本： </translation>
     </message>
@@ -176,17 +186,17 @@
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="175"/>
+        <location filename="../src/view/menumodule.cpp" line="169"/>
         <source>kylin photo view</source>
         <translation>麒麟看图</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="182"/>
+        <location filename="../src/view/menumodule.cpp" line="176"/>
         <source>close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="191"/>
+        <location filename="../src/view/menumodule.cpp" line="185"/>
         <source>Kylin Photo View</source>
         <translation>麒麟看图</translation>
     </message>

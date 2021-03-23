@@ -36,8 +36,9 @@ public:
     static const int RESIZE_KEY_MAX; //能够放大的最大值
     static const int RESIZE_KEY_MIN; //能够缩小的最小值
     static const int DEFAULT_MOVIE_TIME_INTERVAL; //默认动图时间间隔
-
-static const int BAR_HEIGHT;//顶栏和工具栏的高度
+    static QSettings *_settings;
+    static const QString IMAGEPATH;
+    static const int BAR_HEIGHT;//顶栏和工具栏的高度
 
 private:
     static const QStringList _OPENCV_CAN_SUPPORT_FORMATS; //opencv支持的格式列表
@@ -46,7 +47,6 @@ private:
     static QSettings *_getSettings();
     static QStringList _creatSupportFormats();
     static const QString _creatTempPath();
-    static QSettings *_settings;
     static QMap<QString,QString> _getSupportCmd();
 
 };

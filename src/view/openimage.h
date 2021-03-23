@@ -17,6 +17,7 @@ class OpenImage : public QWidget
     Q_OBJECT
 public:
     explicit OpenImage(QWidget *parent = nullptr);
+    void openimage();
 private:
     Interaction *interaction = nullptr;
     QGSettings *m_pGsettingThemeData = nullptr;
@@ -27,7 +28,7 @@ private:
 
     void _setstyle();
     void _initconnect();
-    void openimage();
+
 
     void _initGsettings();
     void _dealSystemGsettingChange();

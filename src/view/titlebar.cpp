@@ -95,22 +95,8 @@ void TitleBar::initControlQss()
 void TitleBar::initConnect()
 {
     connect(minibtn, &QPushButton::clicked, KyView::mutual, &KyView::showMinimized);
-    connect(fullscreen, &QPushButton::clicked, this, &TitleBar::fullRecovery);
+    connect(fullscreen, &QPushButton::clicked, this, &TitleBar::recovery);
     connect(closebtn, &QPushButton::clicked, KyView::mutual, &KyView::close);
-
-}
-//触发全屏事件
-void TitleBar::fullRecovery()
-{
-    if (KyView::mutual->isFullScreen()){
-        fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的全屏图标
-        fullscreen->setToolTip(tr("full srceen"));
-        emit recovery();
-    }else{
-        fullscreen->setIcon(QIcon::fromTheme("window-restore-symbolic"));//主题库的恢复图标
-        fullscreen->setToolTip(tr("recovery"));
-        emit changeSize();
-    }
 
 }
 
