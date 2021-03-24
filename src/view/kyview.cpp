@@ -380,6 +380,8 @@ void KyView::_Toshowimage()
 {
     this->openImage->hide();
     this->showImageWidget->show();
+    if(!titlebar->isHidden())
+        this->showImageWidget->lower();
     if(information->isHidden()){
         return;
     }else{
