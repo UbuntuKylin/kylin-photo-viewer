@@ -49,6 +49,7 @@ void _Interaction::_initConnect(Core *core)
     connect(this,&_Interaction::_deleteImage,core,&Core::deleteImage);//删除图片
     connect(this,&_Interaction::_setAsBackground,core,&Core::setAsBackground);//设置为背景图
     connect(core,&Core::deleteImageOnAlbum,this,&_Interaction::deleteImageOnAlbum);//从相册中删除
+    connect(core,&Core::processingFinish,this,&_Interaction::processingFinish);////正在处理图片或处理完成状态
 }
 
 bool _Interaction::_operateTooOften()

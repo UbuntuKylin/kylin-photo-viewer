@@ -201,6 +201,7 @@ bool File::_saveMovie(QList<Mat> *list,const int &fps, const QString &savepath, 
 {
 
     SaveMovie *saveMovie = new SaveMovie(list,fps,savepath,type,special);
+    connect(saveMovie,&SaveMovie::finished,this,&File::processingFinish);
     saveMovie->start();
 
 //    Gif_H m_Gif;

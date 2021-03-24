@@ -7,6 +7,9 @@ Core::Core()
 
 void Core::_initCore()
 {
+    _file = new File;
+    connect(_file,&File::processingFinish,this,&Core::_processingFinish);
+
     _matList = nullptr;
 
     qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
@@ -102,6 +105,10 @@ void Core::_processingCommand(const QStringList &cmd)
 QVariant Core::openImage(QString fullPath)
 {
     if(fullPath.isEmpty())return QVariant();
+
+    //如果正在播放动图，则停止
+    if(_playMovieTimer->isActive())
+        _playMovieTimer->stop();
 
     MatAndFileinfo maf = File::loadImage(fullPath);
     if(!maf.mat.data){
@@ -270,8 +277,21 @@ void Core::clickNavigation(const QPoint &point)
     _showImage(result);
 }
 
+void Core::_processingFinish()
+{
+    _isProcessingFinish=true;
+    emit processingFinish(true);
+}
+
 void Core::flipImage(const Processing::FlipWay &way)
 {
+    //有未处理完成的指令则不处理
+    if(!_isProcessingFinish)
+        return;
+    //更改界面按钮状态
+    _isProcessingFinish=false;
+    emit processingFinish(false);
+
     //如果是动图，则批量处理
     if(_playMovieTimer->isActive()){
         for(int i=0;i<_matList->length();i++){
@@ -283,13 +303,13 @@ void Core::flipImage(const Processing::FlipWay &way)
         _navigationImage = Processing::resizePix(_nowImage,Variable::NAVIGATION_SIZE).toImage();
         if(_isNavigationShow)
             clickNavigation();
-        File::saveImage(_matList,_fps,_nowpath);
+        _file->saveImage(_matList,_fps,_nowpath,this);
         return;
     }
     Mat mat = Processing::processingImage(Processing::flip,_nowMat,QVariant(way));
     if(!mat.data)
         return;
-    File::saveImage(mat,_nowpath);
+    _file->saveImage(mat,_nowpath);
     mat = _changeImage(mat);
     _nowImage = Processing::converFormat(mat);
     _creatImage();

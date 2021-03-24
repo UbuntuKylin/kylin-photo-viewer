@@ -16,6 +16,7 @@ signals:
     void albumFinish(QVariant var);//相册缩略图加载完成
     void showNavigation(QPixmap pix);//显示或隐藏导航栏事件
     void deleteImageOnAlbum(QList<int> list,int type);//从相册中删除图片事件（删除图片/图片打开失败）
+    void processingFinish(bool);//正在处理图片或处理完成状态
 
 public:
     static Interaction *getInstance();//单例取指针

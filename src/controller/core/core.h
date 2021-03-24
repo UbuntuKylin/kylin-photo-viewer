@@ -16,6 +16,7 @@ signals:
     void albumFinish(QVariant var);
     void showNavigation(QPixmap pix);
     void deleteImageOnAlbum(QList<int> list,int type);
+    void processingFinish(bool);
 
 public:
     Core();
@@ -29,10 +30,12 @@ public:
     void flipImage(const Processing::FlipWay &way);//翻转处理
     void deleteImage();//删除图片
     void setAsBackground();//设置为背景图
+    void _processingFinish();//处理完成
 
 private:
     void _initCore();//初始化核心
     Dbus *_dbus = nullptr;//DBus模块对象
+    File *_file = nullptr;//File模块对象
     void _showImage(const QPixmap &pix);//显示图片
     void _showImageOrMovie();//显示图片或动图
     void _creatImage(const int &proportion = -1);//生成图像
@@ -40,6 +43,7 @@ private:
     void _loadAlbum();//加载相册
     void _navigation(const QPoint &point = QPoint(-1,-1));//导航器
     void _playMovie();//播放动图的槽函数
+    bool _isProcessingFinish = true;//判断是否正在处理
 
 };
 
