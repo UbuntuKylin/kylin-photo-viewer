@@ -380,6 +380,8 @@ void KyView::_Toshowimage()
 {
     this->openImage->hide();
     this->showImageWidget->show();
+    if(!titlebar->isHidden())
+        this->showImageWidget->lower();
     if(information->isHidden()){
         return;
     }else{
@@ -475,7 +477,8 @@ void KyView::dragEnterEvent(QDragEnterEvent *event)
         format = str;
         formatList.append(format);
     }
-    if(formatList.contains( event->mimeData()->urls()[0].fileName().right(3)))
+    QString str = event->mimeData()->urls()[0].fileName();
+    if(formatList.contains( QFileInfo(str).suffix()))
     {
         event->acceptProposedAction();
     }

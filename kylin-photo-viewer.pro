@@ -5,7 +5,7 @@ SUBDIRS = \
 
 TRANSLATIONS += \
     translations/kylin-photo-viewer_zh_CN.ts
-
+!system($$PWD/translations/generate_translations_pm.sh): error("Failed to generate pm")
 qm_files.files = translations/*.qm
 qm_files.path = /usr/share/kylin-photo-viewer/translations/
 
