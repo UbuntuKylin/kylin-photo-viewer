@@ -67,6 +67,8 @@ KyView::KyView(const QStringList &args)
     timer_navi = new QTimer(this);
     timer_navi->setSingleShot(true);
 //    timer_leave = new QTimer(this);
+    // 用户手册功能
+    mDaemonIpcDbus = new DaemonDbus();
 
     this->setMinimumSize(678,678);
     this->_setstyle();
@@ -203,8 +205,10 @@ void KyView::_delayHide()
 {
     if(this->mapFromGlobal(QCursor::pos()).y() > 40  && this->mapFromGlobal(QCursor::pos()).y() <this->height()- 40)
     {
-        titlebar->hide();
-        toolbar->hide();
+        if(hoverState){
+            titlebar->hide();
+            toolbar->hide();
+        }
         if(information->isHidden()){
             return;
         }else{
@@ -223,8 +227,10 @@ void KyView::_delayHide_navi()
 {
 //    if(!navigator->isHidden())
 //        navigator->hide();
-    titlebar->hide();
-    toolbar->hide();
+    if(hoverState){
+        titlebar->hide();
+        toolbar->hide();
+    }
     timer_navi->stop();
 }
 
@@ -258,6 +264,7 @@ void KyView::_hoverChange(int y)
 {
     if (y <= Variable::BAR_HEIGHT  || y >= this->height() - Variable::BAR_HEIGHT )
         {
+            hoverState = false;
             toolbar->show();
             titlebar->show();
 
@@ -277,6 +284,7 @@ void KyView::_hoverChange(int y)
                information->move(this->width()-information->width()+2,Variable::BAR_HEIGHT);
             }
         }else{
+            hoverState = true;
             if(!timer->isActive())
                 timer->start(2000);
 //            toolbar->hide();
@@ -385,7 +393,12 @@ void KyView::_Toshowimage()
     if(information->isHidden()){
         return;
     }else{
-       information->move(this->width()-information->width()+2,0);
+        if(titlebar->isHidden())
+        {
+            information->move(this->width()-information->width()+2,0);
+        }else{
+            information->move(this->width()-information->width()+2,40);
+        }
     }
 
 }
@@ -467,6 +480,27 @@ void KyView::paintEvent(QPaintEvent *event)
     p.fillPath(rectPath,QBrush(mainColor));
 }
 
+void KyView::keyPressEvent(QKeyEvent *event)
+{
+    // F1快捷键打开用户手册
+    if (event->key() == Qt::Key_F1) {
+        if (!mDaemonIpcDbus->daemonIsNotRunning()){
+            //F1快捷键打开用户手册，如kylin-photo-viewer
+            //如果是小工具类，下面的showGuide参数要填写"tools/kylin-photo-viewer"
+            mDaemonIpcDbus->showGuide("tools/indicator-china-weather");
+        }
+    }
+//    if (event->key() == Qt::Key_Left) {
+//        qDebug()<<"上一张";
+//    }
+//    if (event->key() == Qt::Key_Right) {
+//         qDebug()<<"下一张";
+//    }
+//    if (event->key() == Qt::Key_Delete) {
+//         qDebug()<<"删除";
+//    }
+}
+//拖拽图片
 void KyView::dragEnterEvent(QDragEnterEvent *event)
 {
     QStringList formatList;

@@ -56,7 +56,7 @@ Information::Information(QWidget *parent) : QWidget(parent)
     inforWid = new QWidget(this);
     gdLayout =new QGridLayout(this);
     this->_layout();
-    this->setMouseTracking(true);
+//    this->setMouseTracking(true);
 
 }
 
