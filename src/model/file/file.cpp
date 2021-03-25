@@ -28,10 +28,9 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             return maf;
         }
         //获取帧率
-        maf.fps =_getDelay(path,suffix);
         auto tmpMovie = new QMovie(path, "apng");
-//        if(tmpMovie->frameCount()>1)
-//            maf.fps =_getDelay(path,suffix);
+        if(tmpMovie->frameCount()>1)
+            maf.fps =_getDelay(path,suffix);
         QList<Mat> *frames = new QList<Mat>;  //存放gif的所有帧，每个frame都是Mat格式
         for (int i =0; i< tmpMovie->frameCount(); ++i) {
             tmpMovie->jumpToFrame(i);
@@ -80,23 +79,51 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     return maf;
 }
 
+int File::_gifDelay(const QString &path)
+{
+    int j, frame_delay;
+    SavedImage *frame;//这个是系统中保存gif的扩展块的信息，不太了解gif的文件结构的可以看一下：http://blog.csdn.net/wzy198852/article/details/17266507
+    ExtensionBlock *ext;//这个保存gif延时代码块的结构体
+
+    int err = 0;
+    GifFileType *gifFileType = DGifOpenFileName(path.toLocal8Bit().data(),&err);
+    if(err == 0){
+        DGifCloseFile(gifFileType,&err);
+        return 0;
+    }
+    DGifSlurp(gifFileType);
+    frame = &gifFileType->SavedImages[0];//拿到第一个图片相关信息
+    for (j = 0;j<frame->ExtensionBlockCount; j++) {
+     //找到含有延迟时间的代码块
+     if(frame->ExtensionBlocks[j].Function==GRAPHICS_EXT_FUNC_CODE){
+      ext = &(frame->ExtensionBlocks[j]);
+     }
+     //拿到延迟时间
+     if(ext){
+      //延迟时间1-->10ms
+      frame_delay = 10*(ext->Bytes[2]<<8 | ext->Bytes[1]);//拿到延迟时间
+      break;
+     }
+    }
+    qDebug()<<"************"<<frame_delay;
+    DGifCloseFile(gifFileType,&err);
+    return frame_delay;
+}
+
 int File::_getDelay(const QString &path, const QString &suffix)
 {
     int fps = 0;
 
-    if(suffix == "gif"){
-//        int err = 0;
-//        GifFileType *gif = DGifOpenFileName(path.toLocal8Bit().data(),&err);
-//        qDebug()<<"========="<<gif->SWidth;
-//        GraphicsControlBlock gcb;
-//        err = DGifSavedExtensionToGCB(gif,0,&gcb);
-//        err = EGifGCBToSavedExtension(gcb,gif,0);
-//        if(err == 0) qDebug()<<"*******"<<gcb.TransparentColor;
-    }
+    if(suffix == "gif")
+        fps = _gifDelay(path);
+
+//    if(suffix == "apng" || suffix == "png")
+//        qDebug()<<"===此处待补充===";
 
     if(fps != 0)
         return fps;
 
+    //以上都没获取到fps的保底机制
     //QMovie没有现成的方法，为求稳定，每次打开新动图的时候循环5次取最大值，此处待优化
     QMovie tmpMovie(path);
     if(fps == 0)
@@ -105,7 +132,6 @@ int File::_getDelay(const QString &path, const QString &suffix)
             tmpMovie.stop();
             fps=tmpMovie.nextFrameDelay()>fps?tmpMovie.nextFrameDelay():fps;
         }
-    //qDebug()<<"========"<<fps;
 
     return fps == 0 ? Variable::DEFAULT_MOVIE_TIME_INTERVAL : fps;
 }

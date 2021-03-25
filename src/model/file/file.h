@@ -12,7 +12,7 @@
 #include <stb/stb_image.h>
 #include "model/processing/processing.h"
 #include "savemovie.h"
-//#include <gif_lib.h>
+#include <gif_lib.h>
 
 struct ImageAndInfo
 {
@@ -49,6 +49,7 @@ public:
 
 private:
     static int _getDelay(const QString &path,const QString &suffix);
+    static int _gifDelay(const QString &path);
     static void _processStart(const QString &cmd , QStringList arguments = QStringList());
     bool _save(const Mat &mat , const QString &savepath , const QString &type);
     bool _save(QList<Mat> *list ,const int &fps, const QString &savepath , const QString &type, bool special = false);
