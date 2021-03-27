@@ -5,8 +5,10 @@ const QString Variable::PROGRAM_NAME = QString("kylin-photo-viewer");
 //临时文件路径
 const QString Variable::TEMP_PATH = Variable::_creatTempPath();
 
-//配置文件
-QSettings * Variable::_settings = Variable::_getSettings();
+//QGSettings服务名称
+const QString Variable::PHOTO_VIEW_GSETTINGS_SERVICENAME = QString("org.kylin-photo-viewer.settings");
+//GSettings
+QGSettings * Variable::_settings = Variable::_getSettings();
 
 //DBUS服务名称
 const QString Variable::PHOTO_VIEW_DBUS_SERVICENAME = QString("org.ukui.kylin_photo_viewer");
@@ -15,10 +17,15 @@ const QString Variable::PHOTO_VIEW_DBUS_PARH = QString("/");
 //DBUS接口
 const QString Variable::PHOTO_VIEW_DBUS_INTERFACE = QString("kylin_photo_viewer.commands");
 
-//日志级别环境变量名
-const QString Variable::ENV_LOGLEVEL = QString("UKPV_DEBUG");
+//日志级别
+QtMsgType Variable::LOG_LEVEL = Variable::getLogLevel();
+//日志路径
+const QPair<QString,QString> Variable::LOG_PATH = Variable::getLogPath();
 //日志是否写入文件
-const bool Variable::LOGTOFILE = Variable::_settings->value("logToFile").toBool();
+bool Variable::LOG_TO_FILE = Variable::getSettings("log-to-file").toBool();
+//最大日志文件大小
+const qint64 Variable::MAX_LOG_SIZE = 1024*1024; //1MB
+
 //支持的命令列表
 const QMap<QString,QString> Variable::SUPPORT_CMD = Variable::_getSupportCmd();
 
@@ -49,26 +56,14 @@ const int Variable::DEFAULT_MOVIE_TIME_INTERVAL = 100; //默认动图时间间�
 const int Variable::BAR_HEIGHT = 40;
 
 
-QSettings *Variable::_getSettings()
+QGSettings *Variable::_getSettings()
 {
-    QString filePath = QDir::homePath()+"/.config/"+PROGRAM_NAME+"/";
-    QDir dir;
-    if(!dir.exists(filePath))
-        dir.mkdir(filePath);
-    QString fileName = filePath + "settings";
-    //读取配置文件
-    QSettings *_setting = new QSettings(fileName,QSettings::IniFormat);
-    _setting->beginGroup("setting");
-    //读取配置
-    QString logLevel = _setting->value("logLevel").toString();
-    if(logLevel==""){
-        logLevel="DEBUG";
-        _setting->setValue("logLevel",logLevel);
+    QGSettings *mysetting = nullptr;
+    if(QGSettings::isSchemaInstalled(PHOTO_VIEW_GSETTINGS_SERVICENAME.toLocal8Bit())){
+        mysetting = new QGSettings(PHOTO_VIEW_GSETTINGS_SERVICENAME.toLocal8Bit());
+        QObject::connect(mysetting, &QGSettings::changed,&Variable::onGsettingChange);
     }
-    QString imagePath = _setting->value("imagePath").toString();
-     _setting->setValue("imagePath",imagePath);
-   // setenv(ENV_LOGLEVEL.toLocal8Bit().data(),logLevel.toLocal8Bit().data(),1);
-    return _setting;
+    return mysetting;
 }
 
 QMap<QString, QString> Variable::_getSupportCmd()
@@ -83,6 +78,51 @@ QMap<QString, QString> Variable::_getSupportCmd()
     cmds.insert("-rotate","旋转图片");
     cmds.insert("-fullscreen","全屏");
     return cmds;
+}
+
+void Variable::onGsettingChange(const QString &key)
+{
+    if (key == "logLevel"){
+        Variable::LOG_LEVEL = getLogLevel();
+        return;
+    }
+    if (key == "logToFile"){
+        Variable::LOG_TO_FILE = _settings->get("logToFile").toBool();
+        return;
+    }
+}
+
+QPair<QString, QString> Variable::getLogPath()
+{
+    QString logPath = "/run/user/";
+    logPath += QString::number(getuid()) + "/";
+    //创建目录
+    QDir dir;
+    if (!dir.exists(logPath)) {
+        dir.mkdir(logPath);
+    }
+    QPair<QString, QString> pair;
+    pair.first = logPath + PROGRAM_NAME + "_1"+ ".log";
+    pair.second = logPath + PROGRAM_NAME + "_2"+ ".log";
+    return pair;
+}
+
+QtMsgType Variable::getLogLevel()
+{
+    QString level = _settings->get("logLevel").toString().toLower();
+    if (level == "warning" || level == "1") {
+        return QtWarningMsg;
+    }
+    if (level == "critical" || level == "2") {
+        return QtCriticalMsg;
+    }
+    if (level == "fatal" || level == "3") {
+        return QtFatalMsg;
+    }
+    if (level == "info" || level == "4") {
+        return QtInfoMsg;
+    }
+    return QtDebugMsg;
 }
 
 const QString Variable::_creatTempPath()
@@ -103,15 +143,20 @@ QStringList Variable::_creatSupportFormats()
 }
 
 //写入配置文件
-void Variable::setSettings(const QString &key,const QString &vlue)
+void Variable::setSettings(const QString &key, const QVariant &vlue)
 {
-    _settings->setValue(key,vlue);
+    _settings->set(key,vlue);
 }
+
 //读取配置文件
-QString Variable::getSettings(const QString &key)
+QVariant Variable::getSettings(const QString &key)
 {
-    QString path=_settings->value(key).toString();
-    if(path.isEmpty())
-        return QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-    return path;
+    QVariant setting;
+    setting =_settings->get(key);
+    if(key == "imagePath"){
+        if( setting.toString().isEmpty()){
+            return QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+        }
+    }
+    return setting;
 }

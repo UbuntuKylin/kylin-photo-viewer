@@ -36,7 +36,7 @@ public:
     void append(const int &key,const QString &path);
     void append(const ImageUrlList &list);
 
-protected:
+private:
     QList<QPair<int,QString>> _list;
 };
 
@@ -54,8 +54,6 @@ public:
     Mat _nowMat;//记录当前打开
     Mat _backMat;//记录上次打开
     QPixmap _nowImage;
-    Mat _changeImage(Mat mat);
-    void _changeImageType(int num = 0);
     int _proportion = 0;//图片显示比例
     QSize _tmpSize;//按比例缩放后的图片大小
     QString _imageSize;//原图大小
@@ -73,12 +71,11 @@ class NavigationStatus : public ImageShowStatus//导航器相关单独写，提�
 public:
     QPoint _clickBeforePosition;//记录上次点击区域，用于提升体验
     QPoint _clickBeforeStartPosition;//记录上次点击区域，用于节省算力
-    void _creatNavigation();//创建导航器图片等数据，用于节省算力
     QPixmap _showPix;//待显示图
     QImage _navigationImage;//导航栏背景
     QSize _hightlightSize; //高亮区域大小;
-    unsigned int _spaceWidth;//导航栏窗口与缩略图左边缘距离
-    unsigned int _spaceHeight;//导航栏窗口与缩略图上边缘距离
+    int _spaceWidth = 0;//导航栏窗口与缩略图左边缘距离
+    int _spaceHeight = 0;//导航栏窗口与缩略图上边缘距离
 };
 
 #endif // BASE_H

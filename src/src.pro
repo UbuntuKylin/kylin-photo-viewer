@@ -33,11 +33,11 @@ target.source +=$$TARGET
 INSTALLS += target
 
 SOURCES += main.cpp \
+    controller/core/_interaction.cpp \
     controller/core/albumthumbnail.cpp \
     controller/core/base.cpp \
     global/log.cpp \
     model/dbus.cpp \
-    controller/interaction.cpp \
     controller/core/core.cpp \
     model/file/file.cpp \
     model/file/savemovie.cpp \
@@ -57,6 +57,7 @@ SOURCES += main.cpp \
     view/xatom-helper.cpp
 
 HEADERS += \
+    controller/core/_interaction.h \
     controller/core/albumthumbnail.h \
     controller/core/base.h \
     global/log.h \

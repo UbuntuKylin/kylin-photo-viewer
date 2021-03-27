@@ -1,5 +1,5 @@
 #include "dbus.h"
-#include <QDebug>
+
 Dbus::Dbus()
 {
     QDBusConnection sessionBus = QDBusConnection::sessionBus();

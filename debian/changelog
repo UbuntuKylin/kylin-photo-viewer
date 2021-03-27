@@ -1,3 +1,13 @@
+kylin-photo-viewer (1.0.0-3) v101; urgency=medium
+  
+  * 解决BUG#45184 动图旋转后工具栏中图片缩放比例显示不变
+  * 解决BUG#45118 gif格式图片旋转或镜像后未覆盖保存
+  * 解决BUG#44747 连续添加gif或apng格式图片和其他图片时，麒麟看图闪退
+  * 新增功能需求：修改图片尺寸不修改当前显示比例
+  * 优化日志模块，优化配置文件逻辑
+
+ -- liuyuhui <liuyuhui@kylinos.cn>  Thu,25  Mar 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-2) v101; urgency=medium
   
   * 解决BUG#44681 中文环境下麒麟看图页面文字显示为英文

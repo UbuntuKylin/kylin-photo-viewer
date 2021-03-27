@@ -49,7 +49,7 @@ void OpenImage::openimage()
         format += "*."+str +" ";
     format += ")";
     //打开文件夹中的图片文件
-    file_path = QFileDialog::getOpenFileName(this,"打开图片",Variable::getSettings("imagePath"),format);
+    file_path = QFileDialog::getOpenFileName(this,"打开图片",Variable::getSettings("imagePath").toString(),format);
     //空校验，点击“取消”
     if(file_path.isEmpty())
         return;

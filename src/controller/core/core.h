@@ -21,7 +21,7 @@ signals:
 public:
     Core();
     QString initDbus(const QStringList &arguments);//初始化Dbus模块
-    QVariant findAllImageFromeDir(QString fullPath);//寻找目录下所有支持的图片
+    QVariant findAllImageFromDir(QString fullPath);//寻找目录下所有支持的图片
     QVariant openImage(QString fullPath);//打开图片
     void changeImage(const int &type); //切换图片
     void changeWidgetSize(const QSize &size);//切换窗口大小
@@ -30,7 +30,7 @@ public:
     void flipImage(const Processing::FlipWay &way);//翻转处理
     void deleteImage();//删除图片
     void setAsBackground();//设置为背景图
-    void _processingFinish();//处理完成
+    void processingFinishSlot();//处理完成
 
 private:
     void _initCore();//初始化核心
@@ -44,6 +44,9 @@ private:
     void _navigation(const QPoint &point = QPoint(-1,-1));//导航器
     void _playMovie();//播放动图的槽函数
     bool _isProcessingFinish = true;//判断是否正在处理
+    void _changeImageType(int num = 0);//修改图片标签
+    Mat _changeImage(Mat mat);//更改当前图片
+    void _creatNavigation();//创建导航器图片等数据，用于节省算力
 
 };
 

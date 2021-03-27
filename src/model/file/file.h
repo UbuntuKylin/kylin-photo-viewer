@@ -14,17 +14,6 @@
 #include "savemovie.h"
 #include <gif_lib.h>
 
-struct ImageAndInfo
-{
-    QFileInfo info; //信息
-    QPixmap image; //图片
-    int type; //标签
-    int proportion; //比例
-    QString colorSpace;//图片空间
-    QString imageSize;//图片尺寸
-};
-Q_DECLARE_METATYPE(ImageAndInfo)//QVarant 注册自定义类型
-
 class MatAndFileinfo
 {
 public:
