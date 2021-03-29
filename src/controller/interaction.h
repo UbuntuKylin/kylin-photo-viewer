@@ -98,6 +98,8 @@ public:
      * 接口功能：打开图片
      * 接口场景：拖拽或点击按钮添加图片时或收到startWithOpenImage(QString)信号时
      * 接口类型：函数，直接调用
+     * 参数类型：QString
+     * 参数描述：包含图片路径的文件名
      * 返回类型：QVariant -> QList<int> 例：QList<int> list=var.value<QList<int>>();
      * 返回描述：图片唯一标识的队列，用来实例化相册
      */
