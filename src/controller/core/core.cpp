@@ -115,7 +115,7 @@ QVariant Core::openImage(QString fullPath)
         //如果图片打开失败则回滚
         ChamgeImageType type = _imageUrlList.nextOrBack(_backpath,fullPath);
         _changeImageType();
-        emit deleteImageOnAlbum(_imageUrlList.keys(),_nowType);
+        emit deleteImageOnAlbum(_nowType);
         //全部图片都被删除了
         if(_nowType == 0){
             _showImage(QPixmap());
@@ -323,7 +323,7 @@ void Core::deleteImage()
 
     //从队列中去除
     _imageUrlList.remove(_backType);
-    emit deleteImageOnAlbum(_imageUrlList.keys(),_backType);
+    emit deleteImageOnAlbum(_backType);
 
     //删除后队列中无图片，返回状态
     if(_imageUrlList.isEmpty()){

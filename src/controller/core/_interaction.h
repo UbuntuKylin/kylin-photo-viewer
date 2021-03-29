@@ -37,7 +37,7 @@ protected:
     virtual void watchOriginalImage();//查看原图
     virtual void watchAutoImage();//自适应窗口大小
     virtual void clickNavigation(const QPoint &point);//导航器点击
-    virtual void rotate(const bool &direction);//旋转
+    virtual void rotate(const bool &clockwise);//旋转
     virtual void flipH();//水平翻转
     virtual void flipV();//垂直翻转
     virtual void deleteImage();//删除图片

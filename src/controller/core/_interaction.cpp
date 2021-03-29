@@ -62,8 +62,10 @@ bool _Interaction::_operateTooOften()
 
 void _Interaction::initUiFinish()
 {
-    if(_needStartWithOpenImagePath!="")
+    if(_needStartWithOpenImagePath!=""){
         emit startWithOpenImage(_needStartWithOpenImagePath);
+        _needStartWithOpenImagePath = "";
+    }
 }
 
 QVariant _Interaction::openImage(const QString &path)
@@ -134,11 +136,11 @@ void _Interaction::clickNavigation(const QPoint &point)
     emit _clickNavigation(point);
 }
 
-void _Interaction::rotate(const bool &direction)
+void _Interaction::rotate(const bool &clockwise)
 {
     if(_operateTooOften())
         return;
-    if(direction)
+    if(clockwise)
         emit _flip(Processing::clockwise);
     else
         emit _flip(Processing::counterclockwise);
