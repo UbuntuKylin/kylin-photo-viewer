@@ -101,10 +101,13 @@ private:
     void mouseMoveEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);
     void leaveEvent(QEvent *event);
+    void enterEvent(QEvent *event);
     void paintEvent(QPaintEvent *event);
     // 键盘响应事件
     void keyPressEvent(QKeyEvent *event);
-
+    //双击响应
+    void mouseDoubleClickEvent(QMouseEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dropEvent(QDropEvent *event);

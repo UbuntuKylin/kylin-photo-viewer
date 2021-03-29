@@ -7,7 +7,7 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
 //    this->resize(678 +4 ,40 + 4);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    this->resize(479 +4 ,40 + 4);
+    this->resize(479 +4+14 ,Variable::BAR_HEIGHT + 4);
     tooleWid = new QFrame(this);
     toolLayout = new QHBoxLayout(this);
 

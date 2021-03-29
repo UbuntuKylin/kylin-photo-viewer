@@ -18,12 +18,6 @@ KyView::KyView(const QStringList &args)
     this->setMouseTracking(true);
     this->setAcceptDrops(true);
 
-    const QByteArray transparency_id(FITCONTROLTRANS);
-    if(QGSettings::isSchemaInstalled(transparency_id)){
-        m_pGsettingControlTrans = new QGSettings(transparency_id);
-
-    }
-
     mutual = this;
 
     QScreen *screen = QGuiApplication::primaryScreen();
@@ -57,7 +51,7 @@ KyView::KyView(const QStringList &args)
     information = new Information(this);
     information->resize(207,197 + 18);
     information->move(this->width()-information->width() +2,Variable::BAR_HEIGHT);
-    information->setMouseTracking(true);
+    information->installEventFilter(this);
     information->hide();
 
     timer = new QTimer(this);
@@ -111,8 +105,6 @@ void KyView::_initconnect()
     connect(showImageWidget,&ShowImageWidget::clearImage,this,&KyView::_clearImage);
     //导航器出现时，位置变化
     connect(navigator,&Navigator::naviChange,this,&KyView::_naviChange);
-    //右键菜单删除当前图片
-//    connect(showImageWidget,&ShowImageWidget::deleteCurrImage,toolbar,&ToolBar::delImage);
     //滚轮放大和缩小
     connect(showImageWidget,&ShowImageWidget::reduceChange,toolbar,&ToolBar::reduceImage);
     connect(showImageWidget,&ShowImageWidget::enlargeChange,toolbar,&ToolBar::enlargeImage);
@@ -203,17 +195,12 @@ void KyView::_inforChange()
 //延时隐藏
 void KyView::_delayHide()
 {
-    if(this->mapFromGlobal(QCursor::pos()).y() > 40  && this->mapFromGlobal(QCursor::pos()).y() <this->height()- 40)
+    if(this->mapFromGlobal(QCursor::pos()).y() > Variable::BAR_HEIGHT  && this->mapFromGlobal(QCursor::pos()).y() <this->height()- Variable::BAR_HEIGHT)
     {
-        if(hoverState){
-            titlebar->hide();
-            toolbar->hide();
-        }
-        if(information->isHidden()){
-            return;
-        }else{
-           information->move(this->width()-information->width() +2,0);
-    }
+        titlebar->hide();
+        toolbar->hide();
+
+        _inforChange();
     }
 }
 
@@ -227,10 +214,10 @@ void KyView::_delayHide_navi()
 {
 //    if(!navigator->isHidden())
 //        navigator->hide();
-    if(hoverState){
+//    if(hoverState){
         titlebar->hide();
         toolbar->hide();
-    }
+//    }
     timer_navi->stop();
 }
 
@@ -264,33 +251,34 @@ void KyView::_hoverChange(int y)
 {
     if (y <= Variable::BAR_HEIGHT  || y >= this->height() - Variable::BAR_HEIGHT )
         {
-            hoverState = false;
+            //判断定时器是否正在计时。如是，则停止
+            if(timer->isActive())
+                timer->stop();
+            if(timer_navi->isActive())
+                timer_navi->stop();
+
             toolbar->show();
             titlebar->show();
 
+            //顶栏和标题栏位置的变化
             _toolbarChange();
             _titlebarChange();
+
             this->showImageWidget->lower();
             this->showImageWidget->next->hide();
             this->showImageWidget->back->hide();
+
+            //判断具体在顶栏或工具栏的区域，将其raise
             if(y <= Variable::BAR_HEIGHT){
                 titlebar->raise();
             }else if(y >= this->height() - Variable::BAR_HEIGHT){
                 toolbar->raise();
             }
-            if(information->isHidden()){
-                return;
-            }else{
-               information->move(this->width()-information->width()+2,Variable::BAR_HEIGHT);
-            }
+            //信息栏位置的变化
+            _inforChange();
         }else{
-            hoverState = true;
             if(!timer->isActive())
                 timer->start(2000);
-//            toolbar->hide();
-//            titlebar->hide();
-//            QTime _Timer = QTime::currentTime().addMSecs(2000);
-//            while( QTime::currentTime() < _Timer );
             if(showImageWidget->buttonState == false){
                 this->showImageWidget->next->hide();
                 this->showImageWidget->back->hide();
@@ -313,7 +301,10 @@ void KyView::_initGsetting()
         });
     }
 
+    if(QGSettings::isSchemaInstalled(FITCONTROLTRANS)){
+        m_pGsettingControlTrans = new QGSettings(FITCONTROLTRANS);
 
+    }
 //    if(QGSettings::isSchemaInstalled(FITCONTROLTRANS))
 //    {
 //        m_pGsettingControlTrans = new QGSettings(FITCONTROLTRANS);
@@ -397,7 +388,7 @@ void KyView::_Toshowimage()
         {
             information->move(this->width()-information->width()+2,0);
         }else{
-            information->move(this->width()-information->width()+2,40);
+            information->move(this->width()-information->width()+2,Variable::BAR_HEIGHT);
         }
     }
 
@@ -407,12 +398,12 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
 {
     int y =this->mapFromGlobal(QCursor().pos()).y();
     if (openImage->isHidden()) {
+
         _hoverChange(y);
     } else{
         toolbar->hide();
         titlebar->show();
     }
-
 }
 
 void KyView::resizeEvent(QResizeEvent *event){
@@ -441,9 +432,10 @@ void KyView::leaveEvent(QEvent *event)
         return;
     }
     if(openImage->isHidden()){
-
-        timer_navi->start(2000);
-        timer_infor->start(2000);
+        if(!timer_navi->isActive())
+            timer_navi->start(2000);
+        if(!timer_infor->isActive())
+            timer_infor->start(2000);
         showImageWidget->next->hide();
         showImageWidget->back->hide();
     }
@@ -453,7 +445,16 @@ void KyView::leaveEvent(QEvent *event)
 //        return;
 //    }else{
 //        timer_navi->start(2000);
-//    }
+    //    }
+}
+
+void KyView::enterEvent(QEvent *event)
+{
+    if(timer_navi->isActive())
+        timer_navi->stop();
+    if(timer_infor->isActive())
+        timer_infor->stop();
+
 }
 
 void KyView::paintEvent(QPaintEvent *event)
@@ -463,7 +464,7 @@ void KyView::paintEvent(QPaintEvent *event)
     p.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
     QPainterPath rectPath;
     rectPath.addRoundedRect(this->rect(), 0, 0); // 左上右下
-    double tran=m_pGsettingControlTrans->get("transparency").toDouble()*255;
+//    double tran=m_pGsettingControlTrans->get("transparency").toDouble()*255;
     QPainter painter(this);
     QStyleOption opt;
     opt.init(this);
@@ -472,7 +473,7 @@ void KyView::paintEvent(QPaintEvent *event)
     QColor mainColor;
     if(QColor(255,255,255) == opt.palette.color(QPalette::Base) || QColor(248,248,248) == opt.palette.color(QPalette::Base))
     {
-        mainColor = QColor(255, 255, 255,200);
+        mainColor = QColor(255, 255, 255,120);
     }else{
         mainColor = QColor(26, 26, 26,200);
     }
@@ -490,16 +491,52 @@ void KyView::keyPressEvent(QKeyEvent *event)
             mDaemonIpcDbus->showGuide("tools/indicator-china-weather");
         }
     }
-//    if (event->key() == Qt::Key_Left) {
-//        qDebug()<<"上一张";
-//    }
-//    if (event->key() == Qt::Key_Right) {
-//         qDebug()<<"下一张";
-//    }
-//    if (event->key() == Qt::Key_Delete) {
-//         qDebug()<<"删除";
-//    }
 }
+//添加左键双击事件
+void KyView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    //判断左键双击
+    if(event->button() == Qt::LeftButton)
+    {
+        if (this->isMaximized()){
+            this->showNormal();
+            titlebar->fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的全屏图标
+            titlebar->fullscreen->setToolTip(tr("full srceen"));
+
+        }else{
+            this->showMaximized();
+            titlebar->fullscreen->setIcon(QIcon::fromTheme("window-restore-symbolic"));//主题库的恢复图标
+            titlebar->fullscreen->setToolTip(tr("recovery"));
+
+        }
+    }
+}
+//检测鼠标在信息栏上方进入，顶栏和工具栏要展示
+bool KyView::eventFilter(QObject *obj, QEvent *event)
+{
+    if(obj == information){
+        if(!information->isHidden()){
+            if(information->geometry().contains(this->mapFromGlobal(QCursor::pos())))
+               {
+                    int infor_y = information->mapFromGlobal(QCursor().pos()).y();
+                    if (infor_y <= Variable::BAR_HEIGHT)
+                    {
+                        if(timer_navi->isActive())
+                            timer_navi->stop();
+                        if(timer_infor->isActive())
+                            timer_infor->stop();
+                        if(timer->isActive())
+                            timer->stop();
+                        titlebar->show();
+                        toolbar->show();
+                        _inforChange();
+                    }
+            }
+        }
+    }
+    return QObject::eventFilter(obj,event);
+}
+
 //拖拽图片
 void KyView::dragEnterEvent(QDragEnterEvent *event)
 {

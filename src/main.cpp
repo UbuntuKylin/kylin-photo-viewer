@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //注册MessageHandler
-    qInstallMessageHandler(Log::msgHandler);
+//    qInstallMessageHandler(Log::msgHandler);
 
     //翻译
     QTranslator app_trans;

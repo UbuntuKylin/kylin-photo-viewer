@@ -47,7 +47,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     closebtn->setProperty("useIconHighlightEffect", 0x8);
     closebtn->setFlat(true);
 
-    this->setFixedHeight(40);
+    this->setFixedHeight(Variable::BAR_HEIGHT);
     this->setStyle();
     this->initConnect();
     this->initControlQss();
@@ -74,8 +74,6 @@ void TitleBar::setStyle()
 //初始化顶栏布局
 void TitleBar::initControlQss()
 {
-
-
     titleLayout->addSpacing(4);
     titleLayout->addWidget(logoBtn);//logo
     titleLayout->addSpacing(4);
