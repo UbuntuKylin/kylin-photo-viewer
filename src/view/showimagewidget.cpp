@@ -3,8 +3,8 @@
 ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent)
 {
     this->resize(w,h);
-    imageWid = new QWidget(this);
-    imageLayout = new QHBoxLayout(this);
+//    imageWid = new QWidget(this);
+//    imageLayout = new QHBoxLayout(this);
 
     showImage = new QLabel(this);
     showImage->resize(this->width(),this->height());
@@ -30,7 +30,12 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     showInFile = new QAction(tr("Show in File"),this);
     imageMenu = new QMenu(this);
 //    imageMenu->addAction(copy);
-
+//    imageMenu->addAction(copy);
+//    imageMenu->addAction(setDeskPaper);
+//    imageMenu->addAction(setLockPaper);
+//    imageMenu->addAction(print);
+    imageMenu->addAction(deleteImage);
+    imageMenu->addAction(showInFile);
 
     next = new QPushButton(this);
     next->resize(56,56);
@@ -75,23 +80,19 @@ void ShowImageWidget::_initConnect()
 //下一张
 void ShowImageWidget::_nextImage()
 {
+    canSet = true;
     interaction->nextImage();
 }
-//下一张
+//上一张
 void ShowImageWidget::_backImage()
 {
+    canSet = true;
     interaction->backImage();
 }
 
 void ShowImageWidget::_copy()
 {
-//    QClipboard *clipboard = QApplication::clipboard();
 //    qDebug()<<"复制";
-//    if (!copyImage)
-//        return;
-//    else{
-//        clipboard->setPixmap(copyImage);
-//    }
 }
 
 void ShowImageWidget::_setDeskPaper()
@@ -122,20 +123,11 @@ void ShowImageWidget::_showInFile()
         return;
     else
         QDesktopServices::openUrl(QUrl::fromLocalFile(path));
-//        QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-//                                                        path);
-//       { QProcess process;
-//        QString filePath = path;
-//        filePath.replace("/", "\\"); // 只能识别 "\"
-//        QString cmd = QString("explorer.exe /select,\"%1\"").arg(filePath);
-//        qDebug() << cmd;
-//        process.startDetached(cmd);}
-
-
 }
+//显示右键菜单栏
+void ShowImageWidget::m_setMenuAction()
+{   //拿到可设置为壁纸的图片格式
 
-void ShowImageWidget::_checkWallpaper()
-{
     QStringList formatList;
     QString format;
     format = "";
@@ -144,17 +136,22 @@ void ShowImageWidget::_checkWallpaper()
         format = str;
         formatList.append(format);
     }
-    if((paperFormat == "") || (!formatList.contains(paperFormat))){
-        canSet = false;
+    //判断是否为可设置为壁纸的类型
+    if(formatList.contains(paperFormat))
+    {
+      imageMenu->insertAction(deleteImage,setDeskPaper);
     }else{
-        canSet = true;
+        imageMenu->removeAction(setDeskPaper);
     }
-    if(canSet)
-        imageMenu->addAction(setDeskPaper);
-//    imageMenu->addAction(setLockPaper);
-//    imageMenu->addAction(print);
-    imageMenu->addAction(deleteImage);
-    imageMenu->addAction(showInFile);
+
+}
+
+void ShowImageWidget::_processFinish(bool isFinish)
+{
+    if(isFinish)
+        qDebug()<<"finish"<<isFinish;
+    else
+        qDebug()<<"not finish"<<isFinish;
 }
 
 void ShowImageWidget::_initInteraction()
@@ -164,6 +161,7 @@ void ShowImageWidget::_initInteraction()
     connect(interaction,&Interaction::startWithOpenImage,this,&ShowImageWidget::_startWithOpenImage);//启动时打开图片
     connect(interaction,&Interaction::openFinish,this,&ShowImageWidget::openFinish);//图片打开完成，获取数据
     connect(interaction,&Interaction::albumFinish,this,&ShowImageWidget::albumFinish);//相册缩略图打开完成，获取数据
+    connect(interaction,&Interaction::processingFinish,this,&ShowImageWidget::_processFinish);//判断是否完成图片处理
     interaction->initUiFinish();
 }
 void ShowImageWidget::_startWithOpenImage(QString path)
@@ -174,21 +172,17 @@ void ShowImageWidget::_startWithOpenImage(QString path)
 void ShowImageWidget::_openImage(QString path)
 {
     QVariant var= interaction->openImage(path);
+    //相册列表，需要得到图片的数量
     QList<int> list = var.value<QList<int>>();
+    //小于2张，左右按钮隐藏
     if(list.length() < 2){
-            next->hide();
-            back->hide();
+            //主界面需要知道是否只有一张图片来处理hover态显示。
             buttonState = false;
-            emit hideButton();
         }else{
-            next->show();
-            back->show();
             buttonState = true;
         }
-    //创建相册列表
-//    qDebug()<<var.value<QList<int>>();
 }
-
+//拿到图片信息，进行处理
 void ShowImageWidget::openFinish(QVariant var)
 {
 
@@ -199,6 +193,7 @@ void ShowImageWidget::openFinish(QVariant var)
         emit clearImage();
         return;
     }
+    //拿到返回信息
     QFileInfo info = package.info;//详情信息
     QPixmap pixmap = package.image;//图片
     int proportion = package.proportion;//比例
@@ -206,15 +201,24 @@ void ShowImageWidget::openFinish(QVariant var)
     QString colorSpace = package.colorSpace;
     QString num;
     num = QString("%1").arg(proportion) + "%";
+    path = info.absolutePath();//图片的路径
+    copyImage = pixmap;//留着复制可能用
+    paperFormat = info.suffix();
+
+    //使用返回的信息进行设置界面
     this->showImage->setPixmap(pixmap);
     emit perRate(num);//发送给toolbar来更改缩放数字
     emit ToshowImage();//给主界面--展示图片
     emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
     emit titleName(info.fileName());//给顶栏图片的名字
-    path = info.absolutePath();//图片的路径
-    copyImage = pixmap;
-    paperFormat = info.suffix();
-    _checkWallpaper();
+    //设置壁纸--动图在传来时是一帧一帧，防止多次添加右键菜单动作
+    if(canSet)
+    {   qDebug()<<"生成menu";
+        canSet = false;
+        m_setMenuAction();
+
+    }
+
 
 }
 
@@ -239,7 +243,6 @@ void ShowImageWidget::albumFinish(QVariant var)
 void ShowImageWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
-//    ShowImageWidget::resizeEvent(event);
     this->showImage->resize(KyView::mutual->width(),KyView::mutual->height());
     interaction->changeWidgetSize(this->showImage->size());
 }
@@ -260,8 +263,6 @@ bool ShowImageWidget::eventFilter(QObject *obj, QEvent *event)
                 emit reduceChange();
             }
         }
-
-
     }
 
     return QObject::eventFilter(obj,event);
