@@ -24,7 +24,7 @@ public slots:
     void getCmdFromOtherMe(const QStringList &cmd);
 
 private:
-    bool _connectSeccess = false;//注册DBus成功
+    bool m_connectSeccess = false;//注册DBus成功
 };
 
 #endif // DBUS_H

@@ -33,7 +33,7 @@ target.source +=$$TARGET
 INSTALLS += target
 
 SOURCES += main.cpp \
-    controller/core/_interaction.cpp \
+    controller/core/coreinteraction.cpp \
     controller/core/albumthumbnail.cpp \
     controller/core/base.cpp \
     global/log.cpp \
@@ -57,7 +57,7 @@ SOURCES += main.cpp \
     view/xatom-helper.cpp
 
 HEADERS += \
-    controller/core/_interaction.h \
+    controller/core/coreinteraction.h \
     controller/core/albumthumbnail.h \
     controller/core/base.h \
     global/log.h \

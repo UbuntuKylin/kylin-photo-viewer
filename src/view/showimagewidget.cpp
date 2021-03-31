@@ -161,7 +161,6 @@ void ShowImageWidget::_initInteraction()
     connect(interaction,&Interaction::startWithOpenImage,this,&ShowImageWidget::_startWithOpenImage);//启动时打开图片
     connect(interaction,&Interaction::openFinish,this,&ShowImageWidget::openFinish);//图片打开完成，获取数据
     connect(interaction,&Interaction::albumFinish,this,&ShowImageWidget::albumFinish);//相册缩略图打开完成，获取数据
-    connect(interaction,&Interaction::processingFinish,this,&ShowImageWidget::_processFinish);//判断是否完成图片处理
     interaction->initUiFinish();
 }
 void ShowImageWidget::_startWithOpenImage(QString path)
@@ -213,7 +212,7 @@ void ShowImageWidget::openFinish(QVariant var)
     emit titleName(info.fileName());//给顶栏图片的名字
     //设置壁纸--动图在传来时是一帧一帧，防止多次添加右键菜单动作
     if(canSet)
-    {   qDebug()<<"生成menu";
+    {
         canSet = false;
         m_setMenuAction();
 

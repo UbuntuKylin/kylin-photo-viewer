@@ -5,7 +5,7 @@
 #include <QPixmap>
 #include <QVariant>
 #include <QFileInfo>
-class _Interaction;
+class coreinteraction;
 
 class Interaction : public QObject
 {
@@ -28,6 +28,7 @@ signals:
      * 接口类型：信号，需要绑定
      * 参数类型：QVariant -> ImageAndInfo 例：ImageAndInfo package=var.value<ImageAndInfo>();
      * 参数描述：结构体，图片及相关信息信息，详情请参见variable.h文件中的ImageAndInfo结构体
+     * 备注：当type值为0时，说明所有图片都被删掉，显示添加图片界面
      */
     void openFinish(QVariant var);
 
@@ -57,15 +58,6 @@ signals:
      * 参数描述：图片的标签（唯一标识），该删除哪一张
      */
     void deleteImageOnAlbum(int type);
-
-    /*
-     * 接口功能：禁用/启用UI层某些按钮
-     * 接口场景：正在处理图片或处理完成时
-     * 接口类型：信号，需要绑定
-     * 参数类型：bool
-     * 参数描述：false时按钮禁用，true时按钮可用
-     */
-    void processingFinish(bool);
 
 public:
 
@@ -175,6 +167,13 @@ public:
      * 备注：在生成鼠标右键菜单时要进行校验，只有Variable::BACKGROUND_SUPPORT_FORMATS中存在的格式才显示这个选项
      */
     virtual void setAsBackground()=0;//设置为背景图
+
+    /*
+     * 接口功能：结束当前进程
+     * 接口场景：点击退出按钮时
+     * 接口类型：函数，直接调用
+     */
+    virtual void close()=0;//设置为背景图
 
 private:
     static Interaction *m_interaction;//单例指针

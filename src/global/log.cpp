@@ -8,7 +8,7 @@ void Log::msgHandler(QtMsgType type, const QMessageLogContext& context, const QS
     Q_UNUSED(context);
 
     //判断当前允许显示和写入的级别
-    if( type < Variable::LOG_LEVEL) {
+    if( type < Variable::g_logLevel) {
         return;
     }
 
@@ -20,13 +20,14 @@ void Log::msgHandler(QtMsgType type, const QMessageLogContext& context, const QS
     fflush(stdout);
 
     // 遇到致命错误，需要终止程序
-    if (type == QtFatalMsg)
+    if (type == QtFatalMsg) {
         abort();
+    }
 }
 
 void Log::echoToFile(QtMsgType type, const QString &msg)
 {
-    if (!Variable::LOG_TO_FILE) {
+    if (!Variable::g_logToFile) {
         return;
     }
 

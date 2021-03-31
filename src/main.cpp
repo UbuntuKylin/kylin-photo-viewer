@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //注册MessageHandler
-//    qInstallMessageHandler(Log::msgHandler);
+    qInstallMessageHandler(Log::msgHandler);
 
     //翻译
     QTranslator app_trans;
@@ -36,15 +36,17 @@ int main(int argc, char *argv[])
     qt_trans_path = QLibraryInfo::location(QLibraryInfo::TranslationsPath);// /usr/share/qt5/translations
 
     if (locale == "zh_CN") {
-        if(!app_trans.load("kylin-photo-viewer_" + locale + ".qm", trans_path))
+        if(!app_trans.load("kylin-photo-viewer_" + locale + ".qm", trans_path)){
             qDebug() << "Load translation file："<< "kylin-photo-viewer_" + locale + ".qm from" << trans_path << "failed!";
-        else
+        } else {
             a.installTranslator(&app_trans);
+        }
 
-        if(!qt_trans.load("qt_" + locale + ".qm", qt_trans_path))
+        if (!qt_trans.load("qt_" + locale + ".qm", qt_trans_path)){
             qDebug() << "Load translation file："<< "qt_" + locale + ".qm from" << qt_trans_path << "failed!";
-        else
+        } else {
             a.installTranslator(&qt_trans);
+        }
     }
 
     //主题框架

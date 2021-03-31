@@ -28,7 +28,7 @@ class File : public QObject
     Q_OBJECT
 
 signals:
-    void processingFinish();
+    void saveFinish();
 
 public:
     static MatAndFileinfo loadImage(QString path, ImreadModes modes = IMREAD_UNCHANGED);
@@ -37,12 +37,13 @@ public:
     static void deleteImage(const QString &savepath);
 
 private:
-    static int _getDelay(const QString &path,const QString &suffix);
-    static int _gifDelay(const QString &path);
-    static void _processStart(const QString &cmd , QStringList arguments = QStringList());
-    bool _save(const Mat &mat , const QString &savepath , const QString &type);
-    bool _save(QList<Mat> *list ,const int &fps, const QString &savepath , const QString &type, bool special = false);
-    bool _saveMovie(QList<Mat> *list, const int &fps, const QString &savepath, const QString &type , bool special = false);
+    static int getDelay(const QString &path,const QString &suffix);
+    static int gifDelay(const QString &path);
+    static void processStart(const QString &cmd , QStringList arguments = QStringList());
+    QString saveWay(const QString &savepath ,bool replace);
+    bool save(const Mat &mat , const QString &savepath , const QString &type);
+    bool save(QList<Mat> *list ,const int &fps, const QString &savepath , const QString &type);
+    bool saveMovie(QList<Mat> *list, const int &fps, const QString &savepath, const QString &type );
 };
 
 #endif // FILE_H

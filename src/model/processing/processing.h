@@ -15,7 +15,7 @@ public:
     static Mat processingImage(const ProcessingType &type, const Mat &mat, const QVariant &args);
     static QPixmap converFormat(const Mat &mat);
     static QPixmap resizePix(const QPixmap &pixmap ,const QSize &size);
-    static QImage _pictureDeepen(const QImage &img , const QSize &hightlightSize, const QPoint &point);//图片加深
+    static QImage pictureDeepen(const QImage &img , const QSize &hightlightSize, const QPoint &point);//图片加深
 
 private:
     static inline int minNumIsZero(const int &num1 ,const int &num2);

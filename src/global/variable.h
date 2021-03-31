@@ -35,8 +35,8 @@ public:
     static const QString PHOTO_VIEW_DBUS_PARH; //DBUS路径
     static const QString PHOTO_VIEW_DBUS_INTERFACE;//DBUS接口
     static const QPair<QString,QString> LOG_PATH; //日志路径
-    static QtMsgType LOG_LEVEL; //日志级别
-    static bool LOG_TO_FILE; //日志写入文件
+    static QtMsgType g_logLevel; //日志级别
+    static bool g_logToFile; //日志写入文件
     static const qint64 MAX_LOG_SIZE;//最大日志文件大小
     static const QMap<QString,QString> SUPPORT_CMD; //支持的命令列表
     static const QStringList SUPPORT_FORMATS; //支持的格式列表
@@ -54,13 +54,13 @@ public:
     static QVariant getSettings(const QString &key);//读取配置文件
 
 private:
-    static const QStringList _OPENCV_CAN_SUPPORT_FORMATS; //opencv支持的格式列表
-    static const QStringList _OPENCV_CANNOT_SUPPORT_FORMATS; //opencv不支持的格式列表
-    static QStringList _creatSupportFormats();//所有支持格式
-    static QGSettings *_settings;//配置文件对象
-    static QGSettings *_getSettings();//初始化gsettings
-    static const QString _creatTempPath();//创建临时目录
-    static QMap<QString,QString> _getSupportCmd();//创建支持的命令列表
+    static const QStringList opencvCanSupportFormats; //opencv支持的格式列表
+    static const QStringList opencvCannotSupportFormats; //opencv不支持的格式列表
+    static QStringList creatSupportFormats();//所有支持格式
+    static QGSettings *m_settings;//配置文件对象
+    static QGSettings *getSettings();//初始化gsettings
+    static const QString creatTempPath();//创建临时目录
+    static QMap<QString,QString> getSupportCmd();//创建支持的命令列表
     static void onGsettingChange(const QString &key);//监听gsettings改变槽函数
     static QPair<QString,QString> getLogPath();//获取日志目录
     static QtMsgType getLogLevel();//获取日志级别

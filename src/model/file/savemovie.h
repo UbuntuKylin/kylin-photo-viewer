@@ -11,17 +11,17 @@ using namespace cv;
 class SaveMovie : public QThread
 {
 public:
-    SaveMovie(QList<Mat> *list,const int &fps, const QString &savepath, const QString &type, bool special = false);
+    SaveMovie(QList<Mat> *list,const int &fps, const QString &savepath, const QString &type);
 
 protected:
     void run();
 
 private:
-    QList<Mat> * _list;
-    int _fps;
-    QString _savepath;
-    QString _type;
-    bool _special;
+    QList<Mat> * m_list;
+    int m_fps;
+    QString m_savepath;
+    QString m_type;
+    bool m_special;
 };
 
 #endif // SAVEMOVIE_H

@@ -5,19 +5,19 @@ Mat Flip::processing(const Mat &mat, const QVariant &args)
     int type = args.toInt();
     switch (type) {
     case FlipWay::clockwise:
-        return _rotateRight(mat);
+        return rotateRight(mat);
     case FlipWay::counterclockwise:
-        return _rotateLeft(mat);
+        return rotateLeft(mat);
     case FlipWay::horizontal:
-        return _flipH(mat);
+        return flipH(mat);
     case FlipWay::vertical:
-        return _flipV(mat);
+        return flipV(mat);
     }
 
     return mat;
 }
 
-Mat Flip::_rotateRight(const Mat &mat)
+Mat Flip::rotateRight(const Mat &mat)
 {
     Mat temp,dst;
     transpose(mat, temp);
@@ -25,7 +25,7 @@ Mat Flip::_rotateRight(const Mat &mat)
     return dst;
 }
 
-Mat Flip::_rotateLeft(const Mat &mat)
+Mat Flip::rotateLeft(const Mat &mat)
 {
     Mat temp,dst;
     transpose(mat, temp);
@@ -33,14 +33,14 @@ Mat Flip::_rotateLeft(const Mat &mat)
     return dst;
 }
 
-Mat Flip::_flipH(const Mat &mat)
+Mat Flip::flipH(const Mat &mat)
 {
     Mat dst;
     flip(mat,dst,0);
     return dst;
 }
 
-Mat Flip::_flipV(const Mat &mat)
+Mat Flip::flipV(const Mat &mat)
 {
     Mat dst;
     flip(mat,dst,1);

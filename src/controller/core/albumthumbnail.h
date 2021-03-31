@@ -18,8 +18,8 @@ public:
     void run();
 
 private:
-    int _type;
-    QString _path;
+    int m_type;
+    QString m_path;
 };
 
 #endif // ALBUMTHUMBNAIL_H

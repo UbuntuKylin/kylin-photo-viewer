@@ -2,44 +2,46 @@
 
 Core::Core()
 {
-    _initCore();
+    initCore();
 }
 
-void Core::_initCore()
+void Core::initCore()
 {
-    _file = new File;
-    connect(_file,&File::processingFinish,this,&Core::processingFinishSlot);
+    m_file = new File;
+    connect(m_file,&File::saveFinish,this,&Core::saveFinishSlot);
 
-    _matList = nullptr;
+    m_matList = nullptr;
 
     qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
     qRegisterMetaType<Processing::FlipWay>("Processing::FlipWay");
 
-    _clickBeforeStartPosition = QPoint(-1,-1);
-    _clickBeforePosition = QPoint(-1,-1);
+    m_clickBeforeStartPosition = QPoint(-1,-1);
+    m_clickBeforePosition = QPoint(-1,-1);
 
-    _playMovieTimer = new QTimer(this);
-    connect(_playMovieTimer,&QTimer::timeout,this,&Core::_playMovie);
+    m_playMovieTimer = new QTimer(this);
+    connect(m_playMovieTimer,&QTimer::timeout,this,&Core::playMovie);
 }
 
 QString Core::initDbus(const QStringList &arguments)
 {
-    _dbus = new Dbus;
+    m_dbus = new Dbus;
 
     //获取注册Dbus服务是否成功
-    bool connectSeccess=_dbus->getConnectSeccess();
+    bool connectSeccess=m_dbus->getConnectSeccess();
 
     //如果注册Dbus服务成功，接收命令
-    if(connectSeccess)
-        connect(_dbus,&Dbus::processingCommand,this,&Core::_processingCommand);
+    if (connectSeccess) {
+        connect(m_dbus,&Dbus::processingCommand,this,&Core::processingCommand);
+    }
 
     //没有参数不处理
-    if(arguments.length() <2)
+    if (arguments.length() <2) {
         return "";
+    }
 
     //帮助命令则打印
-    if(arguments[1]=="-help" || arguments[1]=="--help" ){
-        for(QString &key : Variable::SUPPORT_CMD.keys()){
+    if (arguments[1]=="-help" || arguments[1]=="--help" ) {
+        for (QString &key : Variable::SUPPORT_CMD.keys()) {
             qInfo()<<key<<"   "<<Variable::SUPPORT_CMD.value(key);
         }
         exit(0);
@@ -47,20 +49,22 @@ QString Core::initDbus(const QStringList &arguments)
     }
 
     //如果是地址且文件存在则打开
-    if(QFileInfo::exists(arguments[1])){
+    if (QFileInfo::exists(arguments[1])) {
         //不是支持的文件格式忽略
         QString format =arguments[1];
         format=format.split(".").last();
-        if(!Variable::SUPPORT_FORMATS.contains(format))
+        if (!Variable::SUPPORT_FORMATS.contains(format)) {
             return "";
+        }
         return arguments[1];
     }
 
     //如果是命令
-    if(Variable::SUPPORT_CMD.keys().contains(arguments[1])){
-        if(connectSeccess)//如果为首个实例不响应
+    if (Variable::SUPPORT_CMD.keys().contains(arguments[1])) {
+        if (connectSeccess) {//如果为首个实例不响应
             return "";
-        _dbus->argumentsCommand(arguments);
+        }
+        m_dbus->argumentsCommand(arguments);
         return "";
     }
 
@@ -68,35 +72,35 @@ QString Core::initDbus(const QStringList &arguments)
     return "";
 }
 
-void Core::_processingCommand(const QStringList &cmd)
+void Core::processingCommand(const QStringList &cmd)
 {
     qDebug()<<"响应外部命令"<<cmd;
 
-    if(cmd[0] == "-next"){
-        changeImage(nextImage);
+    if (cmd[0] == "-next") {
+        changeImage(NEXT_IMAGE);
         return;
     }
-    if(cmd[0] == "-back"){
-        changeImage(backImage);
+    if (cmd[0] == "-back") {
+        changeImage(BACK_IMAGE);
         return;
     }
-    if(cmd[0] == "-big"){
-        changeImageShowSize(ImageShowStatus::Big);
+    if (cmd[0] == "-big") {
+        changeImageShowSize(ImageShowStatus::BIG);
         return;
     }
-    if(cmd[0] == "-small"){
-        changeImageShowSize(ImageShowStatus::Small);
+    if (cmd[0] == "-small") {
+        changeImageShowSize(ImageShowStatus::SMALL);
         return;
     }
-    if(cmd[0] == "-origin"){
-        changeImageShowSize(ImageShowStatus::Origin);
+    if (cmd[0] == "-origin") {
+        changeImageShowSize(ImageShowStatus::ORIGIN);
         return;
     }
-    if(cmd[0] == "-auto"){
-        changeImageShowSize(ImageShowStatus::Auto);
+    if (cmd[0] == "-auto") {
+        changeImageShowSize(ImageShowStatus::AUTO);
         return;
     }
-    if(cmd[0] == "-rotate"){
+    if (cmd[0] == "-rotate") {
         flipImage(Processing::FlipWay::clockwise);
         return;
     }
@@ -104,132 +108,139 @@ void Core::_processingCommand(const QStringList &cmd)
 
 QVariant Core::openImage(QString fullPath)
 {
-    if(fullPath.isEmpty())return QVariant();
+    if (fullPath.isEmpty()) {
+        return QVariant();
+    }
 
     //如果正在播放动图，则停止
-    if(_playMovieTimer->isActive())
-        _playMovieTimer->stop();
+    if (m_playMovieTimer->isActive()) {
+        m_playMovieTimer->stop();
+    }
 
     MatAndFileinfo maf = File::loadImage(fullPath);
-    if(!maf.mat.data){
+    if (!maf.mat.data) {
         //如果图片打开失败则回滚
-        ChamgeImageType type = _imageUrlList.nextOrBack(_backpath,fullPath);
-        _changeImageType();
-        emit deleteImageOnAlbum(_nowType);
+        ChamgeImageType type = m_imageUrlList.nextOrBack(m_backpath,fullPath);
+        changeImageType();
+        emit deleteImageOnAlbum(m_nowType);
         //全部图片都被删除了
-        if(_nowType == 0){
-            _showImage(QPixmap());
+        if (m_nowType == 0) {
+            showImage(QPixmap());
             return QVariant();
         }
         changeImage(type);
         return QVariant();
     }
-    _nowImage = Processing::converFormat(maf.mat);
+    m_nowImage = Processing::converFormat(maf.mat);
     //记录状态
-    _changeImage(maf.mat);
-    _info = maf.info;
-    if(_matList!=nullptr){
-        for(Mat &tmpMat : *_matList){
+    changeMat(maf.mat);
+    m_info = maf.info;
+    if (m_matList!=nullptr) {
+        for (Mat &tmpMat : *m_matList) {
             tmpMat.release();
         }
-        delete _matList;
+        delete m_matList;
     }
-    _matList = maf.matList;
-    _fps = maf.fps;
-    _nowpath = fullPath;
-    _creatImage();
+    m_matList = maf.matList;
+    m_fps = maf.fps;
+    m_nowpath = fullPath;
+    creatImage();
     return QVariant();
 }
 
-void Core::_showImage(const QPixmap &pix)
+void Core::showImage(const QPixmap &pix)
 {
     ImageAndInfo package;
-    package.proportion = _proportion;
-    package.info = _info;
+    package.proportion = m_proportion;
+    package.info = m_info;
     package.image = pix;
-    package.type = _nowType;
-    package.imageSize = _imageSize;
-    package.colorSpace = _colorSpace;
+    package.type = m_nowType;
+    package.imageSize = m_imageSize;
+    package.colorSpace = m_colorSpace;
     QVariant var;
     var.setValue<ImageAndInfo>(package);
     emit openFinish(var);
 }
 
-void Core::_creatImage(const int &proportion)
+void Core::creatImage(const int &proportion)
 {
-    if(_nowImage.isNull())
-        return;
-
-    int defaultProportion  = 100 * _size.width() / _nowImage.width();
-    if(_nowImage.height() * defaultProportion / 100 > _size.height())
-        defaultProportion = 100 * _size.height() / _nowImage.height();
-
-    //自适应窗口大小显示
-    if(proportion <= 0){
-        _proportion  = defaultProportion;
-        _tmpSize = _nowImage.size() * _proportion / 100;
-        _navigation(); //关闭导航器
-        _showImageOrMovie();
+    if (m_nowImage.isNull()) {
         return;
     }
 
-    _proportion = proportion;
-    _tmpSize = _nowImage.size() * _proportion / 100;
+    int defaultProportion  = 100 * m_size.width() / m_nowImage.width();
+    if (m_nowImage.height() * defaultProportion / 100 > m_size.height()) {
+        defaultProportion = 100 * m_size.height() / m_nowImage.height();
+    }
+
+    //自适应窗口大小显示
+    if (proportion <= 0) {
+        m_proportion  = defaultProportion;
+        m_tmpSize = m_nowImage.size() * m_proportion / 100;
+        navigation(); //关闭导航器
+        showImageOrMovie();
+        return;
+    }
+
+    m_proportion = proportion;
+    m_tmpSize = m_nowImage.size() * m_proportion / 100;
     //如果显示比例大于默认比例
-    if(_proportion > defaultProportion){
-        _navigation(QPoint(0,0));
+    if (m_proportion > defaultProportion) {
+        navigation(QPoint(0,0));
         return;
     }
 
     //如果显示比例小于或等于默认比例
-    _navigation(); //关闭导航器
+    navigation(); //关闭导航器
 
-    _showImageOrMovie();
+    showImageOrMovie();
 }
 
-void Core::_showImageOrMovie()
+void Core::showImageOrMovie()
 {
     //动画类格式循环播放
-    if(_matList!=nullptr)
-        if(_matList->length()>2){
-            _playMovie();//立即播放第一帧
-            _playMovieTimer->start(_fps);
+    if (m_matList!=nullptr) {
+        if (m_matList->length()>2) {
+            playMovie();//立即播放第一帧
+            m_playMovieTimer->start(m_fps);
             return;
         }
+    }
     //非动画类格式
-    QPixmap pix = Processing::resizePix(_nowImage,_tmpSize);
-    _showImage(pix);
+    QPixmap pix = Processing::resizePix(m_nowImage,m_tmpSize);
+    showImage(pix);
 }
 
-void Core::_playMovie()
+void Core::playMovie()
 {
-    if(_matListIndex >= _matList->length())
-        _matListIndex=0;
+    if (m_matListIndex >= m_matList->length()) {
+        m_matListIndex=0;
+    }
 
-    Mat mat =_matList->at(_matListIndex);
+    Mat mat =m_matList->at(m_matListIndex);
     QPixmap nowIndexPix = Processing::converFormat(mat);
-    _matListIndex++;
+    m_matListIndex++;
 
-    QPixmap pix = Processing::resizePix(nowIndexPix,_tmpSize);
-    if(_isNavigationShow){
-        QPixmap result = pix.copy(_startShowPoint.x(),_startShowPoint.y(),_size.width(),_size.height());
-        _showImage(result);
+    QPixmap pix = Processing::resizePix(nowIndexPix,m_tmpSize);
+    if (m_isNavigationShow) {
+        QPixmap result = pix.copy(m_startShowPoint.x(),m_startShowPoint.y(),m_size.width(),m_size.height());
+        showImage(result);
         return;
     }
-    _showImage(pix);
+    showImage(pix);
 }
 
-void Core::_navigation(const QPoint &point)
+void Core::navigation(const QPoint &point)
 {
-    _clickBeforeStartPosition = QPoint(-1,-1);
-    if( point.x()<0 || point.y()<0 ){//关闭导航器
-        _clickBeforePosition = QPoint(-1,-1);
-        _isNavigationShow = false;
+    m_clickBeforeStartPosition = QPoint(-1,-1);
+    if ( point.x()<0 || point.y()<0 ) {//关闭导航器
+        m_clickBeforePosition = QPoint(-1,-1);
+        m_isNavigationShow = false;
         emit showNavigation(QPixmap());
         return;
     }
-    _isNavigationShow = true;
-    _creatNavigation();
+    m_isNavigationShow = true;
+    creatNavigation();
     //记录上次放大位置
     clickNavigation();
 }
@@ -238,153 +249,192 @@ void Core::clickNavigation(const QPoint &point)
 {
     bool hasArg = true;
     //无参输入则使用上次的位置
-    if(point==QPoint(-1,-1))
+    if (point==QPoint(-1,-1)) {
         hasArg=false;
+    }
 
     //有参则记录，无参使用上一次的点
-    if(hasArg)
-        _clickBeforePosition = point;
+    if (hasArg) {
+        m_clickBeforePosition = point;
+    }
 
     //计算点击区域——鼠标要在高亮区域中央，且要减去导航栏窗口与图片边缘的距离
-    QPoint startPoint(_clickBeforePosition.x() - _hightlightSize.width() / 2 - _spaceWidth,_clickBeforePosition.y() - _hightlightSize.height() / 2 - _spaceHeight);
-    int right = _navigationImage.width() - _hightlightSize.width();//右侧边缘
-    int bottom = _navigationImage.height() - _hightlightSize.height();//下侧边缘
+    QPoint startPoint(m_clickBeforePosition.x() - m_hightlightSize.width() / 2 - m_spaceWidth,m_clickBeforePosition.y() - m_hightlightSize.height() / 2 - m_spaceHeight);
+    int right = m_navigationImage.width() - m_hightlightSize.width();//右侧边缘
+    int bottom = m_navigationImage.height() - m_hightlightSize.height();//下侧边缘
 
     //过滤无效区域
-    if(startPoint.x()<0)startPoint.setX(0);
-    if(startPoint.y()<0)startPoint.setY(0);
-    if(startPoint.x()>right)startPoint.setX(right);
-    if(startPoint.y()>bottom)startPoint.setY(bottom);
+    if (startPoint.x()<0) {
+        startPoint.setX(0);
+    }
+    if (startPoint.y()<0) {
+        startPoint.setY(0);
+    }
+    if (startPoint.x()>right) {
+        startPoint.setX(right);
+    }
+    if (startPoint.y()>bottom) {
+        startPoint.setY(bottom);
+    }
 
     //有参情况下，和上次点击的有效区域一致则不处理
-    if(startPoint == _clickBeforeStartPosition && hasArg)
+    if (startPoint == m_clickBeforeStartPosition && hasArg) {
         return;
-    _clickBeforeStartPosition = startPoint;
+    }
+    m_clickBeforeStartPosition = startPoint;
 
     //处理导航器图片
-    QImage image = Processing::_pictureDeepen(_navigationImage,_hightlightSize,startPoint);
+    QImage image = Processing::pictureDeepen(m_navigationImage,m_hightlightSize,startPoint);
 
     //发送到导航器
     emit showNavigation(QPixmap::fromImage(image));
 
     //处理待显示区域
-    _startShowPoint = startPoint * _showPix.width() / _navigationImage.width();
+    m_startShowPoint = startPoint * m_showPix.width() / m_navigationImage.width();
 
     //如果是动图，则交给动图显示事件去处理，避免闪屏
-    if(_playMovieTimer->isActive())
+    if (m_playMovieTimer->isActive()) {
         return;
-    QPixmap result = _showPix.copy(_startShowPoint.x(),_startShowPoint.y(),_size.width(),_size.height());
-    _showImage(result);
+    }
+    QPixmap result = m_showPix.copy(m_startShowPoint.x(),m_startShowPoint.y(),m_size.width(),m_size.height());
+    showImage(result);
 }
 
-void Core::processingFinishSlot()
+void Core::saveFinishSlot()
 {
-    _isProcessingFinish=true;
-    emit processingFinish(true);
+    m_isProcessingFinish=true;
+    //emit processingFinish(true);
 }
 
 void Core::flipImage(const Processing::FlipWay &way)
 {
-    //有未处理完成的指令则不处理
-    if(!_isProcessingFinish)
-        return;
-    //更改界面按钮状态
-    _isProcessingFinish=false;
-    emit processingFinish(false);
+    m_processed = true;
 
     //如果是动图，则批量处理
-    if(_playMovieTimer->isActive()){
-        for(int i=0;i<_matList->length();i++){
-            Mat mat = Processing::processingImage(Processing::flip,_matList->at(i),QVariant(way));
-            _matList->replace(i,mat);
+    if (m_playMovieTimer->isActive()) {
+        for (int i=0;i<m_matList->length();i++) {
+            Mat mat = Processing::processingImage(Processing::flip,m_matList->at(i),QVariant(way));
+            m_matList->replace(i,mat);
         }
         //刷新导航栏
-        _nowImage = Processing::converFormat(_matList->first());
-        _creatImage(_proportion);
-        //保存图片
-        _file->saveImage(_matList,_fps,_nowpath);
+        m_nowImage = Processing::converFormat(m_matList->first());
+        creatImage(m_proportion);
         return;
     }
-    Mat mat = Processing::processingImage(Processing::flip,_nowMat,QVariant(way));
-    if(!mat.data)
+    Mat mat = Processing::processingImage(Processing::flip,m_nowMat,QVariant(way));
+    if (!mat.data) {
         return;
-    _file->saveImage(mat,_nowpath);
-    mat = _changeImage(mat);
-    _nowImage = Processing::converFormat(mat);
-    _creatImage();
+    }
+    mat = changeMat(mat);
+    m_nowImage = Processing::converFormat(mat);
+    creatImage();
 }
 
 void Core::deleteImage()
 {
-    File::deleteImage(_nowpath);
+    File::deleteImage(m_nowpath);
 
     //切换到下一张
-    changeImage(nextImage);
+    changeImage(NEXT_IMAGE);
 
     //从队列中去除
-    _imageUrlList.remove(_backType);
-    emit deleteImageOnAlbum(_backType);
+    m_imageUrlList.remove(m_backType);
+    emit deleteImageOnAlbum(m_backType);
 
     //删除后队列中无图片，返回状态
-    if(_imageUrlList.isEmpty()){
-        _imageUrlList.clear();
-        _maxType = 0;//重置计数
-        _nowType = 0;//显示添加图片按钮
-        _navigation();//关闭导航器
-        _showImage(QPixmap());//发送状态
+    if(m_imageUrlList.isEmpty()){
+        m_imageUrlList.clear();
+        m_maxType = 0;//重置计数
+        m_nowType = 0;//显示添加图片按钮
+        navigation();//关闭导航器
+        showImage(QPixmap());//发送状态
     }
 }
 
 void Core::setAsBackground()
 {
     //设置为背景图
-    if(QGSettings::isSchemaInstalled(SET_BACKGROUND_PICTURE_GSETTINGS_PATH)){
+    if (QGSettings::isSchemaInstalled(SET_BACKGROUND_PICTURE_GSETTINGS_PATH)) {
         QGSettings *background = new QGSettings(SET_BACKGROUND_PICTURE_GSETTINGS_PATH);
         QStringList keyList = background->keys();
-        if (keyList.contains(SET_BACKGROUND_PICTURE_GSETTINGS_NAME))
-            background->set(SET_BACKGROUND_PICTURE_GSETTINGS_NAME,_nowpath);
+        if (keyList.contains(SET_BACKGROUND_PICTURE_GSETTINGS_NAME)) {
+            background->set(SET_BACKGROUND_PICTURE_GSETTINGS_NAME,m_nowpath);
+        }
         background->deleteLater();
+    }
+}
+
+void Core::close()
+{
+    //如果正在播放动图，则停止
+    if (m_playMovieTimer->isActive()) {
+        m_playMovieTimer->stop();
+        //保存动图
+        m_file->saveImage(m_matList,m_fps,m_nowpath);
+    } else {
+        //保存图片
+        m_file->saveImage(m_nowMat,m_nowpath);
     }
 }
 
 void Core::changeImage(const int &type)
 {
     //如果图片队列小于2，不处理
-    if(_imageUrlList.length()<1){
-        _backType = _nowType;
-        _backpath = _nowpath;
+    if (m_imageUrlList.length()<1) {
+        m_backType = m_nowType;
+        m_backpath = m_nowpath;
         return;
     }
+
+//    //有未处理完成的指令则不处理
+//    if (!m_isProcessingFinish) {
+//        return;
+//    }
+//    //更改界面按钮状态
+//    m_isProcessingFinish=false;
 
     //如果正在播放动图，则停止
-    if(_playMovieTimer->isActive())
-        _playMovieTimer->stop();
+    if (m_playMovieTimer->isActive()) {
+        m_playMovieTimer->stop();
+        //保存动图
+        if (m_processed) {
+            m_file->saveImage(m_matList,m_fps,m_nowpath);
+        }
+    } else {
+        //保存图片
+        if (m_processed) {
+            m_file->saveImage(m_nowMat,m_nowpath);
+        }
+    }
 
-    if(type == nextImage){
-        int key = _imageUrlList.nextKey(_nowType);
-        _changeImageType(key);
-        openImage(_nowpath);
+    m_processed=false;//重置是否操作过的状态
+
+    if (type == NEXT_IMAGE) {
+        int key = m_imageUrlList.nextKey(m_nowType);
+        changeImageType(key);
+        openImage(m_nowpath);
         return;
     }
-    if(type == backImage){
-        int key = _imageUrlList.backKey(_nowType);
-        _changeImageType(key);
-        openImage(_nowpath);
+    if (type == BACK_IMAGE) {
+        int key = m_imageUrlList.backKey(m_nowType);
+        changeImageType(key);
+        openImage(m_nowpath);
         return;
     }
 
     //如果队列中无此关键值，不处理
-    if(_imageUrlList.keys().indexOf(type)<0)
+    if (m_imageUrlList.keys().indexOf(type)<0) {
         return;
+    }
 
-    _changeImageType(type);
-    openImage(_nowpath);
+    changeImageType(type);
+    openImage(m_nowpath);
 }
 
 void Core::changeWidgetSize(const QSize &size)
 {
-    _size = size;
-    _creatImage(_proportion);
+    m_size = size;
+    creatImage(m_proportion);
 }
 
 void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
@@ -394,51 +444,51 @@ void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
     switch (type) {
 
     ///----------------------------放大图片----------------------------
-    case ImageShowStatus::Big:
-        if(_proportion == Variable::RESIZE_KEY_MAX){//等于临界值
+    case ImageShowStatus::BIG:
+        if (m_proportion == Variable::RESIZE_KEY_MAX) {//等于临界值
             return;
         }
-        if(_proportion + resizeKey > Variable::RESIZE_KEY_MAX){//将要超出临界值
+        if (m_proportion + resizeKey > Variable::RESIZE_KEY_MAX) {//将要超出临界值
             tmpProportion = Variable::RESIZE_KEY_MAX;
-            _creatImage(tmpProportion);
+            creatImage(tmpProportion);
             return;
         }
-        if(_proportion % resizeKey != 0){ //不能整除
-            tmpProportion = (_proportion/resizeKey + 1)*resizeKey;
-            _creatImage(tmpProportion);
+        if (m_proportion % resizeKey != 0) { //不能整除
+            tmpProportion = (m_proportion/resizeKey + 1)*resizeKey;
+            creatImage(tmpProportion);
             return;
         }
-        tmpProportion = _proportion + resizeKey;
-        _creatImage(tmpProportion);
+        tmpProportion = m_proportion + resizeKey;
+        creatImage(tmpProportion);
         return;
 
         ///----------------------------缩小图片----------------------------
-    case ImageShowStatus::Small:
-        if(_proportion == Variable::RESIZE_KEY_MIN){//等于临界值
+    case ImageShowStatus::SMALL:
+        if (m_proportion == Variable::RESIZE_KEY_MIN) {//等于临界值
             return;
         }
-        if(_proportion - resizeKey < Variable::RESIZE_KEY_MIN){//将要超出临界值
+        if (m_proportion - resizeKey < Variable::RESIZE_KEY_MIN) {//将要超出临界值
             tmpProportion = Variable::RESIZE_KEY_MIN;
-            _creatImage(tmpProportion);
+            creatImage(tmpProportion);
             return;
         }
-        if(_proportion % resizeKey != 0){ //不能整除
-            tmpProportion = (_proportion/resizeKey)*resizeKey;
-            _creatImage(tmpProportion);
+        if (m_proportion % resizeKey != 0) { //不能整除
+            tmpProportion = (m_proportion/resizeKey)*resizeKey;
+            creatImage(tmpProportion);
             return;
         }
-        tmpProportion = _proportion - resizeKey;
-        _creatImage(tmpProportion);
+        tmpProportion = m_proportion - resizeKey;
+        creatImage(tmpProportion);
         return;
 
         ///----------------------------查看原图----------------------------
-    case ImageShowStatus::Origin:
-        _creatImage(100);
+    case ImageShowStatus::ORIGIN:
+        creatImage(100);
         return;
 
         ///----------------------------查看自适应图----------------------------
-    case ImageShowStatus::Auto:
-        _creatImage();
+    case ImageShowStatus::AUTO:
+        creatImage();
         return;
 
     default:
@@ -447,70 +497,74 @@ void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
     }
 }
 
-void Core::_changeImageType(int num)
+void Core::changeImageType(int num)
 {
-    _matListIndex = 0;
-    if(num == 0){//回滚
-        _imageUrlList.remove(_nowType);
-        _nowType=_backType;
-        _nowpath = _backpath;
-        if(_imageUrlList.isEmpty()){
-            _nowType=0;
-            _nowpath = "";
+    m_matListIndex = 0;
+    if (num == 0) {//回滚
+        m_imageUrlList.remove(m_nowType);
+        m_nowType=m_backType;
+        m_nowpath = m_backpath;
+        if (m_imageUrlList.isEmpty()) {
+            m_nowType=0;
+            m_nowpath = "";
         }
         return;
     }
-    _backType = _nowType;
-    _nowType = num;
-    _backpath = _nowpath;
-    _nowpath = _imageUrlList.getPath(num);
+    m_backType = m_nowType;
+    m_nowType = num;
+    m_backpath = m_nowpath;
+    m_nowpath = m_imageUrlList.getPath(num);
 }
 
-Mat Core::_changeImage(Mat mat)
+Mat Core::changeMat(Mat mat)
 {
-    if(_backMat.data)
-        _backMat.release();
-    _backMat = _nowMat;
-    _nowMat = mat;
-    _imageSize = QString::number(_nowImage.width())+"x"+QString::number(_nowImage.height());
-    switch (_nowMat.type()) {
+    if (m_backMat.data) {
+        m_backMat.release();
+    }
+    m_backMat = m_nowMat;
+    m_nowMat = mat;
+    m_imageSize = QString::number(m_nowImage.width())+"x"+QString::number(m_nowImage.height());
+    switch (m_nowMat.type()) {
     case CV_8UC4:
-        _colorSpace = "RGBA";
+        m_colorSpace = "RGBA";
         break;
     case CV_8UC3:
-        _colorSpace = "RGB";
+        m_colorSpace = "RGB";
         break;
     case CV_8UC1:
-        _colorSpace = "GRAY";
+        m_colorSpace = "GRAY";
         break;
     }
     //gif走的是apng流程，所以这里要单独判断
-    if(QFileInfo(_nowpath).suffix().toLower() == "gif")
-        _colorSpace = "RGB";
-    return _nowMat;
+    if (QFileInfo(m_nowpath).suffix().toLower() == "gif") {
+        m_colorSpace = "RGB";
+    }
+    return m_nowMat;
 }
 
-void Core::_creatNavigation()
+void Core::creatNavigation()
 {
     //导航栏背景
     QSize navigationSize = Variable::NAVIGATION_SIZE;
-    _navigationImage = Processing::resizePix(_nowImage,navigationSize).toImage();
+    m_navigationImage = Processing::resizePix(m_nowImage,navigationSize).toImage();
 
     //记录空白区域
-    _spaceWidth = (navigationSize.width()-_navigationImage.width())/2;
-    _spaceHeight = (navigationSize.height()-_navigationImage.height())/2;
+    m_spaceWidth = (navigationSize.width()-m_navigationImage.width())/2;
+    m_spaceHeight = (navigationSize.height()-m_navigationImage.height())/2;
 
     //待显示图
-    QSize pixSize = _nowImage.size() * _proportion / 100;
-    _showPix = Processing::resizePix(_nowImage,pixSize);
+    QSize pixSize = m_nowImage.size() * m_proportion / 100;
+    m_showPix = Processing::resizePix(m_nowImage,pixSize);
 
     //高亮区域大小
-    _hightlightSize.setWidth(_navigationImage.width() * _size.width() /  _showPix.width());
-    _hightlightSize.setHeight(_navigationImage.height() * _size.height() /  _showPix.height());
-    if(_hightlightSize.width()>_navigationImage.width())
-        _hightlightSize.setWidth(_navigationImage.width());
-    if(_hightlightSize.height()>_navigationImage.height())
-        _hightlightSize.setHeight(_navigationImage.height());
+    m_hightlightSize.setWidth(m_navigationImage.width() * m_size.width() /  m_showPix.width());
+    m_hightlightSize.setHeight(m_navigationImage.height() * m_size.height() /  m_showPix.height());
+    if (m_hightlightSize.width()>m_navigationImage.width()) {
+        m_hightlightSize.setWidth(m_navigationImage.width());
+    }
+    if (m_hightlightSize.height()>m_navigationImage.height()) {
+        m_hightlightSize.setHeight(m_navigationImage.height());
+    }
 }
 
 QVariant Core::findAllImageFromDir(QString fullPath)
@@ -520,34 +574,35 @@ QVariant Core::findAllImageFromDir(QString fullPath)
     QString filepath = info.absoluteFilePath();//转成绝对路径
     QDir dir(path);//实例化目录对象
     QStringList nameFilters;//格式过滤
-    for(const QString &format : Variable::SUPPORT_FORMATS)
+    for (const QString &format : Variable::SUPPORT_FORMATS) {
         nameFilters<<"*."+format;//构造格式过滤列表
+    }
     QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);//获取所有支持的图片
     //将所有图片打上唯一标签并存入队列
-    ImageUrlList tmpImageUrlList;
-    for(QString &filename : images){
+    ImageUrlAndTypeList tmpImageUrlList;
+    for (QString &filename : images) {
         QString tmpFullPath = path+"/"+filename;
-        _maxType++;
-        tmpImageUrlList.append(_maxType,tmpFullPath);
+        m_maxType++;
+        tmpImageUrlList.append(m_maxType,tmpFullPath);
         //记录需要显示的图片
-        if(tmpFullPath == filepath){
-            _backType = _nowType;
-            _backpath = _nowpath;
-            _nowType = _maxType;
+        if (tmpFullPath == filepath) {
+            m_backType = m_nowType;
+            m_backpath = m_nowpath;
+            m_nowType = m_maxType;
         }
     }
     //新路径中的所有文件靠前排序
-    _imageUrlList.append(tmpImageUrlList);
+    m_imageUrlList.append(tmpImageUrlList);
     QVariant var;
-    var.setValue<QList<int>>(_imageUrlList.keys());
-    _loadAlbum();
+    var.setValue<QList<int>>(m_imageUrlList.keys());
+    loadAlbum();
     return var;
 }
 
-void Core::_loadAlbum()
+void Core::loadAlbum()
 {
-    for(int &k : _imageUrlList.keys()){
-        AlbumThumbnail* thread= new AlbumThumbnail(k,_imageUrlList.getPath(k));
+    for (int &k : m_imageUrlList.keys()) {
+        AlbumThumbnail* thread= new AlbumThumbnail(k,m_imageUrlList.getPath(k));
         connect(thread,&AlbumThumbnail::finished,thread,&AlbumThumbnail::deleteLater);
         connect(thread,&AlbumThumbnail::albumFinish,this,&Core::albumFinish);
         thread->start();
