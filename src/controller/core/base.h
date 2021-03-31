@@ -64,7 +64,8 @@ public:
     int m_matListIndex = 0;//当前播放到哪一帧
     QPoint m_startShowPoint;
     int m_fps = 0;//帧率
-    bool m_processed = false;
+    bool m_processed = false;//此图被操作过
+    bool m_thisImageIsSaving = false;//此图片正在储存
 };
 
 class NavigationStatus : public ImageShowStatus//导航器相关单独写，提高可读性

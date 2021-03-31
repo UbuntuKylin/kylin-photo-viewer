@@ -117,12 +117,6 @@ QVariant Core::openImage(QString fullPath)
         m_playMovieTimer->stop();
     }
 
-    //如果正在保存，则显示等待
-    if (m_file->isSaving(fullPath)) {
-        m_nowpath = fullPath;
-        showImage(QPixmap());
-        return QVariant();
-    }
 
     MatAndFileinfo maf = File::loadImage(fullPath);
     if (!maf.mat.data) {
@@ -151,6 +145,13 @@ QVariant Core::openImage(QString fullPath)
     m_matList = maf.matList;
     m_fps = maf.fps;
     m_nowpath = fullPath;
+    //如果正在保存，则显示等待
+    if (m_file->isSaving(fullPath)) {
+        //如果此图正在保存
+        m_thisImageIsSaving = true;
+        showImage(QPixmap());
+        return QVariant();
+    }
     creatImage();
     return QVariant();
 }
@@ -313,12 +314,17 @@ void Core::saveMovieFinish(const QString &path)
     if (m_nowpath != path) {
         return;
     }
-
+    m_thisImageIsSaving = false;
     openImage(path);
 }
 
 void Core::flipImage(const Processing::FlipWay &way)
 {
+    //如果此图正在保存
+    if (m_thisImageIsSaving) {
+        return;
+    }
+
     m_processed = true;
 
     //如果是动图，则批量处理
@@ -343,6 +349,11 @@ void Core::flipImage(const Processing::FlipWay &way)
 
 void Core::deleteImage()
 {
+    //如果此图正在保存
+    if (m_thisImageIsSaving) {
+        return;
+    }
+
     File::deleteImage(m_nowpath);
 
     //切换到下一张
@@ -397,6 +408,7 @@ void Core::changeImage(const int &type)
         return;
     }
 
+    m_thisImageIsSaving = false;
 //    //有未处理完成的指令则不处理
 //    if (!m_isProcessingFinish) {
 //        return;
@@ -450,6 +462,11 @@ void Core::changeWidgetSize(const QSize &size)
 
 void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
 {
+    //如果此图正在保存
+    if (m_thisImageIsSaving) {
+        return;
+    }
+
     int resizeKey = Variable::RESIZE_KEY;
     int tmpProportion = 0;
     switch (type) {
