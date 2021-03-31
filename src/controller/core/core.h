@@ -29,7 +29,7 @@ public:
     void flipImage(const Processing::FlipWay &way);//翻转处理
     void deleteImage();//删除图片
     void setAsBackground();//设置为背景图
-    void saveFinishSlot();//处理完成
+    void saveMovieFinish(const QString &path);//异步处理完成
     void close();//关闭进程
 
 private:
@@ -43,7 +43,6 @@ private:
     void loadAlbum();//加载相册
     void navigation(const QPoint &point = QPoint(-1,-1));//导航器
     void playMovie();//播放动图的槽函数
-    bool m_isProcessingFinish = true;//判断是否正在处理
     inline void changeImageType(int num = 0);//修改图片标签
     Mat changeMat(Mat mat);//更改当前图片
     void creatNavigation();//创建导航器图片等数据，用于节省算力

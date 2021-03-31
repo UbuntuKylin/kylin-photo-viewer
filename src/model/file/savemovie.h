@@ -10,6 +10,11 @@ using namespace cv;
 
 class SaveMovie : public QThread
 {
+    Q_OBJECT
+
+signals:
+    void saveMovieFinish(const QString &path);
+
 public:
     SaveMovie(QList<Mat> *list,const int &fps, const QString &savepath, const QString &type);
 

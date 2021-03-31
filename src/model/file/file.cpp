@@ -170,14 +170,12 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
         paint.begin(&svg);
         paint.drawImage(QPoint(0,0),pix.toImage());
         paint.end();
-        emit saveFinish();
         return true;
     }
     if (type == "tga") {
         Mat tmpMat;
         cvtColor(mat,tmpMat,cv::COLOR_RGBA2BGRA);
         stbi_write_tga(savepath.toLocal8Bit().data(),tmpMat.cols,tmpMat.rows,4,tmpMat.data);
-        emit saveFinish();
         return true;
     }
     //    if(type == "hdr"){
@@ -196,7 +194,6 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
         list->append(mat);
         return save(list,0,savepath,type);
     }
-    emit saveFinish();
     //非特殊情况
     return imwrite(savepath.toStdString(),mat);
 }
@@ -212,9 +209,9 @@ bool File::save(QList<Mat> *list, const int &fps, const QString &savepath, const
 
 bool File::saveMovie(QList<Mat> *list,const int &fps, const QString &savepath, const QString &type)
 {
-
+    m_list.append(savepath);
     SaveMovie *saveMovie = new SaveMovie(list,fps,savepath,type);
-    connect(saveMovie,&SaveMovie::finished,this,&File::saveFinish);
+    connect(saveMovie,&SaveMovie::saveMovieFinish,this,&File::saveMovieFinishSlot);
     saveMovie->start();
 
     //    Gif_H m_Gif;
@@ -232,9 +229,20 @@ bool File::saveMovie(QList<Mat> *list,const int &fps, const QString &savepath, c
     return true;
 }
 
+void File::saveMovieFinishSlot(const QString &path)
+{
+    m_list.removeOne(path);
+    emit saveMovieFinish(path);
+}
+
 void File::deleteImage(const QString &savepath)
 {
     processStart("gio",QStringList() << "trash" << savepath);
+}
+
+bool File::isSaving(const QString &path)
+{
+    return m_list.contains(path);
 }
 
 void File::processStart(const QString &cmd, QStringList arguments)

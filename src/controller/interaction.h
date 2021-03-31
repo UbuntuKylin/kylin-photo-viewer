@@ -28,7 +28,8 @@ signals:
      * 接口类型：信号，需要绑定
      * 参数类型：QVariant -> ImageAndInfo 例：ImageAndInfo package=var.value<ImageAndInfo>();
      * 参数描述：结构体，图片及相关信息信息，详情请参见variable.h文件中的ImageAndInfo结构体
-     * 备注：当type值为0时，说明所有图片都被删掉，显示添加图片界面
+     * 备注1：当type值为0时，说明所有图片都被删掉，显示添加图片界面
+     * 备注2：当QPixmap::isnull()为true时，显示正在加载动画，放大、缩小、旋转等全部禁用图片详情也要做对应处理，在下次接收到有效图片时恢复正常
      */
     void openFinish(QVariant var);
 

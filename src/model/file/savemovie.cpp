@@ -69,4 +69,5 @@ void SaveMovie::run()
     cmd3 += " "+m_savepath;
     system(cmd3.toLocal8Bit().data());
     qDebug()<<"动图保存完成";
+    emit saveMovieFinish(m_savepath);
 }

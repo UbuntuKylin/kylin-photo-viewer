@@ -8,7 +8,7 @@ Core::Core()
 void Core::initCore()
 {
     m_file = new File;
-    connect(m_file,&File::saveFinish,this,&Core::saveFinishSlot);
+    connect(m_file,&File::saveMovieFinish,this,&Core::saveMovieFinish);
 
     m_matList = nullptr;
 
@@ -115,6 +115,13 @@ QVariant Core::openImage(QString fullPath)
     //如果正在播放动图，则停止
     if (m_playMovieTimer->isActive()) {
         m_playMovieTimer->stop();
+    }
+
+    //如果正在保存，则显示等待
+    if (m_file->isSaving(fullPath)) {
+        m_nowpath = fullPath;
+        showImage(QPixmap());
+        return QVariant();
     }
 
     MatAndFileinfo maf = File::loadImage(fullPath);
@@ -300,10 +307,14 @@ void Core::clickNavigation(const QPoint &point)
     showImage(result);
 }
 
-void Core::saveFinishSlot()
+void Core::saveMovieFinish(const QString &path)
 {
-    m_isProcessingFinish=true;
-    //emit processingFinish(true);
+    //如果当前播放的不是这张图
+    if (m_nowpath != path) {
+        return;
+    }
+
+    openImage(path);
 }
 
 void Core::flipImage(const Processing::FlipWay &way)
