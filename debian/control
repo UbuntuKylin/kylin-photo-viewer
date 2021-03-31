@@ -1,0 +1,35 @@
+Source: kylin-photo-viewer
+Section: utils
+Priority: optional
+Maintainer: lixiang <liuyuhui@kylinos.cn>
+Build-Depends: debhelper (>=9),
+               qtbase5-dev,
+               qt5-qmake,
+               qtchooser,
+               qtscript5-dev,
+               qttools5-dev-tools,
+               qtbase5-dev-tools,
+               libopencv-core-dev,
+               libopencv-imgproc-dev,
+               libopencv-imgcodecs-dev,
+               libqt5svg5-dev,
+               libstb-dev,
+               libgif-dev,
+               libqt5x11extras5-dev,
+               libkf5windowsystem-dev,
+               libgsettings-qt-dev,
+               pkgconf,
+Standards-Version: 4.4.0
+Homepage: https://github.com/ubuntukylin/kylin-photo-viewer
+Vcs-Git: https://github.com/ubuntukylin/kylin-photo-viewer.git
+Vcs-Browser: https://github.com/ubuntukylin/kylin-photo-viewer
+
+Package: kylin-photo-viewer
+Architecture: any
+Depends: 
+               apngasm,
+               ${misc:Depends},${shlibs:Depends}
+Description: Indicator that displays China weather information
+ Kylin Weather displays detail weather information for one place,
+ including weather forecast and observe weather, and you can
+ change it.
