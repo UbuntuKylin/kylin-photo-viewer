@@ -22,56 +22,56 @@ class ToolBar : public QWidget
 public:
     explicit ToolBar(QWidget *parent = nullptr);
     void changePerRate(QString num);
-    void reduceImage();
-    void enlargeImage();
-    QFrame *tooleWid;//布局
+    void reduceImage();//缩小图片
+    void enlargeImage();//放大图片
+    QFrame *g_tooleWid;//布局
 private:
 
-    QHBoxLayout *toolLayout;
+    QHBoxLayout *m_toolLayout;
     QGSettings *m_pGsettingThemeData = nullptr;
-    QPushButton *reduce;//缩小
-    QLabel *percentage;//百分比
-    QPushButton *enlarge;//放大
-    QPushButton *originalSize;//原始尺寸
-    QPushButton *adaptiveWidget;//适应图片
-    QPushButton *rotate;//旋转
-    QPushButton *flipH;//水平翻转
-    QPushButton *flipV;//垂直翻转
-    QPushButton *cutImage;//裁剪
-    QLabel *line1;
-    QPushButton *filter;//滤镜
-    QPushButton *labelbar;//标注栏---
-    QLabel *line2;
-    QPushButton *sidebar;//侧边栏---
-    QPushButton *information;//详细信息---
-    QPushButton *delImage;//删除图片
+    QPushButton *m_reduce;//缩小
+    QLabel *m_percentage;//百分比
+    QPushButton *m_enlarge;//放大
+    QPushButton *m_originalSize;//原始尺寸
+    QPushButton *m_adaptiveWidget;//适应图片
+    QPushButton *m_rotate;//旋转
+    QPushButton *m_flipH;//水平翻转
+    QPushButton *m_flipV;//垂直翻转
+    QPushButton *m_cutImage;//裁剪
+    QLabel *m_line1;
+    QPushButton *m_filter;//滤镜
+    QPushButton *m_labelbar;//标注栏
+    QLabel *m_line2;
+    QPushButton *m_sidebar;//侧边栏
+    QPushButton *m_information;//详细信息
+    QPushButton *m_delImage;//删除图片
 
-    QColor color = QColor(190 ,190, 190);
-    QBrush brush = QBrush(Qt::white);
+    QColor m_color = QColor(190 ,190, 190);
+    QBrush m_brush = QBrush(Qt::white);
 
-    Interaction *interaction = nullptr;
+    Interaction *m_interaction = nullptr;
 
-    void _initControlQss();//初始化布局
-    void _setstyle();
+    void initControlQss();//初始化布局
+    void setstyle();
 //    bool event(QEvent *event);
 
 
-    void _originalSize();
-    void _adaptiveWidget();
-    void _rotate();
-    void _flipH();
-    void _flipV();
-    void _cutImage();
-    void _filter();
-    void _labelbar();
-    void _sidebar();
-    void _information();
-    void _delImage();
+    void originalSize();
+    void adaptiveWidget();
+    void rotate();
+    void flipH();
+    void flipV();
+    void cutImage();
+    void filter();
+    void labelbar();
+    void sidebar();
+    void information();
+    void delImage();
 
-    void _changeStyle();
-    void _initGsetting();
-    void _dealSystemGsettingChange(const QString);
-    void _initConnect();
+    void changeStyle();
+    void initGsetting();
+    void dealSystemGsettingChange(const QString);
+    void initConnect();
 //    void paintEvent(QPaintEvent *event);
 
 

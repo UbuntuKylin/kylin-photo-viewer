@@ -1,3 +1,9 @@
+kylin-photo-viewer (1.0.0-5) v101; urgency=medium
+  
+  * 代码规范
+
+ -- liuyuhui <liuyuhui@kylinos.cn>  Tue,06  Apr 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-4) v101; urgency=medium
   
   * 解决BUG#45176 当图片显示比例为三位数时工具栏中图片的缩放百分比未位于比例缩小和比例放大的中央位置

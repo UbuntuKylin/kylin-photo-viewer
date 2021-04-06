@@ -1,19 +1,20 @@
 #include "showimagewidget.h"
 #include "kyview.h"
+#include "sizedate.h"
 ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent)
 {
     this->resize(w,h);
 //    imageWid = new QWidget(this);
 //    imageLayout = new QHBoxLayout(this);
 
-    showImage = new QLabel(this);
-    showImage->resize(this->width(),this->height());
-    showImage->move(int((this->width() - showImage->width())/2),int((this->height() - showImage->height())/2));
-    showImage->setMouseTracking(true);
-    showImage->installEventFilter(this);
-    showImage->setAlignment(Qt::AlignCenter);
-    showImage->setContextMenuPolicy(Qt::ActionsContextMenu);
-    showImage->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_showImage = new QLabel(this);
+    m_showImage->resize(this->width(),this->height());
+    m_showImage->move(int((this->width() - m_showImage->width())/2),int((this->height() - m_showImage->height())/2));
+    m_showImage->setMouseTracking(true);
+    m_showImage->installEventFilter(this);
+    m_showImage->setAlignment(Qt::AlignCenter);
+    m_showImage->setContextMenuPolicy(Qt::ActionsContextMenu);
+    m_showImage->setContextMenuPolicy(Qt::CustomContextMenu);
 
 //    imageLayout->addWidget(showImage);
 //    imageWid->setLayout(imageLayout);
@@ -22,112 +23,111 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
 //    imageWid->setMouseTracking(true);
 
 
-    copy = new QAction(tr("Copy"),this);
-    setDeskPaper = new QAction(tr("Set Desktop Wallpaper"),this);
-    setLockPaper = new QAction(tr("Set Lock Wallpaper"),this);
-    print = new QAction(tr("Print"),this);
-    deleteImage = new QAction(tr("Delete"),this);
-    showInFile = new QAction(tr("Show in File"),this);
-    imageMenu = new QMenu(this);
+    m_copy = new QAction(tr("Copy"),this);
+    m_setDeskPaper = new QAction(tr("Set Desktop Wallpaper"),this);
+    m_setLockPaper = new QAction(tr("Set Lock Wallpaper"),this);
+    m_print = new QAction(tr("Print"),this);
+    m_deleteImage = new QAction(tr("Delete"),this);
+    m_showInFile = new QAction(tr("Show in File"),this);
+    m_imageMenu = new QMenu(this);
 //    imageMenu->addAction(copy);
 //    imageMenu->addAction(copy);
 //    imageMenu->addAction(setDeskPaper);
 //    imageMenu->addAction(setLockPaper);
 //    imageMenu->addAction(print);
-    imageMenu->addAction(deleteImage);
-    imageMenu->addAction(showInFile);
+    m_imageMenu->addAction(m_deleteImage);
+    m_imageMenu->addAction(m_showInFile);
 
-    next = new QPushButton(this);
-    next->resize(56,56);
-    next->setIcon(QIcon(":/res/res/right.png"));
-    back = new QPushButton(this);
-    back->resize(56,56);
-    back->setIcon(QIcon(":/res/res/left.png"));
+    g_next = new QPushButton(this);
+    g_next->resize(SizeDate::IMAGEBUTTON);
+    g_next->setIcon(QIcon(":/res/res/right.png"));
+    g_back = new QPushButton(this);
+    g_back->resize(SizeDate::IMAGEBUTTON);
+    g_back->setIcon(QIcon(":/res/res/left.png"));
 
-    back->move(43,int((this->height() - back->height())/2));
-    next->move(this->width() - 43 - next->width(),int((this->height() - next->height())/2));
+    g_back->move(SizeDate::LEFTPOS,int((this->height() - g_back->height())/2));
+    g_next->move(this->width() - SizeDate::LEFTPOS - g_next->width(),int((this->height() - g_next->height())/2));
 
-    iconSize = QSize(56,56);
-    back->setIconSize(iconSize);
-    next->setIconSize(iconSize);
+    g_back->setIconSize(SizeDate::IMAGEICON);
+    g_next->setIconSize(SizeDate::IMAGEICON);
 
-    back->setFocusPolicy(Qt::NoFocus);
-    next->setFocusPolicy(Qt::NoFocus);
-    back->setStyleSheet("background-color:transparent;border-radius:4px;");
-    next->setStyleSheet("background-color:transparent;border-radius:4px;");
+    g_back->setFocusPolicy(Qt::NoFocus);
+    g_next->setFocusPolicy(Qt::NoFocus);
+    g_back->setStyleSheet("background-color:transparent;border-radius:4px;");
+    g_next->setStyleSheet("background-color:transparent;border-radius:4px;");
 
-    this->_initConnect();
-    _initInteraction();//一定要放到构造函数末尾
+    this->initConnect();
+    initInteraction();//一定要放到构造函数末尾
 }
 
-void ShowImageWidget::_initConnect()
+void ShowImageWidget::initConnect()
 {
-    connect(next,&QPushButton::clicked,this,&ShowImageWidget::_nextImage);
-    connect(back,&QPushButton::clicked,this,&ShowImageWidget::_backImage);
+    connect(g_next,&QPushButton::clicked,this,&ShowImageWidget::nextImage);
+    connect(g_back,&QPushButton::clicked,this,&ShowImageWidget::backImage);
     //设置壁纸
-    connect(showImage,&QLabel::customContextMenuRequested,[=](const QPoint &pos){
+    connect(m_showImage,&QLabel::customContextMenuRequested,[=](const QPoint &pos){
        Q_UNUSED(pos);
-       imageMenu->exec(QCursor::pos());
+       m_imageMenu->exec(QCursor::pos());
     });
-//    connect(copy, &QAction::triggered, this,&ShowImageWidget::_copy);
-    connect(setDeskPaper, &QAction::triggered, this,&ShowImageWidget::_setDeskPaper);
-//    connect(setLockPaper, &QAction::triggered, this,&ShowImageWidget::_setLockPaper);
-//    connect(print, &QAction::triggered, this,&ShowImageWidget::_print);
-    connect(deleteImage, &QAction::triggered, this,&ShowImageWidget::_deleteImage);
-    connect(showInFile, &QAction::triggered, this,&ShowImageWidget::_showInFile);
+//    connect(copy, &QAction::triggered, this,&ShowImageWidget::copy);
+    connect(m_setDeskPaper, &QAction::triggered, this,&ShowImageWidget::setDeskPaper);
+//    connect(m_setLockPaper, &QAction::triggered, this,&ShowImageWidget::setLockPaper);
+//    connect(m_print, &QAction::triggered, this,&ShowImageWidget::print);
+    connect(m_deleteImage, &QAction::triggered, this,&ShowImageWidget::deleteImage);
+    connect(m_showInFile, &QAction::triggered, this,&ShowImageWidget::showInFile);
 
 }
 //下一张
-void ShowImageWidget::_nextImage()
+void ShowImageWidget::nextImage()
 {
-    canSet = true;
-    interaction->nextImage();
+    m_canSet = true;
+    m_interaction->nextImage();
 }
 //上一张
-void ShowImageWidget::_backImage()
+void ShowImageWidget::backImage()
 {
-    canSet = true;
-    interaction->backImage();
+    m_canSet = true;
+    m_interaction->backImage();
 }
 
-void ShowImageWidget::_copy()
+void ShowImageWidget::copy()
 {
-//    qDebug()<<"复制";
+    qDebug()<<"复制";
 }
 
-void ShowImageWidget::_setDeskPaper()
+void ShowImageWidget::setDeskPaper()
 {
-    interaction->setAsBackground();//设置为桌面壁纸
+    m_interaction->setAsBackground();//设置为桌面壁纸
 }
 
-void ShowImageWidget::_setLockPaper()
+void ShowImageWidget::setLockPaper()
 {
     qDebug()<<"设置为锁屏壁纸";
 }
 
-void ShowImageWidget::_print()
+void ShowImageWidget::print()
 {
     qDebug()<<"打印";
 }
-
-void ShowImageWidget::_deleteImage()
+//删除
+void ShowImageWidget::deleteImage()
 {
-    qDebug()<<"删除";
-    interaction->deleteImage();
+    m_interaction->deleteImage();
 }
-
-void ShowImageWidget::_showInFile()
+//在文件夹中显示
+void ShowImageWidget::showInFile()
 {
 
-    if (path == "")
+    if (m_path == ""){
         return;
-    else
-        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    }else{
+        QDesktopServices::openUrl(QUrl::fromLocalFile(m_path));
+    }
 }
 //显示右键菜单栏
-void ShowImageWidget::m_setMenuAction()
-{   //拿到可设置为壁纸的图片格式
-
+void ShowImageWidget::setMenuAction()
+{
+    //拿到可设置为壁纸的图片格式
     QStringList formatList;
     QString format;
     format = "";
@@ -137,48 +137,40 @@ void ShowImageWidget::m_setMenuAction()
         formatList.append(format);
     }
     //判断是否为可设置为壁纸的类型
-    if(formatList.contains(paperFormat))
+    if(formatList.contains(m_paperFormat))
     {
-      imageMenu->insertAction(deleteImage,setDeskPaper);
+      m_imageMenu->insertAction(m_deleteImage,m_setDeskPaper);
     }else{
-        imageMenu->removeAction(setDeskPaper);
+        m_imageMenu->removeAction(m_setDeskPaper);
     }
 
 }
 
-void ShowImageWidget::_processFinish(bool isFinish)
+void ShowImageWidget::initInteraction()
 {
-    if(isFinish)
-        qDebug()<<"finish"<<isFinish;
-    else
-        qDebug()<<"not finish"<<isFinish;
-}
-
-void ShowImageWidget::_initInteraction()
-{
-    interaction =Interaction::getInstance();
+    m_interaction =Interaction::getInstance();
     //此处绑定信号和槽
-    connect(interaction,&Interaction::startWithOpenImage,this,&ShowImageWidget::_startWithOpenImage);//启动时打开图片
-    connect(interaction,&Interaction::openFinish,this,&ShowImageWidget::openFinish);//图片打开完成，获取数据
-    connect(interaction,&Interaction::albumFinish,this,&ShowImageWidget::albumFinish);//相册缩略图打开完成，获取数据
-    interaction->initUiFinish();
+    connect(m_interaction,&Interaction::startWithOpenImage,this,&ShowImageWidget::startWithOpenImage);//启动时打开图片
+    connect(m_interaction,&Interaction::openFinish,this,&ShowImageWidget::openFinish);//图片打开完成，获取数据
+    connect(m_interaction,&Interaction::albumFinish,this,&ShowImageWidget::albumFinish);//相册缩略图打开完成，获取数据
+    m_interaction->initUiFinish();
 }
-void ShowImageWidget::_startWithOpenImage(QString path)
+void ShowImageWidget::startWithOpenImage(QString path)
 {
-    _openImage(path);
+    openImage(path);
 }
-
-void ShowImageWidget::_openImage(QString path)
+//打开图片
+void ShowImageWidget::openImage(QString path)
 {
-    QVariant var= interaction->openImage(path);
+    QVariant var= m_interaction->openImage(path);
     //相册列表，需要得到图片的数量
     QList<int> list = var.value<QList<int>>();
     //小于2张，左右按钮隐藏
     if(list.length() < 2){
-            //主界面需要知道是否只有一张图片来处理hover态显示。
-            buttonState = false;
+            //主界面需要知道是否只有一张图片来处理左右按钮显示。
+            g_buttonState = false;
         }else{
-            buttonState = true;
+            g_buttonState = true;
         }
 }
 //拿到图片信息，进行处理
@@ -200,37 +192,36 @@ void ShowImageWidget::openFinish(QVariant var)
     QString colorSpace = package.colorSpace;
     QString num;
     num = QString("%1").arg(proportion) + "%";
-    path = info.absolutePath();//图片的路径
-    copyImage = pixmap;//留着复制可能用
-    paperFormat = info.suffix();
+    m_path = info.absolutePath();//图片的路径
+    m_copyImage = pixmap;//留着复制可能用
+    m_paperFormat = info.suffix();
 
     //使用返回的信息进行设置界面
-    this->showImage->setPixmap(pixmap);
+    this->m_showImage->setPixmap(pixmap);
     emit perRate(num);//发送给toolbar来更改缩放数字
     emit ToshowImage();//给主界面--展示图片
     emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
     emit titleName(info.fileName());//给顶栏图片的名字
-    //设置壁纸--动图在传来时是一帧一帧，防止多次添加右键菜单动作
-    if(canSet)
+
+    //设置壁纸--动图在传来时是一帧一帧，只判断并添加一次右键菜单选项
+    if(m_canSet)
     {
-        canSet = false;
-        m_setMenuAction();
+        m_canSet = false;
+        setMenuAction();
 
     }
-
-
 }
-
+//拉伸主界面时重新安排界面显示
 void ShowImageWidget::re_move(int W, int H)
 {
     //拉伸主界面时重新安排界面显示
     this->resize(W,H);
-    this->showImage->resize(W,H);
-    this->showImage->move(int((W - this->showImage->width())/2),int((H - this->showImage->height())/2));
-    back->move(43,int((this->height() - back->height())/2));
-    next->move(W - 43 - next->width(),int((H - next->height())/2));
+    this->m_showImage->resize(W,H);
+    this->m_showImage->move(int((W - this->m_showImage->width())/2),int((H - this->m_showImage->height())/2));
+    g_back->move(SizeDate::LEFTPOS,int((this->height() - g_back->height())/2));
+    g_next->move(W - SizeDate::LEFTPOS - g_next->width(),int((H - g_next->height())/2));
 }
-
+//相册
 void ShowImageWidget::albumFinish(QVariant var)
 {
     ImageAndInfo package =var.value<ImageAndInfo>();
@@ -242,13 +233,14 @@ void ShowImageWidget::albumFinish(QVariant var)
 void ShowImageWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
-    this->showImage->resize(KyView::mutual->width(),KyView::mutual->height());
-    interaction->changeWidgetSize(this->showImage->size());
+    this->m_showImage->resize(KyView::mutual->width(),KyView::mutual->height());
+    m_interaction->changeWidgetSize(this->m_showImage->size());
 }
+//滚轮放大缩小
 bool ShowImageWidget::eventFilter(QObject *obj, QEvent *event)
 {
     //滚轮进行放大缩小图片
-    if(obj == showImage)
+    if(obj == m_showImage)
     {
         if(event->type()==QEvent::Wheel)
         {

@@ -14,9 +14,9 @@ public:
     explicit Navigator(QWidget *parent = nullptr);
 
 private:
-    QLabel *bottomImage;
-    void _showNavigation(QPixmap pix);
-    Interaction * interaction =nullptr;
+    QLabel *m_bottomImage;
+    void showNavigation(QPixmap pix);
+    Interaction * m_interaction =nullptr;
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
 

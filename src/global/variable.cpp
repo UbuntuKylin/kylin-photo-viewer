@@ -52,8 +52,6 @@ const int Variable::RESIZE_KEY_MAX = 1000; //能够放大的最大值
 const int Variable::RESIZE_KEY_MIN = 5; //能够缩小的最小值
 const int Variable::DEFAULT_MOVIE_TIME_INTERVAL = 100; //默认动图时间间隔
 
-//标题栏高度
-const int Variable::BAR_HEIGHT = 40;
 
 
 QGSettings *Variable::getSettings()

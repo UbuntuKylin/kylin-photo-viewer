@@ -52,6 +52,7 @@ SOURCES += main.cpp \
     view/openimage.cpp \
     view/showimagewidget.cpp \
     view/sidebar.cpp \
+    view/sizedate.cpp \
     view/titlebar.cpp \
     view/toolbar.cpp \
     view/xatom-helper.cpp
@@ -78,6 +79,7 @@ HEADERS += \
     view/openimage.h \
     view/showimagewidget.h \
     view/sidebar.h \
+    view/sizedate.h \
     view/titlebar.h \
     view/toolbar.h \
     view/xatom-helper.h

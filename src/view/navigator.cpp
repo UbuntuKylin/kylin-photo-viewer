@@ -4,25 +4,25 @@ Navigator::Navigator(QWidget *parent) : QWidget(parent)
 {
     this->resize(Variable::NAVIGATION_SIZE);
     this->setStyleSheet("QWidget{background-color:rgba(0,0,0,0.4);}");
-    bottomImage = new QLabel(this);
-    bottomImage->setAlignment(Qt::AlignCenter);
-    bottomImage->resize(this->width(),this->height());
-    bottomImage->move(0,0);
+    m_bottomImage = new QLabel(this);
+    m_bottomImage->setAlignment(Qt::AlignCenter);
+    m_bottomImage->resize(this->width(),this->height());
+    m_bottomImage->move(0,0);
     this->setMouseTracking(true);
-    interaction = Interaction::getInstance();
+    m_interaction = Interaction::getInstance();
     //此处绑定信号和槽
-    connect(interaction,&Interaction::showNavigation,this,&Navigator::_showNavigation);//启动时打开图片
-    connect(this,&Navigator::posChange,interaction,&Interaction::clickNavigation);
+    connect(m_interaction,&Interaction::showNavigation,this,&Navigator::showNavigation);//启动时打开图片
+    connect(this,&Navigator::posChange,m_interaction,&Interaction::clickNavigation);
 
 }
 
-void Navigator::_showNavigation(QPixmap pix)
+void Navigator::showNavigation(QPixmap pix)
 {
     if(pix.isNull()){
         this->hide();
         return;
     }
-    bottomImage->setPixmap(pix);
+    m_bottomImage->setPixmap(pix);
     if(this->isHidden()){
         this->show();
         emit naviChange();
