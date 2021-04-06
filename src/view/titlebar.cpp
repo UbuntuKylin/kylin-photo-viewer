@@ -9,18 +9,21 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     g_titleWid = new QWidget(this);
     m_titleLayout = new QHBoxLayout(this);
 
-    m_logoBtn = new QPushButton(this);
+    m_logoBtn = new QLabel(this);
     m_logolb = new QLabel(this);
     m_logoBtn->setFixedSize(SizeDate::LOGOBTN);
-    m_logoBtn->setIconSize(SizeDate::LOGOBTN);//重置图标大小
-    m_logoBtn->setIcon(QIcon(":/res/res/kyview_logo.png"));
+    m_logoBtn->setFixedSize(SizeDate::LOGOBTN);//重置图标大小
+    m_logoBtn->setPixmap(QPixmap::fromImage(QImage(":/res/res/kyview_logo.png")));
+    m_logoBtn->setScaledContents(true);
     m_logolb->setText(tr("Kylin Photo Viewer"));
+
 
     g_imageName = new QLabel(this);
     g_imageName->hide();
 
     g_menu = new menuModule(this);
     g_menu->setFocusPolicy(Qt::NoFocus);
+
     m_minibtn = new QPushButton(this);
     m_minibtn->setFixedSize(SizeDate::TITLEBTN);
     m_minibtn->setToolTip(tr("minimize"));

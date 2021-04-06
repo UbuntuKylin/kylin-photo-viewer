@@ -24,6 +24,7 @@ public:
     void changePerRate(QString num);
     void reduceImage();//缩小图片
     void enlargeImage();//放大图片
+    void delImage();//删除
     QFrame *g_tooleWid;//布局
 private:
 
@@ -66,7 +67,7 @@ private:
     void labelbar();
     void sidebar();
     void information();
-    void delImage();
+
 
     void changeStyle();
     void initGsetting();

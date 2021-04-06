@@ -1,6 +1,9 @@
 kylin-photo-viewer (1.0.0-5) v101; urgency=medium
   
   * 代码规范
+  * 添加深色模式按钮图标
+  * 添加按键响应包括上一张，下一张，删除
+  * 解决BUG#46044 鼠标悬浮于标题栏麒麟看图logo下侧位置时，logo呈选中状态显示
 
  -- liuyuhui <liuyuhui@kylinos.cn>  Tue,06  Apr 2021 09:46:00 +0800
 

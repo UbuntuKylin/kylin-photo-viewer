@@ -6,6 +6,7 @@ OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
     m_openInCenter = new QPushButton(this);
     m_addFile = new QPushButton(m_openInCenter);
     m_addFile->setFocusPolicy(Qt::NoFocus);
+    m_openInCenter->setFocusPolicy(Qt::NoFocus);
     m_openText = new QLabel(this);
     m_openInCenter->setFixedSize(SizeDate::OPENINCENTER_SIZE);
     m_openInCenter->move(0,0);
@@ -80,7 +81,7 @@ void OpenImage::dealSystemGsettingChange()
         m_openInCenter->setStyleSheet("background-color:rgba(0, 0, 0, 0.5);border-radius:64;");
         m_openText->setStyleSheet("QLabel{background-color:transparent;color:rgba(255, 255, 255, 1);}");
         m_addFile->setStyleSheet("background-color:transparent;");
-        m_addFile->setIcon(QIcon(":/res/res/addplus.png"));
+        m_addFile->setIcon(QIcon(":/res/res/1add_black.png"));
         m_addFile->setIconSize(SizeDate::ICONSIZE);
     }else{
         m_openInCenter->setStyleSheet("background-color:rgba(255, 255, 255, 0.4);border-radius:64;");

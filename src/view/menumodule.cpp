@@ -35,7 +35,7 @@ void menuModule::initAction(){
     menuButton->setPopupMode(QToolButton::InstantPopup);
     menuButton->setFixedSize(SizeDate::MBTNSIZE);
     menuButton->setAutoRaise(true);
-
+    menuButton->setFocusPolicy(Qt::NoFocus);
     m_menu = new QMenu();
 
     QList<QAction *> actions ;

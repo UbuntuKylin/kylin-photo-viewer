@@ -486,6 +486,7 @@ void KyView::paintEvent(QPaintEvent *event)
 // F1快捷键打开用户手册
 void KyView::keyPressEvent(QKeyEvent *event)
 {
+
     // F1快捷键打开用户手册
     if (event->key() == Qt::Key_F1) {
         if (!m_DaemonIpcDbus->daemonIsNotRunning())
@@ -494,6 +495,25 @@ void KyView::keyPressEvent(QKeyEvent *event)
             //如果是小工具类，下面的showGuide参数要填写"tools/kylin-photo-viewer"
             m_DaemonIpcDbus->showGuide("tools/indicator-china-weather");
         }
+    }
+    //上一张，下一张，delete按键响应
+    if(!m_openImage->isHidden())
+    {
+        return;
+    }else{
+        if(event->key() == Qt::Key_Delete)
+        {
+            m_toolbar->delImage();
+        }
+        if(event->key() == Qt::Key_Left)
+        {
+            m_showImageWidget->backImage();
+        }
+        if(event->key() == Qt::Key_Right)
+        {
+            m_showImageWidget->nextImage();
+        }
+
     }
 }
 //添加左键双击事件
