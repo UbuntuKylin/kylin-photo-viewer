@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QClipboard>
 #include <QProcess>
+#include <QMovie>
 #include "controller/interaction.h"
 
 class ShowImageWidget : public QWidget
@@ -42,6 +43,8 @@ private:
     QString m_path = "";//打开文件夹的路径
     QPixmap m_copyImage;//留着复制可能用
     QString m_paperFormat;//用来判断可设置为壁纸的样式
+
+    QMovie *m_loadingMovie = nullptr;
     bool m_canSet = true;//针对于动图，只响应第一次的结果显示。
 
     void initInteraction();

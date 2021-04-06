@@ -41,6 +41,7 @@ public:
     ~KyView();
     static KyView *mutual;//指针类型静态成员变量
 
+
 private:
     Interaction *m_interaction = nullptr;
     ToolBar *m_toolbar = nullptr;//工具栏

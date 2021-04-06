@@ -398,9 +398,19 @@ void Core::setAsBackground()
 
 void Core::close()
 {
+    //如果已经触发过关闭事件不响应
+    if (shouldClose) {
+        return;
+    }
+
+    //如果没有操作直接退出
+    if (!m_processed) {
+        exit(0);
+    }
     //如果正在播放动图，则停止
     if (m_playMovieTimer->isActive()) {
         m_playMovieTimer->stop();
+        showImage(QPixmap());
         //保存动图
         m_file->saveImage(m_matList,m_fps,m_nowpath);
         shouldClose = true;
