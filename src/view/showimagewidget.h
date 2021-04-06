@@ -23,6 +23,8 @@ public:
 
     void re_move(int w, int h);
     void openImage(QString path);//打开图片
+    void nextImage();//下一张
+    void backImage();//上一张
 
 private:
     Interaction *m_interaction = nullptr;
@@ -46,8 +48,7 @@ private:
     void openFinish(QVariant var);//打开结束
     void initConnect();
 
-    void nextImage();//下一张
-    void backImage();//上一张
+
 
     //右键菜单的各功能
     void copy();//复制

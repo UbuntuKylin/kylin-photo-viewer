@@ -32,5 +32,32 @@
         <file>res/menu_d.png</file>
         <file>res/kyview_logo.png</file>
         <file>res/close_black.png</file>
+        <file>res/1add_black.png</file>
+        <file>res/1adaptiveWidget_hover.png</file>
+        <file>res/1adaptiveWidget.png</file>
+        <file>res/1cutImage_hover.png</file>
+        <file>res/1cutImage.png</file>
+        <file>res/1delImage_hover.png</file>
+        <file>res/1delImage.png</file>
+        <file>res/1enlarge_hover.png</file>
+        <file>res/1enlarge.png</file>
+        <file>res/1filter_hover.png</file>
+        <file>res/1originalSize_hover.png</file>
+        <file>res/1labelbar.png</file>
+        <file>res/1labelbar_hover.png</file>
+        <file>res/1information.png</file>
+        <file>res/1information_hover.png</file>
+        <file>res/1flipV.png</file>
+        <file>res/1flipV_hover.png</file>
+        <file>res/1flipH.png</file>
+        <file>res/1flipH_hover.png</file>
+        <file>res/1filter.png</file>
+        <file>res/1sidebar.png</file>
+        <file>res/1sidebar_hover.png</file>
+        <file>res/1rotate.png</file>
+        <file>res/1rotate_hover.png</file>
+        <file>res/1reduce.png</file>
+        <file>res/1originalSize.png</file>
+        <file>res/1reduce_hover.png</file>
     </qresource>
 </RCC>

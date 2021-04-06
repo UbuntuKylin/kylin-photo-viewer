@@ -142,57 +142,57 @@ void ToolBar::setstyle()
     m_line1->setStyleSheet("QLabel{border: 1px solid #393939;background-color: #393939;}");
 //    m_line2->setStyleSheet("QLabel{border: 1px solid #393939;background-color: #393939;}");
 
-    m_reduce->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/reduce.png);}"
-                          "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/reduce_hover.png);}"
-                          "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/reduce_hover.png);}");
+    m_reduce->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/reduce.png);}"
+                          "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/reduce_hover.png);}"
+                          "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/reduce_hover.png);}");
 
-    m_enlarge->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/enlarge.png);}"
-                           "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/enlarge_hover.png);}"
-                           "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/enlarge_hover.png);}");
+    m_enlarge->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/enlarge.png);}"
+                           "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/enlarge_hover.png);}"
+                           "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/enlarge_hover.png);}");
 
-    m_originalSize->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/originalSize.png);}"
-                                "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/originalSize_hover.png);}"
-                                "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/originalSize_hover.png);}");
+    m_originalSize->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/originalSize.png);}"
+                                "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/originalSize_hover.png);}"
+                                "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/originalSize_hover.png);}");
 
-    m_adaptiveWidget->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/adaptiveWidget.png);}"
-                                  "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/adaptiveWidget_hover.png);}"
-                                  "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/adaptiveWidget_hover.png);}");
+    m_adaptiveWidget->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/adaptiveWidget.png);}"
+                                  "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/adaptiveWidget_hover.png);}"
+                                  "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/adaptiveWidget_hover.png);}");
 
-    m_rotate->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/rotate.png);}"
-                          "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/rotate_hover.png);}"
-                          "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/rotate_hover.png);}");
+    m_rotate->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/rotate.png);}"
+                          "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/rotate_hover.png);}"
+                          "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/rotate_hover.png);}");
 
-    m_flipH->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/flipH.png);}"
-                         "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/flipH_hover.png);}"
-                         "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/flipH_hover.png);}");
+    m_flipH->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/flipH.png);}"
+                         "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/flipH_hover.png);}"
+                         "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/flipH_hover.png);}");
 
-    m_flipV->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/flipV.png);}"
-                         "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/flipV_hover.png);}"
-                         "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/flipV_hover.png);}");
+    m_flipV->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/flipV.png);}"
+                         "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/flipV_hover.png);}"
+                         "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/flipV_hover.png);}");
 
-//    cutImage->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/cutImage.png);}"
-//                            "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/cutImage_hover.png);}"
-//                            "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/cutImage_hover.png);}");
+//    cutImage->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/cutImage.png);}"
+//                            "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/cutImage_hover.png);}"
+//                            "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/cutImage_hover.png);}");
 
-//    filter->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/filter.png);}"
-//                          "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/filter_hover.png);}"
-//                          "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/filter_hover.png);}");
+//    filter->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/filter.png);}"
+//                          "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/filter_hover.png);}"
+//                          "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/filter_hover.png);}");
 
-//    labelbar->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/labelbar.png);}"
-//                            "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/labelbar_hover.png);}"
-//                            "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/labelbar_hover.png);}");
+//    labelbar->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/labelbar.png);}"
+//                            "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/labelbar_hover.png);}"
+//                            "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/labelbar_hover.png);}");
 
-//    sidebar->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/sidebar.png);}"
-//                           "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/sidebar_hover.png);}"
-//                           "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/sidebar_hover.png);}");
+//    sidebar->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/sidebar.png);}"
+//                           "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/sidebar_hover.png);}"
+//                           "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/sidebar_hover.png);}");
 
-    m_information->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/information.png);}"
-                               "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/information_hover.png);}"
-                               "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/information_hover.png);}");
+    m_information->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/information.png);}"
+                               "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/information_hover.png);}"
+                               "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/information_hover.png);}");
 
-    m_delImage->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/delImage.png);}"
-                            "QPushButton::hover{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/delImage_hover.png);}"
-                            "QPushButton::pressed{border:0px;border-radius:4px;background:white;background-image: url(:/res/res/delImage_hover.png);}");
+    m_delImage->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:;background-image: url(:/res/res/delImage.png);}"
+                            "QPushButton::hover{border:0px;border-radius:4px;background:;background-image: url(:/res/res/delImage_hover.png);}"
+                            "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/delImage_hover.png);}");
 
 
 }
@@ -285,6 +285,7 @@ void ToolBar::information()
 //删除图片
 void ToolBar::delImage()
 {
+    qDebug()<<"d";
     m_interaction->deleteImage();
 }
 
@@ -306,9 +307,111 @@ void ToolBar::changeStyle()
     QString nowThemeStyle = m_pGsettingThemeData->get("styleName").toString();
     if("ukui-dark" == nowThemeStyle || "ukui-black" == nowThemeStyle)
     {
-        qDebug()<<"换图标";
+        m_reduce->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1reduce.png);}"
+                              "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1reduce_hover.png);}"
+                              "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1reduce_hover.png);}");
+
+        m_enlarge->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1enlarge.png);}"
+                               "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1enlarge_hover.png);}"
+                               "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1enlarge_hover.png);}");
+
+        m_originalSize->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1originalSize.png);}"
+                                    "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1originalSize_hover.png);}"
+                                    "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1originalSize_hover.png);}");
+
+        m_adaptiveWidget->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1adaptiveWidget.png);}"
+                                      "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1adaptiveWidget_hover.png);}"
+                                      "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1adaptiveWidget_hover.png);}");
+
+        m_rotate->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1rotate.png);}"
+                              "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1rotate_hover.png);}"
+                              "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1rotate_hover.png);}");
+
+        m_flipH->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1flipH.png);}"
+                             "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1flipH_hover.png);}"
+                             "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1flipH_hover.png);}");
+
+        m_flipV->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1flipV.png);}"
+                             "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1flipV_hover.png);}"
+                             "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1flipV_hover.png);}");
+
+    //    cutImage->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1cutImage.png);}"
+    //                            "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1cutImage_hover.png);}"
+    //                            "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1cutImage_hover.png);}");
+
+    //    filter->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1filter.png);}"
+    //                          "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1filter_hover.png);}"
+    //                          "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1filter_hover.png);}");
+
+    //    labelbar->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1labelbar.png);}"
+    //                            "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1labelbar_hover.png);}"
+    //                            "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1labelbar_hover.png);}");
+
+    //    sidebar->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1sidebar.png);}"
+    //                           "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1sidebar_hover.png);}"
+    //                           "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1sidebar_hover.png);}");
+
+        m_information->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1information.png);}"
+                                   "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1information_hover.png);}"
+                                   "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1information_hover.png);}");
+
+        m_delImage->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1delImage.png);}"
+                                "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1delImage_hover.png);}"
+                                "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1delImage_hover.png);}");
+
     }else{
-        qDebug()<<"换图标";
+        m_reduce->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/reduce.png);}"
+                              "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/reduce_hover.png);}"
+                              "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/reduce_hover.png);}");
+
+        m_enlarge->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/enlarge.png);}"
+                               "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/enlarge_hover.png);}"
+                               "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/enlarge_hover.png);}");
+
+        m_originalSize->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/originalSize.png);}"
+                                    "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/originalSize_hover.png);}"
+                                    "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/originalSize_hover.png);}");
+
+        m_adaptiveWidget->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/adaptiveWidget.png);}"
+                                      "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/adaptiveWidget_hover.png);}"
+                                      "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/adaptiveWidget_hover.png);}");
+
+        m_rotate->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/rotate.png);}"
+                              "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/rotate_hover.png);}"
+                              "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/rotate_hover.png);}");
+
+        m_flipH->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/flipH.png);}"
+                             "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/flipH_hover.png);}"
+                             "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/flipH_hover.png);}");
+
+        m_flipV->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/flipV.png);}"
+                             "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/flipV_hover.png);}"
+                             "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/flipV_hover.png);}");
+
+    //    cutImage->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/cutImage.png);}"
+    //                            "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/cutImage_hover.png);}"
+    //                            "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/cutImage_hover.png);}");
+
+    //    filter->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/filter.png);}"
+    //                          "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/filter_hover.png);}"
+    //                          "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/filter_hover.png);}");
+
+    //    labelbar->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/labelbar.png);}"
+    //                            "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/labelbar_hover.png);}"
+    //                            "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/labelbar_hover.png);}");
+
+    //    sidebar->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/sidebar.png);}"
+    //                           "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/sidebar_hover.png);}"
+    //                           "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/sidebar_hover.png);}");
+
+        m_information->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/information.png);}"
+                                   "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/information_hover.png);}"
+                                   "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/information_hover.png);}");
+
+        m_delImage->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/delImage.png);}"
+                                "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/delImage_hover.png);}"
+                                "QPushButton::pressed{border:0px;border-radius:4px;background:;background-image: url(:/res/res/delImage_hover.png);}");
+
     }
 }
 
