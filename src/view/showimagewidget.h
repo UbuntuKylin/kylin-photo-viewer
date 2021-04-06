@@ -17,50 +17,49 @@ class ShowImageWidget : public QWidget
 public:
     ShowImageWidget(QWidget *parent,int w, int h);
 
-    QPushButton *next; //下一张
-    QPushButton *back; //上一张
-    bool buttonState = true; //用来判断只有一张图片时隐藏左右滑动按钮
+    QPushButton *g_next; //下一张
+    QPushButton *g_back; //上一张
+    bool g_buttonState = true; //用来判断只有一张图片时隐藏左右滑动按钮
 
     void re_move(int w, int h);
-    void _openImage(QString path);//打开图片
-    void _startWithOpenImage(QString path);//由图片打开
+    void openImage(QString path);//打开图片
+
 private:
-    Interaction *interaction = nullptr;
+    Interaction *m_interaction = nullptr;
 //    QWidget *imageWid;
 //    QHBoxLayout *imageLayout;
-    QSize iconSize;//左右按钮图片尺寸
-    QLabel *showImage;//用来展示图片的区域
-    QAction *copy;//复制
-    QAction *setDeskPaper;//设置为桌面壁纸
-    QAction *setLockPaper;//设置为锁屏壁纸
-    QAction *print;//打印
-    QAction *deleteImage;//删除
-    QAction *showInFile;//在文件夹中显示
-    QMenu * imageMenu;//图片右键菜单
+    QLabel *m_showImage;//用来展示图片的区域
+    QAction *m_copy;//复制
+    QAction *m_setDeskPaper;//设置为桌面壁纸
+    QAction *m_setLockPaper;//设置为锁屏壁纸
+    QAction *m_print;//打印
+    QAction *m_deleteImage;//删除
+    QAction *m_showInFile;//在文件夹中显示
+    QMenu * m_imageMenu;//图片右键菜单
 
-    QString path = "";//打开文件夹的路径
-    QPixmap copyImage;//留着复制可能用
-    QString paperFormat;//用来判断可设置为壁纸的样式
-    bool canSet = true;//针对于动图，只响应第一次的结果显示。
+    QString m_path = "";//打开文件夹的路径
+    QPixmap m_copyImage;//留着复制可能用
+    QString m_paperFormat;//用来判断可设置为壁纸的样式
+    bool m_canSet = true;//针对于动图，只响应第一次的结果显示。
 
-    void _initInteraction();
+    void initInteraction();
     void openFinish(QVariant var);//打开结束
-    void _initConnect();
+    void initConnect();
 
-    void _nextImage();//下一张
-    void _backImage();//上一张
+    void nextImage();//下一张
+    void backImage();//上一张
 
     //右键菜单的各功能
-    void _copy();//复制
-    void _setDeskPaper();//设置为桌面壁纸
-    void _setLockPaper();//设置为锁屏壁纸
-    void _print();//打印
-    void _deleteImage();//删除图片
-    void _showInFile();//在文件夹中显示
+    void copy();//复制
+    void setDeskPaper();//设置为桌面壁纸
+    void setLockPaper();//设置为锁屏壁纸
+    void print();//打印
+    void deleteImage();//删除图片
+    void showInFile();//在文件夹中显示
 
-    void m_setMenuAction();//检查当前图片是否可设置为壁纸
+    void setMenuAction();//检查当前图片是否可设置为壁纸
+    void startWithOpenImage(QString path);//由图片打开
 
-    void _processFinish(bool isFinish);//判断是否处理图片完成
     void albumFinish(QVariant var);//相册
     void resizeEvent(QResizeEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);

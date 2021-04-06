@@ -1,65 +1,65 @@
 #include "information.h"
-
+#include "sizedate.h"
 Information::Information(QWidget *parent) : QWidget(parent)
 {
-    this->resize(207,197 + 18);
+    this->resize(SizeDate::INFORSIZE);
     this->adjustSize();
 //    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    widName = new QLabel(this);
-    widName->setAttribute(Qt::WA_TranslucentBackground);
-    widName->setText(tr("Information"));
-//    widName->setText(tr("信息"));
-    name = new QLabel(this);
-    name->setAttribute(Qt::WA_TranslucentBackground);
-    name->setText(tr("Name"));
-//    name->setText(tr("名称"));
-    format = new QLabel(this);
-    format->setAttribute(Qt::WA_TranslucentBackground);
-    format->setText(tr("Format"));
-//    format->setText(tr("格式"));
-    storageSize = new QLabel(this);
-    storageSize->setAttribute(Qt::WA_TranslucentBackground);
-    storageSize->setText(tr("Storage size"));
+    m_widName = new QLabel(this);
+    m_widName->setAttribute(Qt::WA_TranslucentBackground);
+    m_widName->setText(tr("Information"));
+//    m_widName->setText(tr("信息"));
+    m_name = new QLabel(this);
+    m_name->setAttribute(Qt::WA_TranslucentBackground);
+    m_name->setText(tr("Name"));
+//    m_name->setText(tr("名称"));
+    m_format = new QLabel(this);
+    m_format->setAttribute(Qt::WA_TranslucentBackground);
+    m_format->setText(tr("Format"));
+//    m_format->setText(tr("格式"));
+    m_storageSize = new QLabel(this);
+    m_storageSize->setAttribute(Qt::WA_TranslucentBackground);
+    m_storageSize->setText(tr("Storage size"));
 //    storageSize->setText(tr("大小"));
-    pixelSize = new QLabel(this);
-    pixelSize->setAttribute(Qt::WA_TranslucentBackground);
-    pixelSize->setText(tr("Pixel Size"));
+    m_pixelSize = new QLabel(this);
+    m_pixelSize->setAttribute(Qt::WA_TranslucentBackground);
+    m_pixelSize->setText(tr("Pixel Size"));
 //    pixelSize->setText(tr("尺寸"));
-    colorSpace = new QLabel(this);
-    colorSpace->setAttribute(Qt::WA_TranslucentBackground);
-    colorSpace->setText(tr("Color Space"));
+    m_colorSpace = new QLabel(this);
+    m_colorSpace->setAttribute(Qt::WA_TranslucentBackground);
+    m_colorSpace->setText(tr("Color Space"));
 //    colorSpace->setText(tr("颜色空间"));
-    creationTime = new QLabel(this);
-    creationTime->setAttribute(Qt::WA_TranslucentBackground);
-    creationTime->setText(tr("Create Time"));
+    m_creationTime = new QLabel(this);
+    m_creationTime->setAttribute(Qt::WA_TranslucentBackground);
+    m_creationTime->setText(tr("Create Time"));
 //    creationTime->setText(tr("创建时间"));
-    revisionTime = new QLabel(this);
-    revisionTime->setAttribute(Qt::WA_TranslucentBackground);
-    revisionTime->setText(tr("Revise Time"));
+    m_revisionTime = new QLabel(this);
+    m_revisionTime->setAttribute(Qt::WA_TranslucentBackground);
+    m_revisionTime->setText(tr("Revise Time"));
 //    revisionTime->setText(tr("修改时间"));
 
-    nameC = new QLabel(this);
-    nameC->setAttribute(Qt::WA_TranslucentBackground);
-    formatC = new QLabel(this);
-    formatC->setAttribute(Qt::WA_TranslucentBackground);
-    storageSizeC = new QLabel(this);
-    storageSizeC->setAttribute(Qt::WA_TranslucentBackground);
-    pixelSizeC = new QLabel(this);
-    pixelSizeC->setAttribute(Qt::WA_TranslucentBackground);
-    colorSpaceC = new QLabel(this);
-    colorSpaceC->setAttribute(Qt::WA_TranslucentBackground);
-    creationTimeC = new QLabel(this);
-    creationTimeC->setAttribute(Qt::WA_TranslucentBackground);
-    revisionTimeC = new QLabel(this);
-    revisionTimeC->setAttribute(Qt::WA_TranslucentBackground);
+    m_nameC = new QLabel(this);
+    m_nameC->setAttribute(Qt::WA_TranslucentBackground);
+    m_formatC = new QLabel(this);
+    m_formatC->setAttribute(Qt::WA_TranslucentBackground);
+    m_storageSizeC = new QLabel(this);
+    m_storageSizeC->setAttribute(Qt::WA_TranslucentBackground);
+    m_pixelSizeC = new QLabel(this);
+    m_pixelSizeC->setAttribute(Qt::WA_TranslucentBackground);
+    m_colorSpaceC = new QLabel(this);
+    m_colorSpaceC->setAttribute(Qt::WA_TranslucentBackground);
+    m_creationTimeC = new QLabel(this);
+    m_creationTimeC->setAttribute(Qt::WA_TranslucentBackground);
+    m_revisionTimeC = new QLabel(this);
+    m_revisionTimeC->setAttribute(Qt::WA_TranslucentBackground);
 
-    inforWid = new QWidget(this);
-    gdLayout =new QGridLayout(this);
-    this->_layout();
+    m_inforWid = new QWidget(this);
+    m_gdLayout =new QGridLayout(this);
+    this->layout();
 //    this->setMouseTracking(true);
 
 }
-
+//为各控件设置text
 void Information::contentText(QFileInfo info, QString sizeImage, QString spaceColor)
 {
     QString imageSize;
@@ -70,68 +70,54 @@ void Information::contentText(QFileInfo info, QString sizeImage, QString spaceCo
         QString Size = QString("%1").arg(QString::asprintf("%.1f", float(info.size())/1024));
         imageSize = Size + "Kib";
     }
-    if(info.completeBaseName().length() > info.birthTime().toString("yyyy.MM.dd hh:mm").length()){
-
-    }
-    _longText(nameC,info.completeBaseName());
-    formatC->setText(info.suffix().toUpper());
-    storageSizeC->setText(imageSize);
-    pixelSizeC->setText(sizeImage);
-    colorSpaceC->setText(spaceColor);
-    creationTimeC->setText(info.birthTime().toString("yyyy.MM.dd hh:mm"));
-    revisionTimeC->setText(info.lastModified().toString("yyyy.MM.dd hh:mm"));
+    longText(m_nameC,info.completeBaseName());
+    m_formatC->setText(info.suffix().toUpper());
+    m_storageSizeC->setText(imageSize);
+    m_pixelSizeC->setText(sizeImage);
+    m_colorSpaceC->setText(spaceColor);
+    m_creationTimeC->setText(info.birthTime().toString("yyyy.MM.dd hh:mm"));
+    m_revisionTimeC->setText(info.lastModified().toString("yyyy.MM.dd hh:mm"));
 
 }
 
-void Information::_setstyle()
+void Information::setstyle()
 {
 
 }
 
-void Information::_layout()
+void Information::layout()
 {
-    gdLayout->addWidget(widName,0,0,1,2);
-    gdLayout->addWidget(name,1,0,1,1);
-    gdLayout->addWidget(nameC,1,3,1,4);
-    gdLayout->addWidget(format,2,0,1,1);
-    gdLayout->addWidget(formatC,2,3,1,4);
-//    label_9->setAlignment(Qt::AlignLeft|Qt::AlignTop);
-    gdLayout->addWidget(storageSize,3,0,1,1);
-    gdLayout->addWidget(storageSizeC,3,3,1,4);
-    gdLayout->addWidget(pixelSize,4,0,1,1);
-    gdLayout->addWidget(pixelSizeC,4,3,1,4);
-    gdLayout->addWidget(colorSpace,5,0,1,2);
-    gdLayout->addWidget(colorSpaceC,5,3,1,4);
-    gdLayout->addWidget(creationTime,6,0,1,2);
-    gdLayout->addWidget(creationTimeC,6,3,1,4);
-    gdLayout->addWidget(revisionTime,7,0,1,2);
-    gdLayout->addWidget(revisionTimeC,7,3,1,4);
+    m_gdLayout->addWidget(m_widName,0,0,1,2);
+    m_gdLayout->addWidget(m_name,1,0,1,1);
+    m_gdLayout->addWidget(m_nameC,1,3,1,4);
+    m_gdLayout->addWidget(m_format,2,0,1,1);
+    m_gdLayout->addWidget(m_formatC,2,3,1,4);
+    m_gdLayout->addWidget(m_storageSize,3,0,1,1);
+    m_gdLayout->addWidget(m_storageSizeC,3,3,1,4);
+    m_gdLayout->addWidget(m_pixelSize,4,0,1,1);
+    m_gdLayout->addWidget(m_pixelSizeC,4,3,1,4);
+    m_gdLayout->addWidget(m_colorSpace,5,0,1,2);
+    m_gdLayout->addWidget(m_colorSpaceC,5,3,1,4);
+    m_gdLayout->addWidget(m_creationTime,6,0,1,2);
+    m_gdLayout->addWidget(m_creationTimeC,6,3,1,4);
+    m_gdLayout->addWidget(m_revisionTime,7,0,1,2);
+    m_gdLayout->addWidget(m_revisionTimeC,7,3,1,4);
 
-    gdLayout->setContentsMargins(12,10,10,16);
-    inforWid->setLayout(gdLayout);
-    inforWid->resize(this->width(),this->height());
-    inforWid->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    m_gdLayout->setContentsMargins(12,10,10,16);
+    m_inforWid->setLayout(m_gdLayout);
+    m_inforWid->resize(this->width(),this->height());
+    m_inforWid->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
 }
-
-void Information::_longText(QLabel *nameC, QString text)
+//文字过长时，显示...，且可鼠标悬浮显示全部内容
+void Information::longText(QLabel *nameC, QString text)
 {
     QFontMetrics fontWidth(nameC->font());//得到每个字符的宽度
-    int wid = fontWidth.width(revisionTimeC->text());
-    QString elideNote = fontWidth.elidedText(text, Qt::ElideRight, wid);//最大宽度150像素
+    int wid = fontWidth.width(m_revisionTimeC->text());
+    QString elideNote = fontWidth.elidedText(text, Qt::ElideRight, wid);//最大宽度wid像素
     nameC->setText(elideNote);//显示省略好的字符串
     if(elideNote.contains("…",Qt::CaseInsensitive))
     {
          nameC->setToolTip(text);//设置tooltips
-    }
-}
-//检测鼠标位置--顶栏和工具栏的出现和隐藏
-void Information::mouseMoveEvent(QMouseEvent *event)
-{
-    int y =this->mapFromGlobal(QCursor().pos()).y();
-     qDebug()<<"ff"<<y;
-    if (y <= 40){
-
-        emit twoBarShow();
     }
 }

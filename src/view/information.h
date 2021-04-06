@@ -15,35 +15,34 @@ public:
     explicit Information(QWidget *parent = nullptr);
     void contentText(QFileInfo info,QString sizeImage,QString spaceColor);
 private:
-    QLabel *widName;//窗口名--信息
-    QLabel *name;//名称
-    QLabel *format;//格式
-    QLabel *storageSize;//存储大小
-    QLabel *pixelSize;//像素尺寸
-    QLabel *colorSpace; //颜色空间
-    QLabel *creationTime;//创建时间
-    QLabel *revisionTime;//修改时间
+    QLabel *m_widName;//窗口名--信息
+    QLabel *m_name;//名称
+    QLabel *m_format;//格式
+    QLabel *m_storageSize;//存储大小
+    QLabel *m_pixelSize;//像素尺寸
+    QLabel *m_colorSpace; //颜色空间
+    QLabel *m_creationTime;//创建时间
+    QLabel *m_revisionTime;//修改时间
 
-    QLabel *nameC;//名称内容
-    QLabel *formatC;//格式内容
-    QLabel *storageSizeC;//存储大小内容
-    QLabel *pixelSizeC;//像素尺寸内容
-    QLabel *colorSpaceC; //颜色空间内容
-    QLabel *creationTimeC;//创建时间内容
-    QLabel *revisionTimeC;//修改时间内容
+    QLabel *m_nameC;//名称内容
+    QLabel *m_formatC;//格式内容
+    QLabel *m_storageSizeC;//存储大小内容
+    QLabel *m_pixelSizeC;//像素尺寸内容
+    QLabel *m_colorSpaceC; //颜色空间内容
+    QLabel *m_creationTimeC;//创建时间内容
+    QLabel *m_revisionTimeC;//修改时间内容
 
-    QWidget *inforWid;
-    QGridLayout *gdLayout;
+    QWidget *m_inforWid;
+    QGridLayout *m_gdLayout;
 
-    QFont ft;
+    QFont m_ft;
 
-    void _setstyle();
-    void _layout();
-    void _longText(QLabel *nameC, QString text);
-    void mouseMoveEvent(QMouseEvent *event);
+    void setstyle();
+    void layout();
+    void longText(QLabel *nameC, QString text);
 
 signals:
-    void twoBarShow();
+
 };
 
 #endif // INFORMATION_H

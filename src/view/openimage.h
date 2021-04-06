@@ -18,19 +18,19 @@ public:
     explicit OpenImage(QWidget *parent = nullptr);
     void openimage();
 private:
-    Interaction *interaction = nullptr;
+    Interaction *m_interaction = nullptr;
     QGSettings *m_pGsettingThemeData = nullptr;
-    QPushButton *openInCenter;//圆形图标
-    QPushButton *addFile;//“+”图标
-    QLabel *openText;//下方文字
-    QSize iconsize;
+    QPushButton *m_openInCenter;//圆形图标
+    QPushButton *m_addFile;//“+”图标
+    QLabel *m_openText;//下方文字
+    QSize m_iconsize;
 
-    void _setstyle();
-    void _initconnect();
+    void setstyle();
+    void initconnect();
 
 
-    void _initGsettings();
-    void _dealSystemGsettingChange();
+    void initGsettings();
+    void dealSystemGsettingChange();
 
 private slots:
 

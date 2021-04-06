@@ -13,20 +13,20 @@ class TitleBar : public QWidget
 public:
     explicit TitleBar(QWidget *parent = nullptr);
 
-    QWidget *titleWid; //布局
-    menuModule *m_menu = nullptr;
-    QLabel *imageName;
-    QPushButton *fullscreen;//全屏
+    QWidget *g_titleWid; //布局
+    menuModule *g_menu = nullptr;
+    QLabel *g_imageName;
+    QPushButton *g_fullscreen;//全屏
 
     void showImageName(QString name);
 private:
 
-    QHBoxLayout *titleLayout;
-    QPushButton *logoBtn;//logo
-    QLabel *logolb;//name
-    QPushButton *minibtn;//最小化按钮
+    QHBoxLayout *m_titleLayout;
+    QPushButton *m_logoBtn;//logo
+    QLabel *m_logolb;//name
+    QPushButton *m_minibtn;//最小化按钮
 
-    QPushButton *closebtn;//关闭
+    QPushButton *m_closebtn;//关闭
 
     void initControlQss();//初始化顶栏布局
     void initConnect();//建立信号与槽的连接
@@ -38,7 +38,9 @@ private:
 
 signals:
 
-    void recovery();
+    void recovery();//处理主界面最大化和还原
+    void openSignal();//标题栏夏卡菜单打开图片
+    void aboutShow();//关于界面打开，两栏的展示情况
 
 };
 

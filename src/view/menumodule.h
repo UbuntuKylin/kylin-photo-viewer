@@ -33,42 +33,31 @@ public:
     void themeUpdate();
 //    void changeVolumePos(int posX, int posY, int width, int height);
 signals:
-    void menuModuleClose();
-    void openSignal();
+    void menuModuleClose();//从标题栏点击退出的信号
+    void openSignal();//从标题栏进行打开图片的信号
+    void aboutShow();//打开关于，主界面两栏的显示情况
 //    void menuModuleSetThemeStyle(QString);
 public:
     QToolButton *menuButton = nullptr;
     QMenu *m_menu = nullptr;
-public:
-    QString appName = "appName字段未填充!"; //格式kylin-usb-creator
-    QString appShowingName = "app展示名字段未填充"; //格式kylin usb creator ,用来在前端展示
-    QString appVersion = "appVersion字段未填充!";
-    QString appDesc = "appDesc字段未填充!";
-    QString iconPath = "iconPath字段未填充!";
-    QString confPath = "org.china-weather-data.settings";
-
 private:
-//    int volunmPosX;
-//    int volunmPosY;
-//    int volunmPosWidth;
-//    int volunmPosHeight;
+    QString m_appShowingName;
+    QString m_appVersion;
+    QString m_appName;
+    QString m_appDesc = "appDesc字段未填充!";
+    QString m_iconPath;
+    QString m_confPath = "org.china-weather-data.settings";
 
-    QMenu *themeMenu = nullptr;
-    QSize iconSize;
-//    QString appPath = "tools/kylin-usb-creator"; //拉起帮助菜单时使用appName字段
-    QDialog *aboutWindow = nullptr;
+    QMenu *m_themeMenu = nullptr;
+    QDialog *m_aboutWindow = nullptr;
     QGSettings *m_pGsettingThemeData = nullptr;
     QGSettings *m_pGsettingThemeStatus = nullptr;
-    DaemonDbus *ipcDbus = nullptr;
+    DaemonDbus *m_ipcDbus = nullptr;
     enum typeThemeStatus {
         themeAuto = 0,
         themeBlackOnly = 1,
         themeLightOnly = 2
     } themeStatus;
-
-protected:
-//    bool nativeEvent(const QByteArray &eventType, void *message, long *result)override;
-//    bool eventFilter(QObject *obj, QEvent *event)override;
 
 public slots:
     void dealSystemGsettingChange(const QString);
@@ -91,13 +80,10 @@ private:
 
     void refreshThemeBySystemConf();    //通过系统配置更改主题
 
-//    void moveVolSliderWid();
-
-
-    QLabel* titleText = nullptr;
-    QLabel* bodyAppVersion = nullptr;
-    QLabel* bodySupport = nullptr;
-    QLabel* bodyAppName = nullptr;
+    QLabel* m_titleText = nullptr;
+    QLabel* m_bodyAppVersion = nullptr;
+    QLabel* m_bodySupport = nullptr;
+    QLabel* m_bodyAppName = nullptr;
 };
 
 #endif // MENUMODULE_H
