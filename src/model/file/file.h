@@ -36,6 +36,7 @@ public:
     bool saveImage(QList<Mat> *list ,const int &fps, const QString &savepath , bool replace = true);
     static void deleteImage(const QString &savepath);
     bool isSaving(const QString &path);
+    bool allSaveFinish();
 
 private:
     static int getDelay(const QString &path,const QString &suffix);

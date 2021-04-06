@@ -5,6 +5,7 @@
 #include <QPixmap>
 #include <QVariant>
 #include <QFileInfo>
+#include <QStandardItemModel>
 class coreinteraction;
 
 class Interaction : public QObject
@@ -29,18 +30,9 @@ signals:
      * 参数类型：QVariant -> ImageAndInfo 例：ImageAndInfo package=var.value<ImageAndInfo>();
      * 参数描述：结构体，图片及相关信息信息，详情请参见variable.h文件中的ImageAndInfo结构体
      * 备注1：当type值为0时，说明所有图片都被删掉，显示添加图片界面
-     * 备注2：当QPixmap::isnull()为true时，显示正在加载动画，放大、缩小、旋转等会全部禁用，UI层要对图片详情和右键点击菜单做对应处理，在下次接收到有效图片时恢复正常
+     * 备注2：当QPixmap::isnull()为true时，要显示正在加载动画，放大、缩小、旋转、删除等会全部禁用
      */
     void openFinish(QVariant var);
-
-    /*
-     * 接口功能：相册缩略图加载完成，以及把图片相关信息发给前端
-     * 接口场景：每次添加图片，加载完缩略图完成需要UI层显示进相册列表的时候
-     * 接口类型：信号，需要绑定
-     * 参数类型：QVariant -> ImageAndInfo 例：ImageAndInfo package=var.value<ImageAndInfo>();
-     * 参数描述：结构体，图片及相关信息信息，详情请参见variable.h文件中的ImageAndInfo结构体
-     */
-    void albumFinish(QVariant var);
 
     /*
      * 接口功能：显示或隐藏导航栏
@@ -50,15 +42,6 @@ signals:
      * 参数描述：导航栏要显示的预览图，如果为空，则关闭导航栏
      */
     void showNavigation(QPixmap pix);
-
-    /*
-     * 接口功能：从相册中删除图片
-     * 接口场景：删除图片/图片打开失败时
-     * 接口类型：信号，需要绑定
-     * 参数类型：int
-     * 参数描述：图片的标签（唯一标识），该删除哪一张
-     */
-    void deleteImageOnAlbum(int type);
 
 public:
 
@@ -96,16 +79,7 @@ public:
      * 返回类型：QVariant -> QList<int> 例：QList<int> list=var.value<QList<int>>();
      * 返回描述：图片唯一标识的队列，用来实例化相册
      */
-    virtual QVariant openImage(const QString &path)=0;
-
-    /*
-     * 接口功能：切换图片
-     * 接口场景：点击相册中缩略图时
-     * 接口类型：函数，直接调用
-     * 参数类型：int
-     * 参数描述：图片唯一标识，该切换到哪一张
-     */
-    virtual void changeImage(const int &type)=0;
+    virtual void openImage(const QString &path)=0;
 
     /*
      * 接口功能：切换图片
@@ -174,7 +148,15 @@ public:
      * 接口场景：点击退出按钮时
      * 接口类型：函数，直接调用
      */
-    virtual void close()=0;//设置为背景图
+    virtual void close()=0;//关闭
+
+    /*
+     * 接口功能：获取相册model指针
+     * 接口场景：MainWindow构造函数里，在第一次打开图片之前
+     * 接口类型：函数，直接调用
+     * 备注：对应QlistView
+     */
+    virtual QStandardItemModel * getAlbumModel()=0;//获取相册model指针
 
 private:
     static Interaction *m_interaction;//单例指针

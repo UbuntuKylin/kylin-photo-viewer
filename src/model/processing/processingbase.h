@@ -1,10 +1,10 @@
-#ifndef _PROCESSING_H
-#define _PROCESSING_H
+#ifndef PROCESSINGBASE_H
+#define PROCESSINGBASE_H
 
 #include "global/variable.h"
 using namespace cv;
 
-class _Processing
+class ProcessingBase
 {
 public:
     enum FlipWay{none,clockwise,counterclockwise,vertical,horizontal};

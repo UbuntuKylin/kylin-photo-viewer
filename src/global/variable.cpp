@@ -35,8 +35,8 @@ const QStringList Variable::opencvCanSupportFormats={
     "jpg","jpe","jpeg","jp2","exr","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","pnm","webp"};
 //opencv不支持的格式列表
 const QStringList Variable::opencvCannotSupportFormats={
-    "TGA","SVG","GIF","APNG",
-    "tga","svg","gif","apng"};
+    "TGA","SVG","GIF","APNG","ICO"
+    "tga","svg","gif","apng","ico"};
 //壁纸支持的格式列表
 const QStringList Variable::BACKGROUND_SUPPORT_FORMATS={//经测试 "jp2","tga","dib","pbm","ppm"这几种格式不支持设置为壁纸
                                                         "jpg","jpe","jpeg","exr","pgm","pnm","sr","ras","png","bmp","tiff","tif","svg","gif","apng"};
@@ -52,6 +52,8 @@ const int Variable::RESIZE_KEY_MAX = 1000; //能够放大的最大值
 const int Variable::RESIZE_KEY_MIN = 5; //能够缩小的最小值
 const int Variable::DEFAULT_MOVIE_TIME_INTERVAL = 100; //默认动图时间间隔
 
+//标题栏高度
+const int Variable::BAR_HEIGHT = 40;
 
 
 QGSettings *Variable::getSettings()

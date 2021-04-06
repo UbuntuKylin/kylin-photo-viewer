@@ -50,6 +50,9 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
         Mat tmpMat = Mat(h,w,CV_8UC4,const_cast<uchar*>(data)).clone();
         stbi_image_free(data);
         cvtColor(tmpMat,mat,cv::COLOR_BGRA2RGBA);
+    } else if (suffix == "ico") {
+        QImage image(path);
+        mat = Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone();
     }
     //    if (suffix == "hdr") {
     //        int w,h,a;
@@ -175,8 +178,11 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
     if (type == "tga") {
         Mat tmpMat;
         cvtColor(mat,tmpMat,cv::COLOR_RGBA2BGRA);
-        stbi_write_tga(savepath.toLocal8Bit().data(),tmpMat.cols,tmpMat.rows,4,tmpMat.data);
-        return true;
+        return stbi_write_tga(savepath.toLocal8Bit().data(),tmpMat.cols,tmpMat.rows,4,tmpMat.data);
+    }
+    if (type == "ico") {
+        QPixmap pix = Processing::converFormat(mat);
+        return pix.save(savepath);
     }
     //    if(type == "hdr"){
     //        Mat tmpMat;
@@ -243,6 +249,11 @@ void File::deleteImage(const QString &savepath)
 bool File::isSaving(const QString &path)
 {
     return m_list.contains(path);
+}
+
+bool File::allSaveFinish()
+{
+    return m_list.isEmpty();
 }
 
 void File::processStart(const QString &cmd, QStringList arguments)

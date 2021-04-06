@@ -8,7 +8,7 @@
 
 using namespace cv;
 
-class Processing : public _Processing
+class Processing : public ProcessingBase
 {
 public:
     enum ProcessingType{flip};

@@ -8,6 +8,7 @@
 #include <QColor>
 #include <QTimer>
 #include <QGSettings>
+#include <QStandardItemModel>
 #include "model/dbus.h"
 #include "model/file/file.h"
 #include "model/processing/processing.h"
@@ -19,36 +20,11 @@ public:
     enum ChangeShowSizeType{BIG = 0,SMALL,ORIGIN,AUTO};//放大、缩小、原图、自适应
 };
 
-class ImageUrlAndTypeList  : public Enums//图片&地址映射的队列
-{
-public:
-    ImageUrlAndTypeList();
-    typedef QPair<int,QString> Pair;
-    QList<int> keys();
-    void remove(const int &type);
-    ChamgeImageType nextOrBack(const QString &oldPath,const QString &newPath);
-    int backKey(const int &key);
-    int nextKey(const int &key);
-    QString getPath(const int &key);
-    bool isEmpty();
-    void clear();
-    int length();
-    void append(const int &key,const QString &path);
-    void append(const ImageUrlAndTypeList &list);
-
-private:
-    QList<QPair<int,QString>> m_list;
-};
-
 class ImageShowStatus : public Enums //显示图片细节相关，记录显示图片状态
 {
 public:
-    ImageUrlAndTypeList m_imageUrlList;//图片队列
     QSize m_size;//记录当前窗口大小
     QFileInfo m_info;
-    int m_maxType = 0;//记录动态分配标签的最大值
-    int m_nowType = 0;//记录当前打开
-    int m_backType = 0;//记录上次打开
     QString m_nowpath;//记录当前路径
     QString m_backpath;//记录上次路径
     Mat m_nowMat;//记录当前打开
@@ -66,6 +42,8 @@ public:
     int m_fps = 0;//帧率
     bool m_processed = false;//此图被操作过
     bool m_thisImageIsSaving = false;//此图片正在储存
+    QStandardItemModel *m_albumModel = nullptr;//相册model
+    QPixmap m_defultPixmap = QPixmap(":/res/res/kyview_logo.png");
 };
 
 class NavigationStatus : public ImageShowStatus//导航器相关单独写，提高可读性

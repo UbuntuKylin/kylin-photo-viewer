@@ -1,9 +1,9 @@
 #ifndef FLIP_H
 #define FLIP_H
 
-#include "_processing.h"
+#include "processingbase.h"
 
-class Flip : public _Processing
+class Flip : public ProcessingBase
 {
 
 public:

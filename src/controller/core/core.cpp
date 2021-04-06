@@ -12,6 +12,8 @@ void Core::initCore()
 
     m_matList = nullptr;
 
+    m_albumModel = new QStandardItemModel;
+
     qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
     qRegisterMetaType<Processing::FlipWay>("Processing::FlipWay");
 
@@ -106,10 +108,10 @@ void Core::processingCommand(const QStringList &cmd)
     }
 }
 
-QVariant Core::openImage(QString fullPath)
+void Core::openImage(QString fullPath)
 {
     if (fullPath.isEmpty()) {
-        return QVariant();
+        return;
     }
 
     //如果正在播放动图，则停止
@@ -121,16 +123,16 @@ QVariant Core::openImage(QString fullPath)
     MatAndFileinfo maf = File::loadImage(fullPath);
     if (!maf.mat.data) {
         //如果图片打开失败则回滚
-        ChamgeImageType type = m_imageUrlList.nextOrBack(m_backpath,fullPath);
+        ChamgeImageType type = nextOrBack(m_backpath,fullPath);
         changeImageType();
-        emit deleteImageOnAlbum(m_nowType);
+        deleteAlbumItem(fullPath);
         //全部图片都被删除了
-        if (m_nowType == 0) {
+        if (m_albumModel->rowCount() == 0) {
             showImage(QPixmap());
-            return QVariant();
+            return;
         }
         changeImage(type);
-        return QVariant();
+        return;
     }
     m_nowImage = Processing::converFormat(maf.mat);
     //记录状态
@@ -150,19 +152,19 @@ QVariant Core::openImage(QString fullPath)
         //如果此图正在保存
         m_thisImageIsSaving = true;
         showImage(QPixmap());
-        return QVariant();
+        return;
     }
     creatImage();
-    return QVariant();
+    return;
 }
 
 void Core::showImage(const QPixmap &pix)
 {
     ImageAndInfo package;
     package.proportion = m_proportion;
+    package.imageNumber = m_albumModel->rowCount();
     package.info = m_info;
     package.image = pix;
-    package.type = m_nowType;
     package.imageSize = m_imageSize;
     package.colorSpace = m_colorSpace;
     QVariant var;
@@ -183,7 +185,11 @@ void Core::creatImage(const int &proportion)
 
     //自适应窗口大小显示
     if (proportion <= 0) {
-        m_proportion  = defaultProportion;
+        if (defaultProportion > 1000) {
+            m_proportion = 1000;
+        } else {
+            m_proportion  = defaultProportion;
+        }
         m_tmpSize = m_nowImage.size() * m_proportion / 100;
         navigation(); //关闭导航器
         showImageOrMovie();
@@ -310,6 +316,14 @@ void Core::clickNavigation(const QPoint &point)
 
 void Core::saveMovieFinish(const QString &path)
 {
+    //如果收到关闭信号，保存完再退出
+    if (shouldClose) {
+        //双层判断，避免多次确认状态，提升效率
+        if (m_file->allSaveFinish()) {
+            exit(0);
+        }
+    }
+
     //如果当前播放的不是这张图
     if (m_nowpath != path) {
         return;
@@ -344,7 +358,7 @@ void Core::flipImage(const Processing::FlipWay &way)
     }
     mat = changeMat(mat);
     m_nowImage = Processing::converFormat(mat);
-    creatImage();
+    creatImage(m_proportion);
 }
 
 void Core::deleteImage()
@@ -360,14 +374,10 @@ void Core::deleteImage()
     changeImage(NEXT_IMAGE);
 
     //从队列中去除
-    m_imageUrlList.remove(m_backType);
-    emit deleteImageOnAlbum(m_backType);
+    deleteAlbumItem(m_nowpath);
 
     //删除后队列中无图片，返回状态
-    if(m_imageUrlList.isEmpty()){
-        m_imageUrlList.clear();
-        m_maxType = 0;//重置计数
-        m_nowType = 0;//显示添加图片按钮
+    if(m_albumModel->rowCount() == 0){
         navigation();//关闭导航器
         showImage(QPixmap());//发送状态
     }
@@ -393,28 +403,28 @@ void Core::close()
         m_playMovieTimer->stop();
         //保存动图
         m_file->saveImage(m_matList,m_fps,m_nowpath);
+        shouldClose = true;
     } else {
         //保存图片
         m_file->saveImage(m_nowMat,m_nowpath);
+        exit(0);
     }
+}
+
+QStandardItemModel *Core::getAlbumModel()
+{
+    return m_albumModel;
 }
 
 void Core::changeImage(const int &type)
 {
     //如果图片队列小于2，不处理
-    if (m_imageUrlList.length()<1) {
-        m_backType = m_nowType;
+    if (m_albumModel->rowCount()<1) {
         m_backpath = m_nowpath;
         return;
     }
 
     m_thisImageIsSaving = false;
-//    //有未处理完成的指令则不处理
-//    if (!m_isProcessingFinish) {
-//        return;
-//    }
-//    //更改界面按钮状态
-//    m_isProcessingFinish=false;
 
     //如果正在播放动图，则停止
     if (m_playMovieTimer->isActive()) {
@@ -431,27 +441,26 @@ void Core::changeImage(const int &type)
     }
 
     m_processed=false;//重置是否操作过的状态
-
     if (type == NEXT_IMAGE) {
-        int key = m_imageUrlList.nextKey(m_nowType);
+        QString key = nextImagePath(m_nowpath);
         changeImageType(key);
         openImage(m_nowpath);
         return;
     }
     if (type == BACK_IMAGE) {
-        int key = m_imageUrlList.backKey(m_nowType);
+        QString key = backImagePath(m_nowpath);
         changeImageType(key);
         openImage(m_nowpath);
         return;
     }
 
-    //如果队列中无此关键值，不处理
-    if (m_imageUrlList.keys().indexOf(type)<0) {
-        return;
-    }
+//    //如果队列中无此关键值，不处理
+//    if (m_imageUrlAndTypeList.keys().indexOf(type)<0) {
+//        return;
+//    }
 
-    changeImageType(type);
-    openImage(m_nowpath);
+//    changeImageType(type);
+//    openImage(m_nowpath);
 }
 
 void Core::changeWidgetSize(const QSize &size)
@@ -525,23 +534,19 @@ void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
     }
 }
 
-void Core::changeImageType(int num)
+void Core::changeImageType(QString path)
 {
     m_matListIndex = 0;
-    if (num == 0) {//回滚
-        m_imageUrlList.remove(m_nowType);
-        m_nowType=m_backType;
+    if (path == "") {//回滚
+        deleteAlbumItem(path);
         m_nowpath = m_backpath;
-        if (m_imageUrlList.isEmpty()) {
-            m_nowType=0;
+        if (m_albumModel->rowCount() == 0) {
             m_nowpath = "";
         }
         return;
     }
-    m_backType = m_nowType;
-    m_nowType = num;
     m_backpath = m_nowpath;
-    m_nowpath = m_imageUrlList.getPath(num);
+    m_nowpath = path;
 }
 
 Mat Core::changeMat(Mat mat)
@@ -595,7 +600,89 @@ void Core::creatNavigation()
     }
 }
 
-QVariant Core::findAllImageFromDir(QString fullPath)
+void Core::deleteAlbumItem(const QString &path)
+{
+    for (int i = 0;i<m_albumModel->rowCount();i++) {
+        if (m_albumModel->item(i)->data().toString() == path) {
+            QStandardItem * item = m_albumModel->item(i);
+            m_albumModel->removeRow(i);
+            return;
+        }
+    }
+}
+
+Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &newPath)
+{
+    for (int i = 0;i<m_albumModel->rowCount();i++) {
+        if (m_albumModel->item(i)->data().toString() == oldPath) {
+            return NEXT_IMAGE;
+        }
+        if (m_albumModel->item(i)->data().toString() == newPath) {
+            return BACK_IMAGE;
+        }
+    }
+    qDebug()<<"判断切换状态错误";
+    return NEXT_IMAGE;
+}
+
+QString Core::nextImagePath(const QString &oldPath)
+{
+    if (m_albumModel->rowCount()<2) {
+        return "";
+    }
+
+    //最后一张切下一张时，回到队列开头
+    if (m_albumModel->item(m_albumModel->rowCount()-1)->data().toString() == oldPath) {
+        return m_albumModel->item(0)->data().toString();
+    }
+
+    bool tmp = false;
+    for (int i = 0;i<m_albumModel->rowCount();i++) {
+        if (tmp) {
+            return m_albumModel->item(i)->data().toString();
+        }
+        if (m_albumModel->item(i)->data().toString() == oldPath) {
+            tmp = true;
+        }
+    }
+    return "";
+}
+
+QString Core::backImagePath(const QString &oldPath)
+{
+    if (m_albumModel->rowCount()<2) {
+        return "";
+    }
+
+    //第一张切上一张时，回到队列结尾
+    if (m_albumModel->item(0)->data().toString() == oldPath) {
+        return m_albumModel->item(m_albumModel->rowCount()-1)->data().toString();
+    }
+
+    QString tmp = "";
+    for (int i = 0;i<m_albumModel->rowCount();i++) {
+        QString tmp2 = m_albumModel->item(i)->data().toString();
+        if (tmp2 == oldPath) {
+            return tmp;
+        }
+        tmp = tmp2;
+    }
+    return "";
+}
+
+void Core::albumLoadFinish(QVariant var)
+{
+    ImageAndInfo package = var.value<ImageAndInfo>();
+    QString fileName = package.info.absoluteFilePath();
+    for (int i = 0;i<m_albumModel->rowCount();i++) {
+        if (m_albumModel->item(i)->data().toString() == fileName) {
+            m_albumModel->item(i)->setIcon(package.image);
+            return;
+        }
+    }
+}
+
+void Core::findAllImageFromDir(QString fullPath)
 {
     QFileInfo info(fullPath);
     QString path = info.absolutePath();//转成绝对路径
@@ -606,33 +693,42 @@ QVariant Core::findAllImageFromDir(QString fullPath)
         nameFilters<<"*."+format;//构造格式过滤列表
     }
     QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);//获取所有支持的图片
-    //将所有图片打上唯一标签并存入队列
-    ImageUrlAndTypeList tmpImageUrlList;
-    for (QString &filename : images) {
-        QString tmpFullPath = path+"/"+filename;
-        m_maxType++;
-        tmpImageUrlList.append(m_maxType,tmpFullPath);
-        //记录需要显示的图片
-        if (tmpFullPath == filepath) {
-            m_backType = m_nowType;
-            m_backpath = m_nowpath;
-            m_nowType = m_maxType;
-        }
-    }
-    //新路径中的所有文件靠前排序
-    m_imageUrlList.append(tmpImageUrlList);
-    QVariant var;
-    var.setValue<QList<int>>(m_imageUrlList.keys());
-    loadAlbum();
-    return var;
+
+    loadAlbum(path,images);
+
+    openImage(filepath);
 }
 
-void Core::loadAlbum()
+void Core::loadAlbum(QString path, QStringList list)
 {
-    for (int &k : m_imageUrlList.keys()) {
-        AlbumThumbnail* thread= new AlbumThumbnail(k,m_imageUrlList.getPath(k));
+    QList<QStandardItem*> oldItemList;
+    QList<QStandardItem*> newItemList;
+    QList<QStandardItem*> allItemList;
+    //将之前的item放入队列
+    for (int i = 0 ;i < m_albumModel->rowCount() ; i++) {
+        oldItemList.append(m_albumModel->item(i));
+    }
+
+    //将所有图片存入队列
+    for (QString &filename : list) {
+        QString tmpFullPath = path+"/"+filename;
+        //构造item
+        QStandardItem * item  = new QStandardItem;
+        item->setSizeHint(Variable::ALBUM_IMAGE_SIZE);
+        item->setIcon(m_defultPixmap);
+        item->setData(tmpFullPath);//用来保存地址路径
+        newItemList.append(item);
+    }
+    allItemList.append(newItemList);
+    allItemList.append(oldItemList);
+    m_albumModel->insertColumn(0,newItemList);
+
+    //只加载未加载的缩略图,虽多遍历一遍，但节省加载效率
+    for (QString &filename : list) {
+        QString tmpFullPath = path+"/"+filename;
+        AlbumThumbnail* thread= new AlbumThumbnail(tmpFullPath);
         connect(thread,&AlbumThumbnail::finished,thread,&AlbumThumbnail::deleteLater);
-        connect(thread,&AlbumThumbnail::albumFinish,this,&Core::albumFinish);
+        connect(thread,&AlbumThumbnail::albumFinish,this,&Core::albumLoadFinish);
         thread->start();
     }
 }

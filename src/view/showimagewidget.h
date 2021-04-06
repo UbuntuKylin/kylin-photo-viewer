@@ -61,7 +61,6 @@ private:
     void setMenuAction();//检查当前图片是否可设置为壁纸
     void startWithOpenImage(QString path);//由图片打开
 
-    void albumFinish(QVariant var);//相册
     void resizeEvent(QResizeEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
 

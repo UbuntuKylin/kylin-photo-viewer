@@ -14,11 +14,10 @@ signals:
     void albumFinish(QVariant var);
 
 public:
-    AlbumThumbnail(const int &type , const QString &path);
+    AlbumThumbnail(const QString &path);
     void run();
 
 private:
-    int m_type;
     QString m_path;
 };
 

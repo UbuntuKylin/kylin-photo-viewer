@@ -38,11 +38,11 @@ void CoreInteraction::creatCore(const QStringList &list)
 void CoreInteraction::initConnect(Core *core)
 {
     //下面两个绑定顺序一定不要写反，查找文件再打开
-    connect(this,&CoreInteraction::coreOpenImage,core,&Core::findAllImageFromDir,Qt::BlockingQueuedConnection);//阻塞调用取反回值,获取缩略图列表
-    connect(this,&CoreInteraction::coreOpenImage,core,&Core::openImage);//打开图片
+    connect(this,&CoreInteraction::coreOpenImage,core,&Core::findAllImageFromDir);//生成缩略图列表
+    //connect(this,&CoreInteraction::coreOpenImage,core,&Core::openImage);//打开图片
 
+    connect(this,&CoreInteraction::coreGetAlbumModel,core,&Core::getAlbumModel,Qt::BlockingQueuedConnection);//获取相册model指针
     connect(core,&Core::openFinish,this,&CoreInteraction::openFinish);//图片打开完成，将数据返回给UI层
-    connect(core,&Core::albumFinish,this,&Interaction::albumFinish);//相册缩略图打开完成，获取数据
     connect(this,&CoreInteraction::coreChangeImage,core,&Core::changeImage);//切换图片
     connect(this,&CoreInteraction::coreChangeWidgetSize,core,&Core::changeWidgetSize);//改变窗口大小
     connect(this,&CoreInteraction::coreChangeImageShowSize,core,&Core::changeImageShowSize);//图片显示状态（放大缩小）
@@ -51,7 +51,6 @@ void CoreInteraction::initConnect(Core *core)
     connect(this,&CoreInteraction::coreFlip,core,&Core::flipImage);//翻转
     connect(this,&CoreInteraction::coreDeleteImage,core,&Core::deleteImage);//删除图片
     connect(this,&CoreInteraction::coreSetAsBackground,core,&Core::setAsBackground);//设置为背景图
-    connect(core,&Core::deleteImageOnAlbum,this,&CoreInteraction::deleteImageOnAlbum);//从相册中删除
     connect(this,&CoreInteraction::coreClose,core,&Core::close);//结束进程
 }
 
@@ -72,9 +71,9 @@ void CoreInteraction::initUiFinish()
     }
 }
 
-QVariant CoreInteraction::openImage(const QString &path)
+void CoreInteraction::openImage(const QString &path)
 {
-    return coreOpenImage(path);
+    emit coreOpenImage(path);
 }
 
 void CoreInteraction::changeImage(const int &type)
@@ -199,4 +198,9 @@ void CoreInteraction::close()
         return;
     }
     emit coreClose();
+}
+
+QStandardItemModel *CoreInteraction::getAlbumModel()
+{
+    return coreGetAlbumModel();
 }

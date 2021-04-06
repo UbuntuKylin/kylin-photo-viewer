@@ -35,7 +35,6 @@ INSTALLS += target
 SOURCES += main.cpp \
     controller/core/coreinteraction.cpp \
     controller/core/albumthumbnail.cpp \
-    controller/core/base.cpp \
     global/log.cpp \
     model/dbus.cpp \
     controller/core/core.cpp \
@@ -67,7 +66,7 @@ HEADERS += \
     controller/core/core.h \
     model/file/file.h \
     model/file/savemovie.h \
-    model/processing/_processing.h \
+    model/processing/processingbase.h \
     model/processing/flip.h \
     model/processing/processing.h \
     view/daemondbus.h \

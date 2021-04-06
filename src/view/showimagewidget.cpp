@@ -152,7 +152,6 @@ void ShowImageWidget::initInteraction()
     //此处绑定信号和槽
     connect(m_interaction,&Interaction::startWithOpenImage,this,&ShowImageWidget::startWithOpenImage);//启动时打开图片
     connect(m_interaction,&Interaction::openFinish,this,&ShowImageWidget::openFinish);//图片打开完成，获取数据
-    connect(m_interaction,&Interaction::albumFinish,this,&ShowImageWidget::albumFinish);//相册缩略图打开完成，获取数据
     m_interaction->initUiFinish();
 }
 void ShowImageWidget::startWithOpenImage(QString path)
@@ -162,23 +161,14 @@ void ShowImageWidget::startWithOpenImage(QString path)
 //打开图片
 void ShowImageWidget::openImage(QString path)
 {
-    QVariant var= m_interaction->openImage(path);
-    //相册列表，需要得到图片的数量
-    QList<int> list = var.value<QList<int>>();
-    //小于2张，左右按钮隐藏
-    if(list.length() < 2){
-            //主界面需要知道是否只有一张图片来处理左右按钮显示。
-            g_buttonState = false;
-        }else{
-            g_buttonState = true;
-        }
+    m_interaction->openImage(path);
 }
 //拿到图片信息，进行处理
 void ShowImageWidget::openFinish(QVariant var)
 {
 
     ImageAndInfo package =var.value<ImageAndInfo>();
-    int type = package.type;//在队列中的标签
+    int type = package.imageNumber;//在队列中的标签
     //判断有几张图片，分别进行处理：删除到0，显示打开界面；只有一张：不显示左右按钮。
     if(type == 0){
         emit clearImage();
@@ -221,15 +211,7 @@ void ShowImageWidget::re_move(int W, int H)
     g_back->move(SizeDate::LEFTPOS,int((this->height() - g_back->height())/2));
     g_next->move(W - SizeDate::LEFTPOS - g_next->width(),int((H - g_next->height())/2));
 }
-//相册
-void ShowImageWidget::albumFinish(QVariant var)
-{
-    ImageAndInfo package =var.value<ImageAndInfo>();
-    QFileInfo info = package.info;//详情信息
-    QPixmap pixmap = package.image;//图片
-    int type = package.type;//在队列中的标签
-//    qDebug()<<pixmap<<info<<type;
-}
+
 void ShowImageWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);

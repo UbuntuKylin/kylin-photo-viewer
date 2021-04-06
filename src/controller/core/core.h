@@ -13,15 +13,14 @@ class Core : public QObject , public NavigationStatus
 signals:
     void needOpenImage(QString path);
     void openFinish(QVariant var);
-    void albumFinish(QVariant var);
     void showNavigation(QPixmap pix);
     void deleteImageOnAlbum(int type);
 
 public:
     Core();
     QString initDbus(const QStringList &arguments);//初始化Dbus模块
-    QVariant findAllImageFromDir(QString fullPath);//寻找目录下所有支持的图片
-    QVariant openImage(QString fullPath);//打开图片
+    void findAllImageFromDir(QString fullPath);//寻找目录下所有支持的图片
+    void openImage(QString fullPath);//打开图片
     void changeImage(const int &type); //切换图片
     void changeWidgetSize(const QSize &size);//切换窗口大小
     void changeImageShowSize(ImageShowStatus::ChangeShowSizeType type);//图片显示状态（放大缩小）
@@ -31,6 +30,8 @@ public:
     void setAsBackground();//设置为背景图
     void saveMovieFinish(const QString &path);//异步处理完成
     void close();//关闭进程
+    QStandardItemModel * getAlbumModel();//获取相册model指针
+    void albumLoadFinish(QVariant var);//预览加载完成
 
 private:
     void initCore();//初始化核心
@@ -40,12 +41,17 @@ private:
     void showImageOrMovie();//显示图片或动图
     void creatImage(const int &proportion = -1);//生成图像
     void processingCommand(const QStringList &cmd);//处理终端命令
-    void loadAlbum();//加载相册
+    void loadAlbum(QString path, QStringList list);//加载相册
     void navigation(const QPoint &point = QPoint(-1,-1));//导航器
     void playMovie();//播放动图的槽函数
-    inline void changeImageType(int num = 0);//修改图片标签
+    inline void changeImageType(QString path = "");//修改图片标签
     Mat changeMat(Mat mat);//更改当前图片
     void creatNavigation();//创建导航器图片等数据，用于节省算力
+    void deleteAlbumItem(const QString &path);//删除相册中的项
+    ChamgeImageType nextOrBack(const QString &oldPath,const QString &newPath);
+    QString nextImagePath(const QString & oldPath);
+    QString backImagePath(const QString & oldPath);
+    bool shouldClose = false;//可以关闭
 
 };
 

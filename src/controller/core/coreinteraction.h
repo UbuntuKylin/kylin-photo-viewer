@@ -13,6 +13,7 @@ class CoreInteraction :  public Interaction
 
 signals:
     QVariant coreOpenImage(const QString &path);//打开图片  QVariant -> QHash<int,QList<int>>
+    QStandardItemModel * coreGetAlbumModel();//设置为背景图
     void coreChangeImage(const int &type); //切换图片
     void coreChangeWidgetSize(const QSize &size);//切换窗口大小
     void coreChangeImageShowSize(ImageShowStatus::ChangeShowSizeType);//图片显示状态（放大缩小）
@@ -28,7 +29,7 @@ public:
 protected:
     virtual void creatCore(const QStringList &list);//初始化核心模块
     virtual void initUiFinish();//UI初始化完成
-    virtual QVariant openImage(const QString &path);//打开图片  QVariant -> QHash<int,QList<int>>
+    virtual void openImage(const QString &path);//打开图片  QVariant -> QHash<int,QList<int>>
     virtual void changeImage(const int &type);//切换图片
     virtual void nextImage();//切换图片
     virtual void backImage();//切换图片
@@ -44,6 +45,7 @@ protected:
     virtual void deleteImage();//删除图片
     virtual void setAsBackground();//设置为背景图
     virtual void close();//关闭进程
+    virtual QStandardItemModel * getAlbumModel();//获取相册model指针
 
 private:
     void initConnect(Core *core);//初始化绑定
