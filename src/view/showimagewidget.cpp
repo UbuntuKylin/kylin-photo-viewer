@@ -56,6 +56,8 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     g_back->setStyleSheet("background-color:transparent;border-radius:4px;");
     g_next->setStyleSheet("background-color:transparent;border-radius:4px;");
 
+    m_loadingMovie = new QMovie(":/res/res/loadgif.gif");
+
     this->initConnect();
     initInteraction();//一定要放到构造函数末尾
 }
@@ -168,15 +170,22 @@ void ShowImageWidget::openFinish(QVariant var)
 {
 
     ImageAndInfo package =var.value<ImageAndInfo>();
-    int type = package.imageNumber;//在队列中的标签
+    int number = package.imageNumber;//在队列中的标签
     //判断有几张图片，分别进行处理：删除到0，显示打开界面；只有一张：不显示左右按钮。
-    if(type == 0){
+    if (number == 0) {
         emit clearImage();
         return;
+    }else if (number == 1)
+    {
+        g_buttonState = false;
+    }else{
+        g_buttonState = true;
     }
+    QPixmap pixmap = package.image;//图片
+
     //拿到返回信息
     QFileInfo info = package.info;//详情信息
-    QPixmap pixmap = package.image;//图片
+
     int proportion = package.proportion;//比例
     QString imageSize = package.imageSize;
     QString colorSpace = package.colorSpace;
@@ -187,12 +196,22 @@ void ShowImageWidget::openFinish(QVariant var)
     m_paperFormat = info.suffix();
 
     //使用返回的信息进行设置界面
-    this->m_showImage->setPixmap(pixmap);
+
     emit perRate(num);//发送给toolbar来更改缩放数字
     emit ToshowImage();//给主界面--展示图片
     emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
     emit titleName(info.fileName());//给顶栏图片的名字
-
+    if(pixmap.isNull())
+    {
+        this->m_showImage->setMovie(m_loadingMovie);
+        m_loadingMovie->start();
+        return;
+    }else{
+        if(m_loadingMovie->state() != QMovie::NotRunning) {
+            m_loadingMovie->stop();
+        }
+    }
+    this->m_showImage->setPixmap(pixmap);
     //设置壁纸--动图在传来时是一帧一帧，只判断并添加一次右键菜单选项
     if(m_canSet)
     {

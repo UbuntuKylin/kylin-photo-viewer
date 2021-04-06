@@ -493,7 +493,7 @@ void KyView::keyPressEvent(QKeyEvent *event)
         {
             //F1快捷键打开用户手册，如kylin-photo-viewer
             //如果是小工具类，下面的showGuide参数要填写"tools/kylin-photo-viewer"
-            m_DaemonIpcDbus->showGuide("tools/indicator-china-weather");
+            m_DaemonIpcDbus->showGuide("kylin-photo-viewer");
         }
     }
     //上一张，下一张，delete按键响应

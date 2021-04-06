@@ -67,4 +67,4 @@ const int SizeDate::VERSIONHEI = 24;
 //菜单-关于界面版本号
 const QString SizeDate::VERSIONNEM = "1.0.0";
 //菜单-关于界面用户手册
-const QString SizeDate::USERGUIDE = "tools/indicator-china-weather";
+const QString SizeDate::USERGUIDE = "kylin-photo-viewer";

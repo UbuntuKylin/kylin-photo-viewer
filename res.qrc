@@ -59,5 +59,6 @@
         <file>res/1reduce.png</file>
         <file>res/1originalSize.png</file>
         <file>res/1reduce_hover.png</file>
+        <file>res/loadgif.gif</file>
     </qresource>
 </RCC>
