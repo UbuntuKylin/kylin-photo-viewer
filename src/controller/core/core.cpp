@@ -322,6 +322,7 @@ void Core::saveMovieFinish(const QString &path)
         if (m_file->allSaveFinish()) {
             exit(0);
         }
+        return;
     }
 
     //如果当前播放的不是这张图
@@ -403,8 +404,16 @@ void Core::close()
         return;
     }
 
-    //如果没有操作直接退出
+    //如果没有操作且有正在保存的动图直接退出
     if (!m_processed) {
+        if (!m_file->allSaveFinish()) {
+            if (m_playMovieTimer->isActive()) {
+                m_playMovieTimer->stop();
+            }
+            shouldClose = true;
+            showImage(QPixmap());
+            return;
+        }
         exit(0);
     }
     //如果正在播放动图，则停止
