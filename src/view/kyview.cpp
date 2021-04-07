@@ -3,6 +3,7 @@
 #include "sizedate.h"
 KyView *KyView::mutual = nullptr;
 KyView::KyView(const QStringList &args)
+
 {
     Interaction *m_interaction =Interaction::getInstance();
     m_interaction->creatCore(args);
@@ -71,11 +72,18 @@ KyView::KyView(const QStringList &args)
     // 用户手册功能
     m_DaemonIpcDbus = new DaemonDbus();
 
+//    horizontalOffset(100),
+//    verticalOffset(100),
+//    labelheight(600),
+//    labelwidth(400),
+//    m_angle(0)
+
     this->setMinimumSize(SizeDate::MINISIZE);
     this->initconnect();
     //要判断打开状态，是否隐藏主界面--打开按钮widget
     this->openState();
     this->initGsetting();
+    this->setLabel();
 
 }
 KyView::~KyView()
@@ -212,7 +220,13 @@ void KyView::delayHide()
 {
     if(this->mapFromGlobal(QCursor::pos()).y() > SizeDate::BARHEIGHT  && this->mapFromGlobal(QCursor::pos()).y() <this->height()- SizeDate::BARHEIGHT)
     {
-        m_titlebar->hide();
+        if(!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden())
+        {
+            m_titlebar->show();
+        }else{
+            m_titlebar->hide();
+        }
+
         m_toolbar->hide();
         inforChange();
     }
@@ -348,9 +362,13 @@ void KyView::themeChange()
     {
         m_information->setStyleSheet("background-color:rgba(0,0,0,0.66);border-radius:4px;");
         m_titlebar->g_menu->setThemeDark();
+        m_showImageWidget->g_next->setIcon(QIcon(":/res/res/1right.png"));
+        m_showImageWidget->g_back->setIcon(QIcon(":/res/res/1left.png"));
     }else{
         m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-radius:4px;");
         m_titlebar->g_menu->setThemeLight();
+        m_showImageWidget->g_next->setIcon(QIcon(":/res/res/right.png"));
+        m_showImageWidget->g_back->setIcon(QIcon(":/res/res/left.png"));
     }
      m_toolbar->changeStyle();
 
@@ -604,4 +622,168 @@ void KyView::dropEvent(QDropEvent *event)
         return;
     }
 
+}
+//以下全是触摸手势
+void KyView::setLabel()
+{
+    // 注册手势
+    m_showImageWidget->m_showImage->setAttribute(Qt::WA_AcceptTouchEvents);
+    m_showImageWidget->m_showImage->grabGesture(Qt::PanGesture);
+    m_showImageWidget->m_showImage->grabGesture(Qt::PinchGesture);
+    m_showImageWidget->m_showImage->grabGesture(Qt::SwipeGesture);
+    m_showImageWidget->m_showImage->grabGesture(Qt::TapGesture);
+
+    m_showImageWidget->m_showImage->setGeometry(horizontalOffset,verticalOffset,labelheight,labelwidth);
+    QMatrix matrix;
+    matrix.rotate(m_angle); // 照片旋转角度，仅图片旋转
+    m_showImageWidget->m_showImage->setPixmap(QPixmap(":/image/demo.jpeg").transformed(matrix, Qt::SmoothTransformation));
+    m_showImageWidget->m_showImage->setScaledContents(true);
+
+    qDebug() << horizontalOffset;
+    qDebug() << verticalOffset;
+//    qDebug() << labelheight;
+//    qDebug() << labelwidth;
+}
+
+
+
+bool KyView::event(QEvent *event)
+{
+    if(event->type() ==  QEvent::Gesture) //手势处理
+        return gestureEvent(event);
+
+    return QWidget::event(event);
+}
+
+// 使用鼠标事件进行测试,创建手势对象传入相应手势操作函数
+void KyView::mousePressEvent(QMouseEvent *event)
+{
+    qDebug() << "mousePressEvent";
+
+    QPinchGesture *gesture = new QPinchGesture;
+    qreal temp = -90;
+    gesture->setRotationAngle(temp);
+    gesture->setChangeFlags(QPinchGesture::RotationAngleChanged);
+    pinchTriggered(gesture);
+    //update();
+    QWidget::mousePressEvent(event);
+}
+
+/*
+ * Qt::TapGesture 点按手势。 value = 1
+ * Qt::TapAndHoldGesture 轻击并按住（长按）手势。  value = 2
+ * Qt::PanGesture 平移手势。  value = 3
+ * Qt::PinchGesture 捏手势。  value = 4
+ * Qt::SwipeGesture 滑动手势。  value = 5
+ */
+
+// 手势识别
+bool KyView::gestureEvent(QEvent *event)
+{
+    QGestureEvent *gestureEvent = static_cast<QGestureEvent *>(event);
+    qDebug() << "gesture";
+    if(QGesture *gesture = gestureEvent->gesture(Qt::PinchGesture))
+        pinchTriggered(static_cast<QPinchGesture *>(gesture));
+    if(QGesture *gesture = gestureEvent->gesture(Qt::TapGesture))
+        tapTriggered(static_cast<QTapGesture *>(gesture));
+    if(QGesture *gesture = gestureEvent->gesture(Qt::PanGesture))
+        panTriggered(static_cast<QPanGesture *>(gesture));
+    if(QGesture *gesture = gestureEvent->gesture(Qt::SwipeGesture))
+        swipeTriggered(static_cast<QSwipeGesture *>(gesture));
+
+    return true;
+}
+
+/*
+ * 在pinchTriggered里面处理缩放手势
+ * changeFlags 保存当前已更改的手势属性
+ * rotationAngle 保持手势运动覆盖的角度
+ * lastRotationAngle 保存手势最后的覆盖角度
+ * totalRotationAngle 保存手势覆盖的总角度
+ * scaleFactor 保存当前比例因子（与用户触摸的的两个输入点的距离有关）
+ */
+void KyView::pinchTriggered(QPinchGesture *gesture)
+{
+    qDebug() << "pinchTriggered";
+    QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags(); // 获取已改变的手势属性
+    if (changeFlags & QPinchGesture::RotationAngleChanged) { // 手势覆盖角度改变
+        qDebug() << "RotationAngleChanged";
+        qreal angle = gesture->property("rotationAngle").toReal();
+        const qreal lastAngle = gesture->property("lastRotationAngle").toReal();
+        qDebug() << angle;
+        if(lastAngle > 45) // 最后的手势覆盖角度大于45度
+            angle = 90;
+        if(lastAngle < -45)
+            angle = -90;
+        m_angle += angle;
+        setLabel();
+    }
+    if (changeFlags & QPinchGesture::ScaleFactorChanged) { // 两个输入点的距离改变
+        qDebug() << "ScaleFactorChanged";
+        qreal scaleFactor = gesture->property("scaleFactor").toReal();
+        qDebug() << scaleFactor;
+
+        // 图片缩放
+        labelheight *= scaleFactor;
+        labelwidth *= scaleFactor;
+        setLabel();
+    }
+    if (gesture->state() == Qt::GestureFinished) { // 手势结束
+
+
+    }
+
+    update();
+
+}
+
+/* 在tapTriggered里面处理点（按）手势
+ *
+ */
+void KyView::tapTriggered(QTapGesture *gesture)
+{
+    qDebug() << "tapTriggered";
+}
+
+/*
+ * 在panTriggered里面处理平移手势
+ *
+ */
+void KyView::panTriggered(QPanGesture *gesture)
+{
+    qDebug() << "panTriggered";
+// 隐藏鼠标箭头，当移动到图片时改变鼠标图标
+#ifndef QT_NO_CURSOR
+    switch (gesture->state()) {
+        case Qt::GestureStarted:
+        case Qt::GestureUpdated:
+            setCursor(Qt::SizeAllCursor);
+            break;
+        default:
+            setCursor(Qt::ArrowCursor);
+    }
+#endif
+    QPointF delta = gesture->lastOffset(); // 获取平移增量，从上一个输入到当前输入位置的增量
+    // 移动图片
+    horizontalOffset += delta.x();
+    verticalOffset += delta.y();
+    setLabel();
+}
+
+/* 在swipeTriggered里面处理滑动手势
+ *
+ */
+void KyView::swipeTriggered(QSwipeGesture *gesture)
+{
+    if (gesture->state() == Qt::GestureFinished) {
+        if (gesture->horizontalDirection() == QSwipeGesture::Left)
+        { // 向左滑动
+            // 下一张
+            m_showImageWidget->nextImage();
+        }
+        else if(gesture->horizontalDirection() == QSwipeGesture::Right){ // 向右滑动
+            // 上一张
+            m_showImageWidget->backImage();
+        }
+    }
 }

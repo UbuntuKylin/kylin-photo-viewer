@@ -20,6 +20,14 @@
 #include <QUrl>
 #include <QMessageBox>
 
+#include <QPinchGesture>
+#include <QTouchEvent>
+#include <QGestureEvent>
+#include <QPanGesture>
+#include <QSwipeGesture>
+#include <QTapGesture>
+#include <QImageReader>
+
 #include "toolbar.h"
 #include "titlebar.h"
 #include "openimage.h"
@@ -102,6 +110,24 @@ private:
     bool eventFilter(QObject *obj, QEvent *event);//事件过滤器--信息栏响应两栏show
     void dragEnterEvent(QDragEnterEvent *event);//文件拖拽显示事件--判断是否响应dropevent
     void dropEvent(QDropEvent *event);//文件拖拽响应
+
+
+
+    bool event(QEvent *event);
+    bool gestureEvent(QEvent *event); // 手势识别
+    void pinchTriggered(QPinchGesture *gesture);  // 捏手势
+    void tapTriggered(QTapGesture *gesture);  // 点（按）手势
+    void panTriggered(QPanGesture *gesture);  // 平移手势
+    void swipeTriggered(QSwipeGesture *gesture);  // 滑动手势
+    void setLabel(); // 设置label的属性
+    void mousePressEvent(QMouseEvent *event);
+
+    qreal horizontalOffset = 100; // 水平偏移
+    qreal verticalOffset = 100; // 垂直偏移
+    qreal labelheight = 600;
+    qreal labelwidth = 400;
+    QLabel *label;
+    qreal m_angle = 0; // 图片旋转角度增量
 
 private slots:
 
