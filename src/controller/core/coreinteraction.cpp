@@ -14,7 +14,7 @@ Interaction *Interaction::getInstance()
 
 CoreInteraction::CoreInteraction()
 {
-    m_canResize = new QTimer;
+    m_canResize = new QTimer(this);
     m_canResize->setSingleShot(true);
 }
 
@@ -24,34 +24,32 @@ void CoreInteraction::creatCore(const QStringList &list)
         return;//防止多次初始化核心
     }
     //开辟线程
-    Core *core = new Core();
-    m_needStartWithOpenImagePath = core->initDbus(list);
+    m_core = new Core();
+    m_needStartWithOpenImagePath = m_core->initDbus(list);
     QThread *thread = new QThread();
     //绑定信号和槽
-    initConnect(core);
+    initConnect();
     //放到新线程中
-    core->moveToThread(thread);
+    m_core->moveToThread(thread);
     thread->start();
     m_isCoreInit = true;//防止多次初始化核心
 }
 
-void CoreInteraction::initConnect(Core *core)
+void CoreInteraction::initConnect()
 {
-    //下面两个绑定顺序一定不要写反，查找文件再打开
-    connect(this,&CoreInteraction::coreOpenImage,core,&Core::findAllImageFromDir);//生成缩略图列表
-    //connect(this,&CoreInteraction::coreOpenImage,core,&Core::openImage);//打开图片
-
-    connect(this,&CoreInteraction::coreGetAlbumModel,core,&Core::getAlbumModel,Qt::BlockingQueuedConnection);//获取相册model指针
-    connect(core,&Core::openFinish,this,&CoreInteraction::openFinish);//图片打开完成，将数据返回给UI层
-    connect(this,&CoreInteraction::coreChangeImage,core,&Core::changeImage);//切换图片
-    connect(this,&CoreInteraction::coreChangeWidgetSize,core,&Core::changeWidgetSize);//改变窗口大小
-    connect(this,&CoreInteraction::coreChangeImageShowSize,core,&Core::changeImageShowSize);//图片显示状态（放大缩小）
-    connect(core,&Core::showNavigation,this,&CoreInteraction::showNavigation);//显示导航器
-    connect(this,&CoreInteraction::coreClickNavigation,core,&Core::clickNavigation);//导航器点击
-    connect(this,&CoreInteraction::coreFlip,core,&Core::flipImage);//翻转
-    connect(this,&CoreInteraction::coreDeleteImage,core,&Core::deleteImage);//删除图片
-    connect(this,&CoreInteraction::coreSetAsBackground,core,&Core::setAsBackground);//设置为背景图
-    connect(this,&CoreInteraction::coreClose,core,&Core::close);//结束进程
+    connect(this,&CoreInteraction::coreOpenImage,m_core,&Core::findAllImageFromDir);//生成缩略图列表
+    connect(this,&CoreInteraction::coreGetAlbumModel,m_core,&Core::getAlbumModel,Qt::BlockingQueuedConnection);//获取相册model指针
+    connect(m_core,&Core::openFinish,this,&CoreInteraction::openFinish);//图片打开完成，将数据返回给UI层
+    connect(this,&CoreInteraction::coreChangeImage,m_core,&Core::changeImage);//切换图片
+    connect(this,&CoreInteraction::coreChangeWidgetSize,m_core,&Core::changeWidgetSize);//改变窗口大小
+    connect(this,&CoreInteraction::coreChangeImageShowSize,m_core,&Core::changeImageShowSize);//图片显示状态（放大缩小）
+    connect(m_core,&Core::showNavigation,this,&CoreInteraction::showNavigation);//显示导航器
+    connect(this,&CoreInteraction::coreClickNavigation,m_core,&Core::clickNavigation);//导航器点击
+    connect(this,&CoreInteraction::coreFlip,m_core,&Core::flipImage);//翻转
+    connect(this,&CoreInteraction::coreDeleteImage,m_core,&Core::deleteImage);//删除图片
+    connect(this,&CoreInteraction::coreSetAsBackground,m_core,&Core::setAsBackground);//设置为背景图
+    connect(this,&CoreInteraction::coreClose,m_core,&Core::close);//关闭事件
+    connect(m_core,&Core::coreProgremExit,this,&CoreInteraction::progremExit);//发送信号让主界面结束进程
 }
 
 bool CoreInteraction::coreOperateTooOften()
@@ -204,3 +202,5 @@ QStandardItemModel *CoreInteraction::getAlbumModel()
 {
     return coreGetAlbumModel();
 }
+
+

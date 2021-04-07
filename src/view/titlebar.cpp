@@ -101,6 +101,7 @@ void TitleBar::initConnect()
     connect(m_minibtn, &QPushButton::clicked, KyView::mutual, &KyView::showMinimized);
     connect(g_fullscreen, &QPushButton::clicked, this, &TitleBar::recovery);
     connect(m_closebtn, &QPushButton::clicked, inter, &Interaction::close);
+    connect(inter,&Interaction::progremExit, KyView::mutual, &KyView::close);
     connect(g_menu,&menuModule::openSignal,this,&TitleBar::openSignal);
     connect(g_menu,&menuModule::aboutShow,this,&TitleBar::aboutShow);
 

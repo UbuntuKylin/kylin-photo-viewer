@@ -46,7 +46,7 @@ QString Core::initDbus(const QStringList &arguments)
         for (QString &key : Variable::SUPPORT_CMD.keys()) {
             qInfo()<<key<<"   "<<Variable::SUPPORT_CMD.value(key);
         }
-        exit(0);
+        progremExit();
         return "";
     }
 
@@ -320,7 +320,7 @@ void Core::saveMovieFinish(const QString &path)
     if (shouldClose) {
         //双层判断，避免多次确认状态，提升效率
         if (m_file->allSaveFinish()) {
-            exit(0);
+            progremExit();
         }
         return;
     }
@@ -414,7 +414,8 @@ void Core::close()
             showImage(QPixmap());
             return;
         }
-        exit(0);
+        progremExit();
+        return;
     }
     //如果正在播放动图，则停止
     if (m_playMovieTimer->isActive()) {
@@ -426,7 +427,7 @@ void Core::close()
     } else {
         //保存图片
         m_file->saveImage(m_nowMat,m_nowpath);
-        exit(0);
+        progremExit();
     }
 }
 
@@ -687,6 +688,12 @@ QString Core::backImagePath(const QString &oldPath)
         tmp = tmp2;
     }
     return "";
+}
+
+void Core::progremExit()
+{
+    this->deleteLater();
+    emit coreProgremExit();
 }
 
 void Core::albumLoadFinish(QVariant var)

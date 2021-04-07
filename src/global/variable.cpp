@@ -76,7 +76,7 @@ QMap<QString, QString> Variable::getSupportCmd()
     cmds.insert("-origin","显示原图");
     cmds.insert("-auto","自适应窗口大小显示图片");
     cmds.insert("-rotate","旋转图片");
-    cmds.insert("-fullscreen","全屏");
+    //cmds.insert("-fullscreen","全屏");
     return cmds;
 }
 

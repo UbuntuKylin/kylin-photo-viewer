@@ -11,10 +11,10 @@ class Core : public QObject , public NavigationStatus
     Q_OBJECT
 
 signals:
-    void needOpenImage(QString path);
-    void openFinish(QVariant var);
-    void showNavigation(QPixmap pix);
-    void deleteImageOnAlbum(int type);
+    void needOpenImage(QString path);//启动时打开图片
+    void openFinish(QVariant var);//打开完成
+    void showNavigation(QPixmap pix);//操作导航器
+    void coreProgremExit();//结束进程
 
 public:
     Core();
@@ -52,6 +52,7 @@ private:
     QString nextImagePath(const QString & oldPath);
     QString backImagePath(const QString & oldPath);
     bool shouldClose = false;//可以关闭
+    void progremExit();//结束进程
 
 };
 

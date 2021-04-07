@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QFileInfo>
+#include <QProcess>
 #include <QDir>
 #include "global/variable.h"
 

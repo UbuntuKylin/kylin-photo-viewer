@@ -43,6 +43,14 @@ signals:
      */
     void showNavigation(QPixmap pix);
 
+    /*
+     * 接口功能：结束进程
+     * 接口场景：任务队列中所以任务处理完毕，可以退出时
+     * 接口类型：信号，需要绑定
+     * 备注：绑定MainWindow的close方法
+     */
+    void progremExit();
+
 public:
 
     /*
