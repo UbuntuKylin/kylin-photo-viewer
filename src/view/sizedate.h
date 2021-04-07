@@ -29,8 +29,8 @@ public:
     static const QSize TOOLBUTTON;//工具栏按钮尺寸
     static const QSize TOOLPER;//工具栏缩放率尺寸
     static const QSize TOOLLINE;//工具栏两条线的尺寸
-    static const QColor TOOLCOLOR;//工具栏两条线的尺寸
-    static const int BLURRADIUS;//工具栏两条线的尺寸
+    static const QColor TOOLCOLOR;//工具栏阴影颜色
+    static const int BLURRADIUS;//工具栏模糊度
 
     static const QSize IMAGEBUTTON;//图片界面按钮尺寸
     static const QSize IMAGEICON;//图片界面icon尺寸

@@ -1,6 +1,6 @@
 #ifndef SHOWIMAGEWIDGET_H
 #define SHOWIMAGEWIDGET_H
-
+#define FITTHEMEWINDOW "org.ukui.style"
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
@@ -10,6 +10,7 @@
 #include <QClipboard>
 #include <QProcess>
 #include <QMovie>
+#include <QGSettings>
 #include "controller/interaction.h"
 
 class ShowImageWidget : public QWidget
@@ -20,6 +21,7 @@ public:
 
     QPushButton *g_next; //下一张
     QPushButton *g_back; //上一张
+    QLabel *m_showImage;//用来展示图片的区域
     bool g_buttonState = true; //用来判断只有一张图片时隐藏左右滑动按钮
 
     void re_move(int w, int h);
@@ -29,9 +31,10 @@ public:
 
 private:
     Interaction *m_interaction = nullptr;
+    QGSettings *m_pGsettingThemeData = nullptr;
 //    QWidget *imageWid;
 //    QHBoxLayout *imageLayout;
-    QLabel *m_showImage;//用来展示图片的区域
+
     QAction *m_copy;//复制
     QAction *m_setDeskPaper;//设置为桌面壁纸
     QAction *m_setLockPaper;//设置为锁屏壁纸

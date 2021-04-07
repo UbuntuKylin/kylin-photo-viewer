@@ -40,10 +40,10 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
 
     g_next = new QPushButton(this);
     g_next->resize(SizeDate::IMAGEBUTTON);
-    g_next->setIcon(QIcon(":/res/res/right.png"));
+
     g_back = new QPushButton(this);
     g_back->resize(SizeDate::IMAGEBUTTON);
-    g_back->setIcon(QIcon(":/res/res/left.png"));
+
 
     g_back->move(SizeDate::LEFTPOS,int((this->height() - g_back->height())/2));
     g_next->move(this->width() - SizeDate::LEFTPOS - g_next->width(),int((this->height() - g_next->height())/2));

@@ -25,6 +25,7 @@ public:
     void reduceImage();//缩小图片
     void enlargeImage();//放大图片
     void delImage();//删除
+    void changeStyle();
     QFrame *g_tooleWid;//布局
 private:
 
@@ -53,9 +54,7 @@ private:
     Interaction *m_interaction = nullptr;
 
     void initControlQss();//初始化布局
-    void setstyle();
-//    bool event(QEvent *event);
-
+    void initGsetting();
 
     void originalSize();
     void adaptiveWidget();
@@ -68,9 +67,6 @@ private:
     void sidebar();
     void information();
 
-
-    void changeStyle();
-    void initGsetting();
     void dealSystemGsettingChange(const QString);
     void initConnect();
 //    void paintEvent(QPaintEvent *event);

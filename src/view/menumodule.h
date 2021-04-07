@@ -24,23 +24,25 @@
 //#include "titlebar.h"
 //#include "kyview.h"
 #include "daemondbus.h"
-
+#include "controller/interaction.h"
 class menuModule : public QWidget
 {
     Q_OBJECT
 public:
     explicit menuModule(QWidget *);
-    void themeUpdate();
-//    void changeVolumePos(int posX, int posY, int width, int height);
+    void setThemeLight();
+    void setThemeDark();
+
 signals:
     void menuModuleClose();//从标题栏点击退出的信号
     void openSignal();//从标题栏进行打开图片的信号
     void aboutShow();//打开关于，主界面两栏的显示情况
-//    void menuModuleSetThemeStyle(QString);
+
 public:
     QToolButton *menuButton = nullptr;
     QMenu *m_menu = nullptr;
 private:
+
     QString m_appShowingName;
     QString m_appVersion;
     QString m_appName;
@@ -48,6 +50,7 @@ private:
     QString m_iconPath;
     QString m_confPath = "org.china-weather-data.settings";
 
+    Interaction *m_interaction = nullptr;
     QMenu *m_themeMenu = nullptr;
     QDialog *m_aboutWindow = nullptr;
     QGSettings *m_pGsettingThemeData = nullptr;
@@ -74,9 +77,7 @@ private:
     void helpAction();
     void setThemeFromLocalThemeSetting(QList<QAction* >); //获取本地主题配置
     void setStyleByThemeGsetting(); //通过外部主题配置设置主题
-    void setThemeStyle();
-    void setThemeLight();
-    void setThemeDark();
+
 
     void refreshThemeBySystemConf();    //通过系统配置更改主题
 
