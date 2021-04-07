@@ -347,13 +347,13 @@ void KyView::themeChange()
     if ("ukui-dark" == themeStyle || "ukui-black" == themeStyle)
     {
         m_information->setStyleSheet("background-color:rgba(0,0,0,0.66);border-radius:4px;");
-        m_toolbar->g_tooleWid->setStyleSheet("background-color:rgba(0,0,0,0.66);border-radius:2px;");
-
+        m_titlebar->g_menu->setThemeDark();
     }else{
-        m_toolbar->g_tooleWid->setStyleSheet("background-color:rgba(255,255,255,1);");
-        m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-radius:2px;");
-
+        m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-radius:4px;");
+        m_titlebar->g_menu->setThemeLight();
     }
+     m_toolbar->changeStyle();
+
 }
 
 
@@ -493,7 +493,7 @@ void KyView::keyPressEvent(QKeyEvent *event)
         {
             //F1快捷键打开用户手册，如kylin-photo-viewer
             //如果是小工具类，下面的showGuide参数要填写"tools/kylin-photo-viewer"
-            m_DaemonIpcDbus->showGuide("kylin-photo-viewer");
+            m_DaemonIpcDbus->showGuide(SizeDate::USERGUIDE);
         }
     }
     //上一张，下一张，delete按键响应

@@ -42,13 +42,16 @@ void OpenImage::openimage()
 {
     QString file_path;
     QString format;
+    QString openFile = tr("Open Image");
+    QString fileType = tr("Image Files(");
     //构造打开条件
-    format = "Image Files(";
+//    format = "Image Files(";
+    format = fileType;
     for(const QString &str:Variable::SUPPORT_FORMATS )
         format += "*."+str +" ";
     format += ")";
     //打开文件夹中的图片文件
-    file_path = QFileDialog::getOpenFileName(this,"打开图片",Variable::getSettings("imagePath").toString(),format);
+    file_path = QFileDialog::getOpenFileName(this,openFile,Variable::getSettings("imagePath").toString(),format);
     //空校验，点击“取消”
     if(file_path.isEmpty())
     {

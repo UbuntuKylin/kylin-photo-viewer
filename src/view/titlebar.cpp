@@ -97,11 +97,11 @@ void TitleBar::initControlQss()
 //信号和槽
 void TitleBar::initConnect()
 {
-    Interaction *inter = Interaction::getInstance();
+    m_interaction = Interaction::getInstance();
     connect(m_minibtn, &QPushButton::clicked, KyView::mutual, &KyView::showMinimized);
     connect(g_fullscreen, &QPushButton::clicked, this, &TitleBar::recovery);
-    connect(m_closebtn, &QPushButton::clicked, inter, &Interaction::close);
-    connect(inter,&Interaction::progremExit, KyView::mutual, &KyView::close);
+    connect(m_closebtn, &QPushButton::clicked, m_interaction, &Interaction::close);
+    connect(m_interaction,&Interaction::progremExit, KyView::mutual, &KyView::close);
     connect(g_menu,&menuModule::openSignal,this,&TitleBar::openSignal);
     connect(g_menu,&menuModule::aboutShow,this,&TitleBar::aboutShow);
 

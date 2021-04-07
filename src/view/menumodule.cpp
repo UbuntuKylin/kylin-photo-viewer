@@ -70,9 +70,10 @@ void menuModule::initAction(){
     themeActions<<autoTheme<<lightTheme<<darkTheme;
     actionTheme->setMenu(m_themeMenu);
     menuButton->setMenu(m_menu);
-    Interaction *inter = Interaction::getInstance();
+    m_interaction = Interaction::getInstance();
     connect(m_menu,&QMenu::triggered,this,&menuModule::triggerMenu);
-    connect(this,&menuModule::menuModuleClose,inter,&Interaction::close);
+    connect(this,&menuModule::menuModuleClose,m_interaction,&Interaction::close);
+//    connect(m_interaction,&Interaction::progremExit, KyView::mutual, &KyView::close);
 
     initGsetting();
 }

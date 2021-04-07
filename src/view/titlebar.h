@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 
 #include "menumodule.h"
+#include "controller/interaction.h"
 class TitleBar : public QWidget
 {
     Q_OBJECT
@@ -20,7 +21,7 @@ public:
 
     void showImageName(QString name);
 private:
-
+    Interaction *m_interaction = nullptr;
     QHBoxLayout *m_titleLayout;
     QLabel *m_logoBtn;//logo
     QLabel *m_logolb;//name
