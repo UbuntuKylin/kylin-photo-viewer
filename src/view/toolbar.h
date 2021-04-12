@@ -53,31 +53,29 @@ private:
 
     Interaction *m_interaction = nullptr;
 
+
+    void originalSize();//原始尺寸
+    void adaptiveWidget();//适应窗口
+    void rotate();//旋转
+    void flipH();//水平翻转
+    void flipV();//垂直翻转
+    void cutImage();//裁剪
+    void filter();//滤镜
+    void labelbar();//标注
+    void sidebar();//侧边栏--相册
+    void information();//信息栏
+
     void initControlQss();//初始化布局
-    void initGsetting();
-
-    void originalSize();
-    void adaptiveWidget();
-    void rotate();
-    void flipH();
-    void flipV();
-    void cutImage();
-    void filter();
-    void labelbar();
-    void sidebar();
-    void information();
-
     void dealSystemGsettingChange(const QString);
+    void initGsetting();
     void initConnect();
-//    void paintEvent(QPaintEvent *event);
-
 
 private slots:
 
 
 signals:
-    void _changeNum(QString num);
-    void showInfor();
+    void showInfor();//主界面显示信息栏
+    void showSidebar();//主界面显示相册
 
 };
 

@@ -6,6 +6,15 @@
 #define SET_BACKGROUND_PICTURE_GSETTINGS_PATH "org.mate.background"
 #define SET_BACKGROUND_PICTURE_GSETTINGS_NAME "pictureFilename"
 
+class MyStandardItem :public QStandardItem
+{
+public:
+    void setPath(const QString &path);
+    QString getPath();
+private:
+    QString m_path;
+};
+
 class Core : public QObject , public NavigationStatus
 {
     Q_OBJECT
@@ -22,6 +31,7 @@ public:
     void findAllImageFromDir(QString fullPath);//寻找目录下所有支持的图片
     void openImage(QString fullPath);//打开图片
     void changeImage(const int &type); //切换图片
+    void changeImageFromClick(QModelIndex modelIndex); //切换图片
     void changeWidgetSize(const QSize &size);//切换窗口大小
     void changeImageShowSize(ImageShowStatus::ChangeShowSizeType type);//图片显示状态（放大缩小）
     void clickNavigation(const QPoint &point = QPoint(-1,-1));//导航器点击

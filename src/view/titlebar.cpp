@@ -5,76 +5,78 @@
 TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
 {
 
-
+    //布局
     g_titleWid = new QWidget(this);
     m_titleLayout = new QHBoxLayout(this);
-
+    //左上角图标
     m_logoBtn = new QLabel(this);
+    //左上角APP名字
     m_logolb = new QLabel(this);
-    m_logoBtn->setFixedSize(SizeDate::LOGOBTN);
-    m_logoBtn->setFixedSize(SizeDate::LOGOBTN);//重置图标大小
+    m_logoBtn->setFixedSize(LOGOBTN);
+    m_logoBtn->setFixedSize(LOGOBTN);//重置图标大小
     m_logoBtn->setPixmap(QPixmap::fromImage(QImage(":/res/res/kyview_logo.png")));
     m_logoBtn->setScaledContents(true);
     m_logolb->setText(tr("Kylin Photo Viewer"));
 
-
+    //中间图片名字
     g_imageName = new QLabel(this);
     g_imageName->hide();
-
+    //窗口四联--菜单
     g_menu = new menuModule(this);
     g_menu->setFocusPolicy(Qt::NoFocus);
-
+    //窗口四联--最小化按钮
     m_minibtn = new QPushButton(this);
-    m_minibtn->setFixedSize(SizeDate::TITLEBTN);
+    m_minibtn->setFixedSize(TITLEBTN);
     m_minibtn->setToolTip(tr("minimize"));
     m_minibtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     m_minibtn->setIcon(QIcon::fromTheme("window-minimize-symbolic"));//主题库的最小化图标
     m_minibtn->setProperty("isWindowButton", 0x1);
     m_minibtn->setProperty("useIconHighlightEffect", 0x2);
     m_minibtn->setFlat(true);
-
+    //窗口四联--最大化/还原按钮
     g_fullscreen = new QPushButton(this);
     g_fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的最小化图标
-    g_fullscreen->setFixedSize(SizeDate::TITLEBTN);
+    g_fullscreen->setFixedSize(TITLEBTN);
     g_fullscreen->setToolTip(tr("full screen"));
     g_fullscreen->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     g_fullscreen->setProperty("isWindowButton", 0x1);
     g_fullscreen->setProperty("useIconHighlightEffect", 0x2);
     g_fullscreen->setFlat(true);
-
+    //窗口四联--关闭按钮
     m_closebtn = new QPushButton(this);
     m_closebtn->setToolTip(tr("close"));
     m_closebtn->setIcon(QIcon::fromTheme("window-close-symbolic"));//主题库的叉子图标
-    m_closebtn->setFixedSize(SizeDate::TITLEBTN);
+    m_closebtn->setFixedSize(TITLEBTN);
     m_closebtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     m_closebtn->setProperty("isWindowButton", 0x2);
     m_closebtn->setProperty("useIconHighlightEffect", 0x8);
     m_closebtn->setFlat(true);
 
-    this->setFixedHeight(SizeDate::BARHEIGHT);
-    this->setStyle();
+    this->setFixedHeight(BARHEIGHT);
     this->initConnect();
     this->initControlQss();
 }
 //顶栏图片名字
 void TitleBar::showImageName(QString name)
 {
-    if(name == ""){
+    if (name == "") {
         return;
     }else{
-        g_imageName->setText(name);
+        longText(g_imageName,name);
+//        g_imageName->setText(name);
         g_imageName->show();
     }
 }
-//样式
-void TitleBar::setStyle()
+//名字过长显示...
+void TitleBar::longText(QLabel *nameC, QString text)
 {
-
-    m_logolb->setStyleSheet("background-color:transparent;");
-    g_imageName->setStyleSheet("background-color:transparent;");
-    m_logoBtn->setStyleSheet("background-color:transparent;");
-    g_titleWid->setWindowOpacity(0.7);
-
+    QFontMetrics fontWidth(nameC->font());//得到每个字符的宽度
+    QString elideNote = fontWidth.elidedText(text, Qt::ElideRight, this->width()/2);//最大宽度wid像素
+    nameC->setText(elideNote);//显示省略好的字符串
+    if (elideNote.contains("…",Qt::CaseInsensitive))
+    {
+         nameC->setToolTip(text);//设置tooltips
+    }
 }
 //初始化顶栏布局
 void TitleBar::initControlQss()

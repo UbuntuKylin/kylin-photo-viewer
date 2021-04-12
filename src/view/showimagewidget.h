@@ -21,10 +21,9 @@ public:
 
     QPushButton *g_next; //下一张
     QPushButton *g_back; //上一张
-    QLabel *m_showImage;//用来展示图片的区域
     bool g_buttonState = true; //用来判断只有一张图片时隐藏左右滑动按钮
 
-    void re_move(int w, int h);
+    void reMove(int w, int h);
     void openImage(QString path);//打开图片
     void nextImage();//下一张
     void backImage();//上一张
@@ -34,7 +33,7 @@ private:
     QGSettings *m_pGsettingThemeData = nullptr;
 //    QWidget *imageWid;
 //    QHBoxLayout *imageLayout;
-
+    QLabel *m_showImage;//用来展示图片的区域
     QAction *m_copy;//复制
     QAction *m_setDeskPaper;//设置为桌面壁纸
     QAction *m_setLockPaper;//设置为锁屏壁纸
@@ -49,7 +48,7 @@ private:
 
     QMovie *m_loadingMovie = nullptr;
     bool m_canSet = true;//针对于动图，只响应第一次的结果显示。
-
+    int m_typeNum;
     void initInteraction();
     void openFinish(QVariant var);//打开结束
     void initConnect();
@@ -72,13 +71,14 @@ private:
 
 signals:
     void perRate(QString num);//改变工具栏的缩小的百分比
-    void ToshowImage();//告诉主界面需要show和hide的控件
+    void toShowImage();//告诉主界面需要show和hide的控件
     void showNavi(QPixmap img);//展示导航栏
     void changeInfor(QFileInfo info, QString imageSize,QString colorSpace);//获得信息栏的信息
     void titleName(QString imageName);//需要将图片名字发送给标题栏显示
     void clearImage();//删除完列表里的图片时需要清空界面，恢复默认状态
     void reduceChange();//滚轮对图片缩小，需要将此动作信号发送出去进行处理
     void enlargeChange();//滚轮对图片放大，需要将此动作信号发送出去进行处理
+    void changeSideSelect(int type);//将当前图片序号发送给相册进行切换
 };
 
 #endif // SHOWIMAGEWIDGET_H

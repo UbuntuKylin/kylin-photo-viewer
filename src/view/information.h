@@ -37,7 +37,6 @@ private:
 
     QFont m_ft;
 
-    void setstyle();
     void layout();
     void longText(QLabel *nameC, QString text);
 

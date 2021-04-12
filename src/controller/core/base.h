@@ -16,7 +16,7 @@
 
 class Enums{
 public:
-    enum ChamgeImageType{NEXT_IMAGE=-1,BACK_IMAGE=-2};
+    enum ChamgeImageType{NEXT_IMAGE=-1,BACK_IMAGE=-2,ERROR_IMAGE=-9};
     enum ChangeShowSizeType{BIG = 0,SMALL,ORIGIN,AUTO};//放大、缩小、原图、自适应
 };
 

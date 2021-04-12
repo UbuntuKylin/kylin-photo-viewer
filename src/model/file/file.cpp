@@ -7,6 +7,7 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     //获取文件信息
     QFileInfo info(path);
     maf.info=info;
+
     //svg、gif等opencv不支持的格式
     QString suffix = info.suffix().toLower();
     if (suffix == "gif" || suffix == "apng" || suffix == "png") {
@@ -17,6 +18,7 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             if (!mat.data) {
                 qDebug()<< "读取缩略图失败："<< path;
             }
+            maf.mat=mat;
             return maf;
         }
         //获取帧率
@@ -53,6 +55,8 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     } else if (suffix == "ico") {
         QImage image(path);
         mat = Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone();
+    } else if (suffix == "jp2") {
+
     }
     //    if (suffix == "hdr") {
     //        int w,h,a;
@@ -69,6 +73,12 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     if (!mat.data) {
         qDebug() << "读取图片失败："<< path;
         return maf;
+    }
+    //通用加载方法的缩略图尺寸优化
+    if (modes == IMREAD_REDUCED_COLOR_8) {
+        if (mat.cols < Variable::ALBUM_IMAGE_SIZE.width() || mat.rows < Variable::ALBUM_IMAGE_SIZE.height()) {
+            mat = imread(path.toLocal8Bit().data());
+        }
     }
     maf.mat = mat;
     return maf;
@@ -159,7 +169,7 @@ bool File::saveImage(const Mat &mat, const QString &savepath, bool replace)
 
 bool File::saveImage(QList<Mat> *list, const int &fps, const QString &savepath, bool replace)
 {
-    return save(list,fps,saveWay(savepath,replace),QFileInfo(savepath).suffix());
+    return save(list,fps,saveWay(savepath,replace));
 }
 
 bool File::save(const Mat &mat, const QString &savepath, const QString &type)
@@ -198,25 +208,25 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
     if (type == "gif") {
         QList<Mat> *list = new QList<Mat>;
         list->append(mat);
-        return save(list,0,savepath,type);
+        return save(list,0,savepath);
     }
     //非特殊情况
     return imwrite(savepath.toStdString(),mat);
 }
 
-bool File::save(QList<Mat> *list, const int &fps, const QString &savepath, const QString &type)
+bool File::save(QList<Mat> *list, const int &fps, const QString &savepath)
 {
     if (list->length()<1) {
         return false;
     }
 
-    return saveMovie(list,fps,savepath,type);
+    return saveMovie(list,fps,savepath);
 }
 
-bool File::saveMovie(QList<Mat> *list,const int &fps, const QString &savepath, const QString &type)
+bool File::saveMovie(QList<Mat> *list,const int &fps, const QString &savepath)
 {
     m_list.append(savepath);
-    SaveMovie *saveMovie = new SaveMovie(list,fps,savepath,type);
+    SaveMovie *saveMovie = new SaveMovie(list,fps,savepath);
     connect(saveMovie,&SaveMovie::saveMovieFinish,this,&File::saveMovieFinishSlot);
     saveMovie->start();
 
@@ -258,11 +268,21 @@ bool File::allSaveFinish()
 
 void File::processStart(const QString &cmd, QStringList arguments)
 {
-    QString cmdTmp = cmd;
-    for (QString &x : arguments) {
-        cmdTmp += " ";
-        cmdTmp += x;
+    if (!m_process) {
+        //File构造函数是在主线程调用的，m_process如果在构造函数中实例化，会报错
+        m_process = new QProcess;//操作文件
+        connect(m_process,&QProcess::readyReadStandardError,this,&File::processLog);
     }
-    system(cmdTmp.toLocal8Bit().data());
+
+    m_process->start(cmd,arguments);
+    m_process->waitForStarted();
+    m_process->waitForFinished();
+}
+
+void File::processLog()
+{
+    qDebug()<<"*******process error*******\n"
+           << QString::fromLocal8Bit(m_process->readAllStandardError())
+           <<"\n*******process error*******";
 }
 

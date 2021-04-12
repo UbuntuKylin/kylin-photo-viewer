@@ -29,20 +29,20 @@ Mat Flip::rotateLeft(const Mat &mat)
 {
     Mat temp,dst;
     transpose(mat, temp);
-    flip(temp,dst,-1);
+    flip(temp,dst,0);
     return dst;
 }
 
 Mat Flip::flipH(const Mat &mat)
 {
     Mat dst;
-    flip(mat,dst,0);
+    flip(mat,dst,1);
     return dst;
 }
 
 Mat Flip::flipV(const Mat &mat)
 {
     Mat dst;
-    flip(mat,dst,1);
+    flip(mat,dst,0);
     return dst;
 }

@@ -1,6 +1,6 @@
 #include "savemovie.h"
 
-SaveMovie::SaveMovie(QList<Mat> *list, const int &fps, const QString &savepath, const QString &type)
+SaveMovie::SaveMovie(QList<Mat> *list, const int &fps, const QString &savepath)
 {
     //结束回收资源
     connect(this,&SaveMovie::finished,this,&SaveMovie::deleteLater);
@@ -9,13 +9,14 @@ SaveMovie::SaveMovie(QList<Mat> *list, const int &fps, const QString &savepath, 
         m_list->append(mat.clone());
     }
     m_fps = fps;
-    qDebug()<<"m_fps"<<m_fps;
     m_savepath = savepath;
-    m_type = type;
 }
 
 void SaveMovie::run()
 {
+    m_process =new QProcess;
+    connect(m_process,&QProcess::readyReadStandardError,this,&SaveMovie::processLog);
+
     QFileInfo info(m_savepath);
     QString name = info.completeBaseName();
     QString tmpName = info.completeBaseName()+"_tmp";
@@ -44,30 +45,39 @@ void SaveMovie::run()
     cmd +=  QString::number(m_fps);
     cmd += " 1000 -z0";
     //执行命令
-    system(cmd.toLocal8Bit().data());
-    //等待完成
-    while (!QFileInfo::exists(tmpFilePath)) {
-        msleep(1);
-    }
-    //删除临时帧
-    QString deleteTmpImages = "rm " + tmpDir+"*.png";
-    system(deleteTmpImages.toLocal8Bit().data());
+    m_process->start(cmd);
+    m_process->waitForStarted();
+    m_process->waitForFinished();
     //转码
     if (suffix == "gif") {
         QString cmd2 = "apng2gif ";
         cmd2 += " "+tmpFilePath;
-        system(cmd2.toLocal8Bit().data());
+        m_process->start(cmd2);
+        m_process->waitForStarted();
+        m_process->waitForFinished();
         tmpFilePath.chop(4);
         tmpFilePath += suffix;
     }
-    while (!QFileInfo::exists(tmpFilePath)) {
-        msleep(1);
-    }
-    //移动回原目录
+    //移动回原目 录
     QString cmd3 = "mv ";
     cmd3 += tmpFilePath;
     cmd3 += " "+m_savepath;
-    system(cmd3.toLocal8Bit().data());
+    m_process->start(cmd3);
+    m_process->waitForStarted();
+    m_process->waitForFinished();
+    //删除临时文件
+    QString deleteTmpImages = "rm -rf "+tmpDir;
+    m_process->start(deleteTmpImages);
+    m_process->waitForStarted();
+    m_process->waitForFinished();
     qDebug()<<"动图保存完成";
+    m_process->deleteLater();
     emit saveMovieFinish(m_savepath);
+}
+
+void SaveMovie::processLog()
+{
+    qDebug()<<"*******process error*******\n"
+           << QString::fromLocal8Bit(m_process->readAllStandardError())
+           <<"\n*******process error*******";
 }
