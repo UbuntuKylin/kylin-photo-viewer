@@ -24,6 +24,7 @@ signals:
     void openFinish(QVariant var);//打开完成
     void showNavigation(QPixmap pix);//操作导航器
     void coreProgremExit();//结束进程
+    void changeAlbumHighLight(QModelIndex modelIndex);//在相册中选中到所切换的图片
 
 public:
     Core();

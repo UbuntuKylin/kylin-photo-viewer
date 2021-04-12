@@ -176,7 +176,7 @@ void Core::setHighLight(const QString &path)
     for (int i = 0;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item =dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == path) {
-//            item->setBackground();
+            emit changeAlbumHighLight(item->index());
             return;
         }
     }

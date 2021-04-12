@@ -51,6 +51,7 @@ void CoreInteraction::initConnect()
     connect(this,&CoreInteraction::coreClose,m_core,&Core::close);//关闭事件
     connect(m_core,&Core::coreProgremExit,this,&CoreInteraction::progremExit);//发送信号让主界面结束进程
     connect(this,&CoreInteraction::changeImageFromClick,m_core,&Core::changeImageFromClick);//点击相册事件
+    connect(m_core,&Core::changeAlbumHighLight,this,&CoreInteraction::changeAlbumHighLight);//在相册中选中到所切换的图片
 }
 
 bool CoreInteraction::coreOperateTooOften()

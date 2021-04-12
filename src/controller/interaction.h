@@ -59,6 +59,13 @@ signals:
      */
     void changeImageFromClick(QModelIndex modelIndex);//切换到所选图片
 
+    /*
+     * 接口功能：切换图片时，相册设置高亮
+     * 接口场景：切换图片时
+     * 接口类型：信号，需要绑定QListView的setCurrentIndex槽
+     */
+    void changeAlbumHighLight(QModelIndex modelIndex);//在相册中选中到所切换的图片
+
 public:
 
     /*
