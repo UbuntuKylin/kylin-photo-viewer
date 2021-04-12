@@ -15,26 +15,26 @@ Navigator::Navigator(QWidget *parent) : QWidget(parent)
     connect(this,&Navigator::posChange,m_interaction,&Interaction::clickNavigation);
 
 }
-
+//显示导航器
 void Navigator::showNavigation(QPixmap pix)
 {
-    if(pix.isNull()){
+    if (pix.isNull()) {
         this->hide();
         return;
     }
     m_bottomImage->setPixmap(pix);
-    if(this->isHidden()){
+    if (this->isHidden()) {
         this->show();
         emit naviChange();
     }
 }
-
+//发送鼠标移动坐标
 void Navigator::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint currpos =this->mapFromGlobal(QCursor().pos());
     emit posChange(currpos);
 }
-
+//发送鼠标按下坐标
 void Navigator::mousePressEvent(QMouseEvent *event)
 {
     if(event->type() == QEvent::MouseButtonPress)

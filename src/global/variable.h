@@ -49,7 +49,7 @@ public:
     static const int RESIZE_KEY_MAX; //能够放大的最大值
     static const int RESIZE_KEY_MIN; //能够缩小的最小值
     static const int DEFAULT_MOVIE_TIME_INTERVAL; //默认动图时间间隔
-    static const int BAR_HEIGHT;//顶栏和工具栏的高度
+
     static void setSettings(const QString &key,const QVariant &vlue);//写入配置文件
     static QVariant getSettings(const QString &key);//读取配置文件
 

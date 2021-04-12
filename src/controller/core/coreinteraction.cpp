@@ -50,6 +50,7 @@ void CoreInteraction::initConnect()
     connect(this,&CoreInteraction::coreSetAsBackground,m_core,&Core::setAsBackground);//设置为背景图
     connect(this,&CoreInteraction::coreClose,m_core,&Core::close);//关闭事件
     connect(m_core,&Core::coreProgremExit,this,&CoreInteraction::progremExit);//发送信号让主界面结束进程
+    connect(this,&CoreInteraction::changeImageFromClick,m_core,&Core::changeImageFromClick);//点击相册事件
 }
 
 bool CoreInteraction::coreOperateTooOften()

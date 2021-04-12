@@ -31,9 +31,9 @@ void menuModule::initAction(){
     menuButton->setIcon(QIcon::fromTheme("open-menu-symbolic"));
     menuButton->setProperty("isWindowButton", 0x1);
     menuButton->setProperty("useIconHighlightEffect",0x2);
-    menuButton->setIconSize(SizeDate::MICONSIZES);
+    menuButton->setIconSize(MICONSIZES);
     menuButton->setPopupMode(QToolButton::InstantPopup);
-    menuButton->setFixedSize(SizeDate::MBTNSIZE);
+    menuButton->setFixedSize(MBTNSIZE);
     menuButton->setAutoRaise(true);
     menuButton->setFocusPolicy(Qt::NoFocus);
     m_menu = new QMenu();
@@ -117,7 +117,7 @@ void menuModule::aboutAction(){
 void menuModule::helpAction(){
 //    帮助点击事件处理
 
-    m_appName = SizeDate::USERGUIDE;
+    m_appName = USERGUIDE;
     if(!m_ipcDbus){
         m_ipcDbus = new DaemonDbus();
     }
@@ -145,8 +145,8 @@ void menuModule::initAbout(){
     hints.decorations = MWM_DECOR_BORDER;
     XAtomHelper::getInstance()->setWindowMotifHint(m_aboutWindow->winId(), hints);
 
-    m_aboutWindow->setFixedSize(SizeDate::MABOUT);
-    m_aboutWindow->setMinimumHeight(SizeDate::MABOUT.height());
+    m_aboutWindow->setFixedSize(MABOUT);
+    m_aboutWindow->setMinimumHeight(MABOUT.height());
     QVBoxLayout *mainlyt = new QVBoxLayout();
     QHBoxLayout *titleLyt = initTitleBar();
     QVBoxLayout *bodylyt = initBody();
@@ -163,7 +163,7 @@ void menuModule::initAbout(){
 
 QHBoxLayout* menuModule::initTitleBar(){
     QLabel* titleIcon = new QLabel();
-    titleIcon->setFixedSize(SizeDate::MICONSIZEM);
+    titleIcon->setFixedSize(MICONSIZEM);
 
     m_appShowingName = tr("kylin photo view");
     m_iconPath = ":/res/res/kyview_logo.png";
@@ -173,7 +173,7 @@ QHBoxLayout* menuModule::initTitleBar(){
     QPushButton *titleBtnClose = new QPushButton;
     titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
     titleBtnClose->setToolTip(tr("close"));
-    titleBtnClose->setFixedSize(SizeDate::MBTNSIZE);
+    titleBtnClose->setFixedSize(MBTNSIZE);
     titleBtnClose->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     titleBtnClose->setProperty("isWindowButton", 0x2);
     titleBtnClose->setProperty("useIconHighlightEffect", 0x8);
@@ -194,22 +194,22 @@ QHBoxLayout* menuModule::initTitleBar(){
 }
 
 QVBoxLayout* menuModule::initBody(){
-    m_appVersion = SizeDate::VERSIONNEM;
+    m_appVersion = VERSIONNEM;
     QLabel* bodyIcon = new QLabel();
-    bodyIcon->setFixedSize(SizeDate::MICONSIZEB);
+    bodyIcon->setFixedSize(MICONSIZEB);
     bodyIcon->setPixmap(QPixmap::fromImage(QImage(m_iconPath)));
     bodyIcon->setStyleSheet("font-size:14px;");
     bodyIcon->setScaledContents(true);
-    m_bodyAppName->setFixedHeight(SizeDate::NAMEHEIGHT);
+    m_bodyAppName->setFixedHeight(NAMEHEIGHT);
     m_bodyAppName->setText(tr(m_appShowingName.toLocal8Bit()));
-    m_bodyAppVersion->setFixedHeight(SizeDate::VERSIONHEI);
+    m_bodyAppVersion->setFixedHeight(VERSIONHEI);
     m_bodyAppVersion->setText(tr("Version: ") + m_appVersion);
     m_bodyAppVersion->setAlignment(Qt::AlignLeft);
 
     connect(m_bodySupport,&QLabel::linkActivated,this,[=](const QString url){
         QDesktopServices::openUrl(QUrl(url));
     });
-    m_bodySupport->setFixedHeight(SizeDate::VERSIONHEI);
+    m_bodySupport->setFixedHeight(VERSIONHEI);
     m_bodySupport->setContextMenuPolicy(Qt::NoContextMenu);
     QVBoxLayout *vlyt = new QVBoxLayout;
     vlyt->setMargin(0);

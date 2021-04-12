@@ -43,7 +43,7 @@ const QStringList Variable::BACKGROUND_SUPPORT_FORMATS={//经测试 "jp2","tga",
 //支持的格式列表
 const QStringList Variable::SUPPORT_FORMATS=Variable::creatSupportFormats();
 
-const QSize Variable::ALBUM_IMAGE_SIZE = QSize(94,58); //相册缩略图尺寸
+const QSize Variable::ALBUM_IMAGE_SIZE = QSize(94,56); //相册缩略图尺寸
 const QSize Variable::NAVIGATION_SIZE = QSize(200,133); //导航器尺寸
 const int Variable::PICTURE_DEEPEN_KEY = 50; //图片加深值
 const int Variable::REFRESH_RATE = 15; //刷新间隔
@@ -52,8 +52,6 @@ const int Variable::RESIZE_KEY_MAX = 1000; //能够放大的最大值
 const int Variable::RESIZE_KEY_MIN = 5; //能够缩小的最小值
 const int Variable::DEFAULT_MOVIE_TIME_INTERVAL = 100; //默认动图时间间隔
 
-//标题栏高度
-const int Variable::BAR_HEIGHT = 40;
 
 
 QGSettings *Variable::getSettings()

@@ -58,29 +58,22 @@ private:
     OpenImage *m_openImage = nullptr;//打开图片
     ShowImageWidget *m_showImageWidget = nullptr;//展示图片
     Information *m_information = nullptr;//信息窗口
-
+    SideBar *m_sideBar = nullptr;//相册
     QGSettings *m_pGsettingThemeData = nullptr;//主题
     QGSettings *m_pGsettingControlTrans = nullptr;//控制面板透明度
 
     QTimer *m_timer;
-    QTimer *m_timerinfor;
     QTimer *m_timernavi;
 
     // 用户手册功能
     DaemonDbus *m_DaemonIpcDbus;
 
+    QPoint m_startPoint; //鼠标按下起点
+    bool m_mousePress; //按下鼠标左键
     bool m_inforState = true;//信息栏状态
-
-    void delayHide();//顶栏工具栏的延时隐藏
-    void delayHide_infor();//顶栏工具栏的延时隐藏
-    void delayHide_navi();//导航栏在鼠标离开界面时隐藏
-//    void delayHide_leave();//顶栏和底栏在鼠标离开界面时隐藏
-
-
-
+    bool m_albumState = true;//信息栏状态
     void initconnect();//初始化连接
-    void openState();//  判断打开应用应该是什么状态
-    void aboutShow();//关于界面打开，两栏隐藏
+
 
     void titlebarChange();//改变顶栏位置和大小
     void openImageChange();//改变中间打开图片位置和大小
@@ -88,12 +81,8 @@ private:
     void toolbarChange();//改变工具栏位置和大小
     void naviChange();//改变导航栏位置
     void inforChange();//改变信息栏位置
-
-    void showInforWid();//展示或隐藏图片信息窗口
-
-    void clearImage();//无图片，需要返回默认界面
+    void albumChange();//改变相册位置
     void hoverChange(int y);//hover态，顶栏和工具栏的状态
-
     void initGsetting();//监听主题变化
 //    void initGSetting_tran();//监听控制面板变化
     void themeChange();//主题变化
@@ -101,6 +90,8 @@ private:
 
 
     void mouseMoveEvent(QMouseEvent *event);//hover态时两栏和按钮状态--检测鼠标所在区域
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);//改变窗口尺寸，各控件大小位置变化
     void leaveEvent(QEvent *event);//鼠标离开，按钮、两栏隐藏
     void enterEvent(QEvent *event);//鼠标进入
@@ -113,26 +104,34 @@ private:
 
 
 
+    //手势相关
     bool event(QEvent *event);
     bool gestureEvent(QEvent *event); // 手势识别
     void pinchTriggered(QPinchGesture *gesture);  // 捏手势
-    void tapTriggered(QTapGesture *gesture);  // 点（按）手势
-    void panTriggered(QPanGesture *gesture);  // 平移手势
-    void swipeTriggered(QSwipeGesture *gesture);  // 滑动手势
-    void setLabel(); // 设置label的属性
-    void mousePressEvent(QMouseEvent *event);
-
-    qreal horizontalOffset = 100; // 水平偏移
-    qreal verticalOffset = 100; // 垂直偏移
-    qreal labelheight = 600;
-    qreal labelwidth = 400;
-    QLabel *label;
-    qreal m_angle = 0; // 图片旋转角度增量
+    void tapAndHoldGesture(QTapAndHoldGesture *gesture);  // 平移手势
+    void initGrabGesture(); // 初始化手势
+    bool touchRotate(const qreal &lastAngle);//触控旋转
+    int m_rotateLevel = 0;//手势旋转级别
+    qreal m_lastDistance = 1;//上次手势距离
+    qreal m_minDistance = 0.5;//最小生效距离
+    //放大缩小和旋转同时只能进行一项
+    bool m_isRotate = false;
+    bool m_isResize = false;
+    bool m_panTriggered = false;//长按事件触发中
+    QPointF m_touchPoint;//滑动切换图片事件记录距离
 
 private slots:
 
     void changOrigSize();//主界面最大化和还原
-    void Toshowimage();//显示图片
+    void toShowImage();//显示图片
+    void showSidebar();//显示相册
+
+    void delayHide();//顶栏工具栏的延时隐藏
+    void delayHide_navi();//导航栏在鼠标离开界面时隐藏
+    void openState();//  判断打开应用应该是什么状态
+    void aboutShow();//关于界面打开，两栏隐藏
+    void showInforWid();//展示或隐藏图片信息窗口
+    void clearImage();//无图片，需要返回默认界面
 
 
 signals:

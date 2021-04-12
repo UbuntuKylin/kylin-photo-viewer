@@ -51,6 +51,13 @@ signals:
      */
     void progremExit();
 
+    /*
+     * 接口功能：点击相册切换图片
+     * 接口场景：点击相册中的图片时
+     * 接口类型：信号，需要绑定QListView的click信号
+     */
+    void changeImageFromClick(QModelIndex modelIndex);//切换到所选图片
+
 public:
 
     /*

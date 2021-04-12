@@ -62,5 +62,7 @@
         <file>res/loadgif.gif</file>
         <file>res/1left.png</file>
         <file>res/1right.png</file>
+        <file>res/loadgif23.gif</file>
+        <file>res/little_add.png</file>
     </qresource>
 </RCC>

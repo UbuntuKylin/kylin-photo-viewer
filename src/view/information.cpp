@@ -2,9 +2,9 @@
 #include "sizedate.h"
 Information::Information(QWidget *parent) : QWidget(parent)
 {
-    this->resize(SizeDate::INFORSIZE);
+    this->resize(INFORSIZE);
     this->adjustSize();
-//    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
     m_widName = new QLabel(this);
     m_widName->setAttribute(Qt::WA_TranslucentBackground);
     m_widName->setText(tr("Information"));
@@ -52,18 +52,17 @@ Information::Information(QWidget *parent) : QWidget(parent)
     m_creationTimeC->setAttribute(Qt::WA_TranslucentBackground);
     m_revisionTimeC = new QLabel(this);
     m_revisionTimeC->setAttribute(Qt::WA_TranslucentBackground);
-
+    //布局
     m_inforWid = new QWidget(this);
     m_gdLayout =new QGridLayout(this);
     this->layout();
-//    this->setMouseTracking(true);
 
 }
 //为各控件设置text
 void Information::contentText(QFileInfo info, QString sizeImage, QString spaceColor)
 {
     QString imageSize;
-    if (float(info.size())/1024 >= 1024){
+    if (float(info.size())/1024 >= 1024) {
         QString Size = QString("%1").arg(QString::asprintf("%.1f", float(info.size())/1024/1024));
         imageSize = Size + "Mib";
     }else{
@@ -79,12 +78,7 @@ void Information::contentText(QFileInfo info, QString sizeImage, QString spaceCo
     m_revisionTimeC->setText(info.lastModified().toString("yyyy.MM.dd hh:mm"));
 
 }
-
-void Information::setstyle()
-{
-
-}
-
+//布局
 void Information::layout()
 {
     m_gdLayout->addWidget(m_widName,0,0,1,2);

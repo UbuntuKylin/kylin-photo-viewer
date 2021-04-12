@@ -19,6 +19,7 @@ public:
 
 private:
     QString m_path;
+    QPixmap changImageSize(const QPixmap &pix);
 };
 
 #endif // ALBUMTHUMBNAIL_H
