@@ -29,7 +29,6 @@ public:
     void backImage();//上一张
 
 private:
-    Interaction *m_interaction = nullptr;
     QGSettings *m_pGsettingThemeData = nullptr;
 //    QWidget *imageWid;
 //    QHBoxLayout *imageLayout;

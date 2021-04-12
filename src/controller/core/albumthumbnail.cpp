@@ -13,7 +13,6 @@ void AlbumThumbnail::run()
         QPixmap pix = Processing::converFormat(maf.mat);
         pix = Processing::resizePix(pix,Variable::ALBUM_IMAGE_SIZE);
         package.image = changImageSize(pix);
-        qDebug()<<"package.image"<<package.image;
     }
     package.info = maf.info;
     QVariant var;
@@ -34,6 +33,7 @@ QPixmap AlbumThumbnail::changImageSize(const QPixmap &pix)
     h = Variable::ALBUM_IMAGE_SIZE.height() - pix.height();
 
     QPixmap newPix(Variable::ALBUM_IMAGE_SIZE);
+    newPix.fill(Qt::transparent);
     QPainter painter(&newPix);
     painter.drawPixmap(w/2,h/2,pix);
     return newPix;

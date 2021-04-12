@@ -57,6 +57,6 @@ int main(int argc, char *argv[])
     hints.decorations = MWM_DECOR_BORDER;
     XAtomHelper::getInstance()->setWindowMotifHint(w.winId(), hints);
 
-    w.show();
+    Interaction::getInstance()->initUiFinish();
     return a.exec();
 }

@@ -20,6 +20,7 @@ signals:
      * 接口类型：信号，需要绑定
      * 参数类型：QString
      * 参数描述：图片路径
+     * 备注：如果路径值为Variable::API_TYPE,则不显示主界面
      */
     void startWithOpenImage(QString);
 

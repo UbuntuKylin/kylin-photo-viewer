@@ -42,7 +42,7 @@ QString Core::initDbus(const QStringList &arguments)
     }
 
     //帮助命令则打印
-    if (arguments[1]=="-help" || arguments[1]=="--help" ) {
+    if (arguments[1]=="-help" || arguments[1]=="--help" || arguments[1]=="-h") {
         for (QString &key : Variable::SUPPORT_CMD.keys()) {
             qInfo()<<key<<"   "<<Variable::SUPPORT_CMD.value(key);
         }
@@ -63,6 +63,10 @@ QString Core::initDbus(const QStringList &arguments)
             return "";
         }
         return path;
+    }
+
+    if (arguments[1] == "-api") {
+        return processingApi(arguments);
     }
 
     //如果是命令
@@ -112,6 +116,72 @@ void Core::processingCommand(const QStringList &cmd)
     }
 }
 
+QString Core::processingApi(const QStringList &cmd)
+{
+    if (cmd.length() < 4) {
+        return "";
+    }
+
+    if (cmd[2] == "-flip") {
+        if (cmd.length() < 5) {
+            qInfo()<<"参数不合规，使用-h查看帮助";
+            return "";
+        }
+        apiCmd.append(cmd[2]);
+        if (!QFileInfo::exists(cmd[3])) {
+            qInfo()<<"文件不存在";
+            return "";
+        }
+        QString format =cmd[3];
+        format=format.split(".").last();
+        if (!Variable::SUPPORT_FORMATS.contains(format)) {
+            qInfo()<<"不支持的格式";
+            return "";
+        }
+        apiCmd.append(cmd[3]);
+        QString flipCmd = cmd[4];
+        int hNum = flipCmd.count('h');
+        hNum = hNum % 2;//保留有效操作
+        int vNum = flipCmd.count('v');
+        vNum = vNum % 2;
+        int cNum = flipCmd.count('c');
+        cNum = cNum % 4;
+        QString flipCmdResult;
+        for (int i = 0;i < hNum;i++) {
+            flipCmdResult+="h";
+        }
+        for (int i = 0;i < vNum;i++) {
+            flipCmdResult+="v";
+        }
+        for (int i = 0;i < cNum;i++) {
+            flipCmdResult+="c";
+        }
+        apiCmd.append(flipCmdResult);
+
+        if (cmd.length() > 5) {
+            QString saveWay = cmd[5];
+            if (saveWay.indexOf('r') > 0) {
+                apiReplaceFile = true;
+            }
+        }
+
+        isApi = true;
+        return Variable::API_TYPE;
+    }
+    return "";
+}
+
+void Core::setHighLight(const QString &path)
+{
+    for (int i = 0;i<m_albumModel->rowCount();i++) {
+        MyStandardItem * item =dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
+        if (item->getPath() == path) {
+//            item->setBackground();
+            return;
+        }
+    }
+}
+
 void Core::openImage(QString fullPath)
 {
     if (fullPath.isEmpty()) {
@@ -138,6 +208,7 @@ void Core::openImage(QString fullPath)
         changeImage(type);
         return;
     }
+    setHighLight(m_nowpath);//设置相册选中
     m_nowImage = Processing::converFormat(maf.mat);
     //记录状态
     changeMat(maf.mat);
@@ -398,6 +469,10 @@ void Core::setAsBackground()
         QGSettings *background = new QGSettings(SET_BACKGROUND_PICTURE_GSETTINGS_PATH);
         QStringList keyList = background->keys();
         if (keyList.contains(SET_BACKGROUND_PICTURE_GSETTINGS_NAME)) {
+            QString nowPath =  background->get(SET_BACKGROUND_PICTURE_GSETTINGS_NAME).toString();
+            if (nowPath == m_nowpath) {
+                background->set(SET_BACKGROUND_PICTURE_GSETTINGS_NAME,QString(""));
+            }
             background->set(SET_BACKGROUND_PICTURE_GSETTINGS_NAME,m_nowpath);
         }
         background->deleteLater();
@@ -429,11 +504,11 @@ void Core::close()
         m_playMovieTimer->stop();
         showImage(QPixmap());
         //保存动图
-        m_file->saveImage(m_matList,m_fps,m_nowpath);
+        m_file->saveImage(m_matList,m_fps,m_nowpath,apiReplaceFile);
         shouldClose = true;
     } else {
         //保存图片
-        m_file->saveImage(m_nowMat,m_nowpath);
+        m_file->saveImage(m_nowMat,m_nowpath,apiReplaceFile);
         progremExit();
     }
 }
@@ -738,8 +813,37 @@ void Core::albumLoadFinish(QVariant var)
     }
 }
 
+bool Core::apiFunction()
+{
+    if (!isApi) {
+       return false;
+    }
+    QString fullPath = apiCmd[1];
+    openImage(fullPath);
+    //翻转
+    if (apiCmd[0]=="-flip") {
+        QString cmd = apiCmd[2];
+        for (QChar &ch : cmd) {
+            if (ch == 'h') {
+                flipImage(Processing::FlipWay::horizontal);
+            } else if (ch == 'v') {
+                flipImage(Processing::FlipWay::vertical);
+            } else if (ch == 'c') {
+                flipImage(Processing::FlipWay::clockwise);
+            }
+        }
+        close();
+    }
+    return true;
+}
+
+
 void Core::findAllImageFromDir(QString fullPath)
 {
+    if (apiFunction()) {
+        return;
+    }
+
     QFileInfo info(fullPath);
     QString path = info.absolutePath();//转成绝对路径
     QString filepath = info.absoluteFilePath();//转成绝对路径

@@ -51,6 +51,7 @@ private:
     void showImageOrMovie();//显示图片或动图
     void creatImage(const int &proportion = -1);//生成图像
     void processingCommand(const QStringList &cmd);//处理终端命令
+    QString processingApi(const QStringList &cmd);//处理外部命令
     void loadAlbum(QString path, QStringList list);//加载相册
     void navigation(const QPoint &point = QPoint(-1,-1));//导航器
     void playMovie();//播放动图的槽函数
@@ -61,8 +62,13 @@ private:
     ChamgeImageType nextOrBack(const QString &oldPath,const QString &newPath);
     QString nextImagePath(const QString & oldPath);
     QString backImagePath(const QString & oldPath);
+    void setHighLight(const QString &path);
     bool shouldClose = false;//可以关闭
+    bool isApi = false;//作为API接口运行
+    bool apiReplaceFile = false;//api替换原图
+    QStringList apiCmd;//保存操作命令
     void progremExit();//结束进程
+    bool apiFunction();//处理api函数
 
 };
 

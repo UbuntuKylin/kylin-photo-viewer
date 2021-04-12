@@ -31,10 +31,10 @@ const QMap<QString,QString> Variable::SUPPORT_CMD = Variable::getSupportCmd();
 
 //opencv支持的格式列表
 const QStringList Variable::opencvCanSupportFormats={
-    "JPG","JPE","JPEG","JP2","EXR","PBM","PGM","PPM","SR","RAS","PNG","BMP","DIB","TIFF","TIF","PNM","WEBP",
-    "jpg","jpe","jpeg","jp2","exr","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","pnm","webp"};
+    "JPG","JPE","JPEG","EXR","PBM","PGM","PPM","SR","RAS","PNG","BMP","DIB","TIFF","TIF","PNM","WEBP",
+    "jpg","jpe","jpeg","exr","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","pnm","webp"};
 //opencv不支持的格式列表
-const QStringList Variable::opencvCannotSupportFormats={
+const QStringList Variable::opencvCannotSupportFormats={//"JP2"待添加
     "TGA","SVG","GIF","APNG","ICO"
     "tga","svg","gif","apng","ico"};
 //壁纸支持的格式列表
@@ -51,6 +51,8 @@ const int Variable::RESIZE_KEY = 10; //每次放大缩小的值
 const int Variable::RESIZE_KEY_MAX = 1000; //能够放大的最大值
 const int Variable::RESIZE_KEY_MIN = 5; //能够缩小的最小值
 const int Variable::DEFAULT_MOVIE_TIME_INTERVAL = 100; //默认动图时间间隔
+
+const QString Variable::API_TYPE = QString("$api$"); //是否为外部作为API调用的标识
 
 
 
@@ -74,7 +76,9 @@ QMap<QString, QString> Variable::getSupportCmd()
     cmds.insert("-origin","显示原图");
     cmds.insert("-auto","自适应窗口大小显示图片");
     cmds.insert("-rotate","旋转图片");
-    //cmds.insert("-fullscreen","全屏");
+    cmds.insert("-api","外部接口 \n  -api -flip [path] [cmd] [saveway]\n"
+                       "  cmd:  -v 垂直翻转    -h 水平翻转    -c 顺时针旋转90度\n    可重复使用，例如 -vhcc \n"
+                       "  saveway:  -b 备份保存  |  -r 覆盖保存");
     return cmds;
 }
 

@@ -51,7 +51,6 @@ public:
 
 
 private:
-    Interaction *m_interaction = nullptr;
     ToolBar *m_toolbar = nullptr;//工具栏
     TitleBar *m_titlebar = nullptr;//顶栏
     Navigator *m_navigator = nullptr;//导航器
@@ -105,11 +104,11 @@ private:
 
 
     //手势相关
+    void initGrabGesture(); // 初始化手势
     bool event(QEvent *event);
     bool gestureEvent(QEvent *event); // 手势识别
     void pinchTriggered(QPinchGesture *gesture);  // 捏手势
     void tapAndHoldGesture(QTapAndHoldGesture *gesture);  // 平移手势
-    void initGrabGesture(); // 初始化手势
     bool touchRotate(const qreal &lastAngle);//触控旋转
     int m_rotateLevel = 0;//手势旋转级别
     qreal m_lastDistance = 1;//上次手势距离

@@ -77,7 +77,11 @@ void SaveMovie::run()
 
 void SaveMovie::processLog()
 {
-    qDebug()<<"*******process error*******\n"
-           << QString::fromLocal8Bit(m_process->readAllStandardError())
-           <<"\n*******process error*******";
+    QString error = QString::fromLocal8Bit(m_process->readAllStandardError());
+    if (error == "") {
+        return;
+    }
+    qDebug()<<"--------process error--------\n"
+           << error
+           <<"\n-----------------------------";
 }

@@ -213,7 +213,6 @@ void ToolBar::labelbar()
 //侧边栏
 void ToolBar::sidebar()
 {
-    qDebug()<<"相册侧栏";
     emit showSidebar();
 }
 //信息栏展示

@@ -64,10 +64,7 @@ bool CoreInteraction::coreOperateTooOften()
 
 void CoreInteraction::initUiFinish()
 {
-    if (m_needStartWithOpenImagePath!="") {
-        emit startWithOpenImage(m_needStartWithOpenImagePath);
-        m_needStartWithOpenImagePath = "";
-    }
+    emit startWithOpenImage(m_needStartWithOpenImagePath);
 }
 
 void CoreInteraction::openImage(const QString &path)

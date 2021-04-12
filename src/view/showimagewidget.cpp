@@ -5,6 +5,8 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
 {
     this->resize(w,h);
 
+    initInteraction();
+
     //中间展示图片部分
     m_showImage = new QLabel(this);
     m_showImage->resize(this->width(),this->height());
@@ -52,7 +54,6 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     m_loadingMovie = new QMovie(":/res/res/loadgif.gif");
 
     this->initConnect();
-    initInteraction();//一定要放到构造函数末尾
 }
 
 void ShowImageWidget::initConnect()
@@ -77,14 +78,14 @@ void ShowImageWidget::initConnect()
 void ShowImageWidget::nextImage()
 {
     m_canSet = true;
-    m_interaction->nextImage();
+    Interaction::getInstance()->nextImage();
 //    emit changeSideSelect(m_typeNum);
 }
 //上一张
 void ShowImageWidget::backImage()
 {
     m_canSet = true;
-    m_interaction->backImage();
+    Interaction::getInstance()->backImage();
 //    emit changeSideSelect(m_typeNum);
 }
 //复制
@@ -95,7 +96,7 @@ void ShowImageWidget::copy()
 //设置为桌面壁纸
 void ShowImageWidget::setDeskPaper()
 {
-    m_interaction->setAsBackground();
+    Interaction::getInstance()->setAsBackground();
 }
 //设置为锁屏壁纸
 void ShowImageWidget::setLockPaper()
@@ -110,7 +111,7 @@ void ShowImageWidget::print()
 //删除
 void ShowImageWidget::deleteImage()
 {
-    m_interaction->deleteImage();
+    Interaction::getInstance()->deleteImage();
 }
 //在文件夹中显示
 void ShowImageWidget::showInFile()
@@ -146,21 +147,24 @@ void ShowImageWidget::setMenuAction()
 
 void ShowImageWidget::initInteraction()
 {
-    m_interaction =Interaction::getInstance();
-    //此处绑定信号和槽
-    connect(m_interaction,&Interaction::startWithOpenImage,this,&ShowImageWidget::startWithOpenImage);//启动时打开图片
-    connect(m_interaction,&Interaction::openFinish,this,&ShowImageWidget::openFinish);//图片打开完成，获取数据
-    m_interaction->initUiFinish();
+    connect(Interaction::getInstance(),&Interaction::startWithOpenImage,this,&ShowImageWidget::startWithOpenImage);//启动时打开图片
+    connect(Interaction::getInstance(),&Interaction::openFinish,this,&ShowImageWidget::openFinish);//图片打开完成，获取数据
 }
 //双击或带参数打开
 void ShowImageWidget::startWithOpenImage(QString path)
 {
+    if (path != Variable::API_TYPE) {
+        KyView::mutual->show();
+    }
+    if (path == "") {
+        return;
+    }
     openImage(path);
 }
 //打开图片
 void ShowImageWidget::openImage(QString path)
 {
-    m_interaction->openImage(path);
+    Interaction::getInstance()->openImage(path);
 }
 //拿到图片信息，进行处理
 void ShowImageWidget::openFinish(QVariant var)
@@ -231,7 +235,7 @@ void ShowImageWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
     this->m_showImage->resize(KyView::mutual->width(),KyView::mutual->height());
-    m_interaction->changeWidgetSize(this->m_showImage->size());
+    Interaction::getInstance()->changeWidgetSize(this->m_showImage->size());
 }
 //滚轮放大缩小
 bool ShowImageWidget::eventFilter(QObject *obj, QEvent *event)
