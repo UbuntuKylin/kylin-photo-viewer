@@ -44,9 +44,13 @@ QString Core::initDbus(const QStringList &arguments)
     //帮助命令则打印
     if (arguments[1]=="-help" || arguments[1]=="--help" || arguments[1]=="-h") {
         for (QString &key : Variable::SUPPORT_CMD.keys()) {
-            qInfo()<<key<<"   "<<Variable::SUPPORT_CMD.value(key);
+            QString str = key + "   " + Variable::SUPPORT_CMD.value(key);
+            QStringList list = str.split("\n");
+            for (QString &tmpStr : list) {
+                qInfo()<<tmpStr;
+            }
         }
-        progremExit();
+        exit(0);
         return "";
     }
 

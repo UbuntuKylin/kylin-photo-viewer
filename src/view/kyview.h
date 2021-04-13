@@ -28,6 +28,8 @@
 #include <QTapGesture>
 #include <QImageReader>
 
+#include <QX11Info>
+
 #include "toolbar.h"
 #include "titlebar.h"
 #include "openimage.h"
@@ -67,7 +69,6 @@ private:
     // 用户手册功能
     DaemonDbus *m_DaemonIpcDbus;
 
-    QPoint m_startPoint; //鼠标按下起点
     bool m_mousePress; //按下鼠标左键
     bool m_inforState = true;//信息栏状态
     bool m_albumState = true;//信息栏状态

@@ -76,9 +76,9 @@ QMap<QString, QString> Variable::getSupportCmd()
     cmds.insert("-origin","显示原图");
     cmds.insert("-auto","自适应窗口大小显示图片");
     cmds.insert("-rotate","旋转图片");
-    cmds.insert("-api","外部接口 \n  -api -flip [path] [cmd] [saveway]\n"
-                       "  cmd:  -v 垂直翻转    -h 水平翻转    -c 顺时针旋转90度\n    可重复使用，例如 -vhcc \n"
-                       "  saveway:  -b 备份保存  |  -r 覆盖保存");
+    cmds.insert("-api","外部接口  -api -flip [path] [cmd] [saveway]\n"
+                       "  ├-cmd: -v 垂直翻转 -h 水平翻转 -c 顺时针旋转90度 | 可重复使用，例如-vhcc \n"
+                       "  └-saveway:  -b 备份保存 -r 覆盖保存 | 可不填，不填相当于-b");
     return cmds;
 }
 

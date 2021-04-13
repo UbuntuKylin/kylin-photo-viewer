@@ -458,31 +458,54 @@ void KyView::showSidebar()
 //检测鼠标位置--顶栏和工具栏的出现和隐藏
 void KyView::mouseMoveEvent(QMouseEvent *event)
 {
-    //无法响应窗口最大化等主题控制的事件，目前只能拖拽,存在拖拽太快时窗口跟不上位置的问题
-    if (m_titlebar != nullptr) {
-        if (!m_titlebar->isHidden() && m_titlebar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
-            //移动窗口
-            if (m_mousePress) {
-                this->setCursor(Qt::DragMoveCursor);//改变鼠标样式
-                QPoint curPoint = event->globalPos();   //按住移动时的位置
-                QPoint movePoint = curPoint - m_startPoint;
-                QPoint mainWinPos = this->pos();
-                this->move(mainWinPos.x() + movePoint.x(), mainWinPos.y() + movePoint.y());
-                m_startPoint = curPoint;
-            }
-        }
-    }
-
-
-    int y =this->mapFromGlobal(QCursor().pos()).y();
+    //鼠标移入特定区域显示/隐藏控件
     if (m_openImage->isHidden()) {
+        int y =this->mapFromGlobal(QCursor().pos()).y();
         hoverChange(y);
     } else {
         m_toolbar->hide();
         m_titlebar->show();
     }
+    //无法响应窗口最大化等主题控制的事件，目前只能拖拽,存在拖拽太快时窗口跟不上位置的问题
+    if (m_titlebar == nullptr) {
+        return;
+    }
+    if (m_titlebar->isHidden() || !m_titlebar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+        return;
+    }
+    if (!m_mousePress) {
+        return;
+    }
+    //移动窗口
+    this->setCursor(Qt::DragMoveCursor);//改变鼠标样式
 
+    QPoint pos = this->mapToGlobal(event->pos());
+
+    XEvent xEvent;
+    memset(&xEvent, 0, sizeof(XEvent));
+
+    Display *display = QX11Info::display();
+    xEvent.xclient.type = ClientMessage;
+    xEvent.xclient.message_type = XInternAtom(display, "_NET_WM_MOVERESIZE", False);
+    xEvent.xclient.display = display;
+    xEvent.xclient.window = (XID)(this ->winId());
+    xEvent.xclient.format = 32;
+    xEvent.xclient.data.l[0] = pos.x();
+    xEvent.xclient.data.l[1] = pos.y();
+    xEvent.xclient.data.l[2] = 8;
+    xEvent.xclient.data.l[3] = Button1;
+    xEvent.xclient.data.l[4] = 1;
+
+    XUngrabPointer(display, CurrentTime);
+    XSendEvent(display,
+               QX11Info::appRootWindow(QX11Info::appScreen()),
+               False,
+               SubstructureNotifyMask | SubstructureRedirectMask,
+               &xEvent);
+    XFlush(display);
+    event->accept();
 }
+
 void KyView::mousePressEvent(QMouseEvent * event)
 {
     //只能是鼠标左键移动和改变大小
@@ -490,9 +513,6 @@ void KyView::mousePressEvent(QMouseEvent * event)
     {
         m_mousePress = true;
     }
-
-    //按下时鼠标左键时，窗口在屏幕中的坐标
-    m_startPoint = event->globalPos();
 }
 
 void KyView::mouseReleaseEvent(QMouseEvent * event)
@@ -706,7 +726,6 @@ void KyView::dropEvent(QDropEvent *event)
 
 void KyView::initGrabGesture()
 {
-
     //手势需要关闭主题事件
     this->setProperty("useStyleWindowManager",false);
     // 注册手势
@@ -718,9 +737,22 @@ void KyView::initGrabGesture()
 
 bool KyView::event(QEvent *event)
 {
-    if (event->type() ==  QEvent::Gesture) { //手势处理
+    //手势处理
+    if (event->type() ==  QEvent::Gesture) {
         return gestureEvent(event);
     }
+
+    //使用X11接管窗口移动事件后，鼠标离开事件不触发，此处作为备用方案
+    if (m_mousePress) {
+        if (event->type() == QEvent::Move) {
+            //本次不响应切换手势
+            m_panTriggered = false;
+            //模拟释放一次
+            QMouseEvent event1(QEvent::MouseButtonRelease, QPoint(0,0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+            QApplication::sendEvent(this, &event1);
+        }
+    }
+
     if (m_panTriggered) {
         if (event->type() == QEvent::MouseButtonRelease) {
             m_panTriggered = false;
@@ -737,7 +769,9 @@ bool KyView::event(QEvent *event)
                 Interaction::getInstance()->nextImage();
             }
         }
+        return QWidget::event(event);
     }
+
     return QWidget::event(event);
 }
 
