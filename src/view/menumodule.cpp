@@ -31,9 +31,9 @@ void menuModule::initAction(){
     menuButton->setIcon(QIcon::fromTheme("open-menu-symbolic"));
     menuButton->setProperty("isWindowButton", 0x1);
     menuButton->setProperty("useIconHighlightEffect",0x2);
-    menuButton->setIconSize(MICONSIZES);
+    menuButton->setIconSize(MICON_SIZES);
     menuButton->setPopupMode(QToolButton::InstantPopup);
-    menuButton->setFixedSize(MBTNSIZE);
+    menuButton->setFixedSize(MBTN_SIZE);
     menuButton->setAutoRaise(true);
     menuButton->setFocusPolicy(Qt::NoFocus);
     m_menu = new QMenu();
@@ -70,10 +70,9 @@ void menuModule::initAction(){
     themeActions<<autoTheme<<lightTheme<<darkTheme;
     actionTheme->setMenu(m_themeMenu);
     menuButton->setMenu(m_menu);
-    m_interaction = Interaction::getInstance();
     connect(m_menu,&QMenu::triggered,this,&menuModule::triggerMenu);
-    connect(this,&menuModule::menuModuleClose,m_interaction,&Interaction::close);
-//    connect(m_interaction,&Interaction::progremExit, KyView::mutual, &KyView::close);
+    connect(this,&menuModule::menuModuleClose,Interaction::getInstance(),&Interaction::close);
+//    connect(Interaction::getInstance(),&Interaction::progremExit, KyView::mutual, &KyView::close);
 
     initGsetting();
 }
@@ -82,12 +81,12 @@ void menuModule::initAction(){
 
 void menuModule::setStyleByThemeGsetting(){
     QString nowThemeStyle = m_pGsettingThemeData->get("styleName").toString();
-    if("ukui-dark" == nowThemeStyle || "ukui-black" == nowThemeStyle)
+    if ("ukui-dark" == nowThemeStyle || "ukui-black" == nowThemeStyle)
     {
         setThemeDark();
-    }else if("ukui-default" == nowThemeStyle || "ukui-light" == nowThemeStyle || "ukui-white" == nowThemeStyle){
+    } else if ("ukui-default" == nowThemeStyle || "ukui-light" == nowThemeStyle || "ukui-white" == nowThemeStyle){
         setThemeLight();
-    }else{
+    } else {
         return;
     }
 }
@@ -97,13 +96,13 @@ void menuModule::triggerMenu(QAction *act){
 
 
     QString str = act->text();
-    if(tr("Quit") == str){
+    if (tr("Quit") == str) {
         emit menuModuleClose();
-    }else if(tr("About") == str){
+    } else if (tr("About") == str) {
         aboutAction();
-    }else if(tr("Help") == str){
+    } else if (tr("Help") == str) {
         helpAction();
-    }else if(tr("Open..") == str){
+    } else if (tr("Open..") == str) {
         emit openSignal();
     }
 }
@@ -117,12 +116,12 @@ void menuModule::aboutAction(){
 void menuModule::helpAction(){
 //    帮助点击事件处理
 
-    m_appName = USERGUIDE;
-    if(!m_ipcDbus){
+    m_appName = USER_GUIDE;
+    if (!m_ipcDbus) {
         m_ipcDbus = new DaemonDbus();
     }
 
-    if(!m_ipcDbus->daemonIsNotRunning()){
+    if (!m_ipcDbus->daemonIsNotRunning()) {
         m_ipcDbus->showGuide(m_appName);
     }
 }
@@ -145,8 +144,8 @@ void menuModule::initAbout(){
     hints.decorations = MWM_DECOR_BORDER;
     XAtomHelper::getInstance()->setWindowMotifHint(m_aboutWindow->winId(), hints);
 
-    m_aboutWindow->setFixedSize(MABOUT);
-    m_aboutWindow->setMinimumHeight(MABOUT.height());
+    m_aboutWindow->setFixedSize(M_ABOUT);
+    m_aboutWindow->setMinimumHeight(M_ABOUT.height());
     QVBoxLayout *mainlyt = new QVBoxLayout();
     QHBoxLayout *titleLyt = initTitleBar();
     QVBoxLayout *bodylyt = initBody();
@@ -163,7 +162,7 @@ void menuModule::initAbout(){
 
 QHBoxLayout* menuModule::initTitleBar(){
     QLabel* titleIcon = new QLabel();
-    titleIcon->setFixedSize(MICONSIZEM);
+    titleIcon->setFixedSize(MICON_SIZEM);
 
     m_appShowingName = tr("kylin photo view");
     m_iconPath = ":/res/res/kyview_logo.png";
@@ -173,7 +172,7 @@ QHBoxLayout* menuModule::initTitleBar(){
     QPushButton *titleBtnClose = new QPushButton;
     titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
     titleBtnClose->setToolTip(tr("close"));
-    titleBtnClose->setFixedSize(MBTNSIZE);
+    titleBtnClose->setFixedSize(MBTN_SIZE);
     titleBtnClose->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     titleBtnClose->setProperty("isWindowButton", 0x2);
     titleBtnClose->setProperty("useIconHighlightEffect", 0x8);
@@ -194,22 +193,22 @@ QHBoxLayout* menuModule::initTitleBar(){
 }
 
 QVBoxLayout* menuModule::initBody(){
-    m_appVersion = VERSIONNEM;
+    m_appVersion = VERSION_NEM;
     QLabel* bodyIcon = new QLabel();
-    bodyIcon->setFixedSize(MICONSIZEB);
+    bodyIcon->setFixedSize(MICON_SIZEB);
     bodyIcon->setPixmap(QPixmap::fromImage(QImage(m_iconPath)));
     bodyIcon->setStyleSheet("font-size:14px;");
     bodyIcon->setScaledContents(true);
-    m_bodyAppName->setFixedHeight(NAMEHEIGHT);
+    m_bodyAppName->setFixedHeight(NAME_HEIGHT);
     m_bodyAppName->setText(tr(m_appShowingName.toLocal8Bit()));
-    m_bodyAppVersion->setFixedHeight(VERSIONHEI);
+    m_bodyAppVersion->setFixedHeight(VERSION_HEI);
     m_bodyAppVersion->setText(tr("Version: ") + m_appVersion);
     m_bodyAppVersion->setAlignment(Qt::AlignLeft);
 
     connect(m_bodySupport,&QLabel::linkActivated,this,[=](const QString url){
         QDesktopServices::openUrl(QUrl(url));
     });
-    m_bodySupport->setFixedHeight(VERSIONHEI);
+    m_bodySupport->setFixedHeight(VERSION_HEI);
     m_bodySupport->setContextMenuPolicy(Qt::NoContextMenu);
     QVBoxLayout *vlyt = new QVBoxLayout;
     vlyt->setMargin(0);
@@ -227,7 +226,7 @@ QVBoxLayout* menuModule::initBody(){
 }
 
 void menuModule::initGsetting(){
-    if(QGSettings::isSchemaInstalled(FITTHEMEWINDOW)){
+    if (QGSettings::isSchemaInstalled(FITTHEMEWINDOW)) {
         m_pGsettingThemeData = new QGSettings(FITTHEMEWINDOW);
         connect(m_pGsettingThemeData,&QGSettings::changed,this,&menuModule::dealSystemGsettingChange);
     }
@@ -235,16 +234,16 @@ void menuModule::initGsetting(){
 }
 
 void menuModule::dealSystemGsettingChange(const QString key){
-    if(key == "styleName"){
+    if (key == "styleName") {
         refreshThemeBySystemConf();
     }
 }
 
 void menuModule::refreshThemeBySystemConf(){
     QString themeNow = m_pGsettingThemeData->get("styleName").toString();
-    if("ukui-dark" == themeNow || "ukui-black" == themeNow){
+    if ("ukui-dark" == themeNow || "ukui-black" == themeNow) {
         setThemeDark();
-    }else{
+    } else {
         setThemeLight();
     }
 }

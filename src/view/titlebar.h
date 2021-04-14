@@ -21,7 +21,7 @@ public:
 
     void showImageName(QString name);
 private:
-    Interaction *m_interaction = nullptr;
+
     QHBoxLayout *m_titleLayout;
 
     QLabel *m_logoBtn;//左上角logo

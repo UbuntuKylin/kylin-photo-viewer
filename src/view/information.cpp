@@ -2,7 +2,7 @@
 #include "sizedate.h"
 Information::Information(QWidget *parent) : QWidget(parent)
 {
-    this->resize(INFORSIZE);
+    this->resize(INFOR_SIZE);
     this->adjustSize();
 
     m_widName = new QLabel(this);
@@ -65,7 +65,7 @@ void Information::contentText(QFileInfo info, QString sizeImage, QString spaceCo
     if (float(info.size())/1024 >= 1024) {
         QString Size = QString("%1").arg(QString::asprintf("%.1f", float(info.size())/1024/1024));
         imageSize = Size + "Mib";
-    }else{
+    } else {
         QString Size = QString("%1").arg(QString::asprintf("%.1f", float(info.size())/1024));
         imageSize = Size + "Kib";
     }
@@ -110,8 +110,7 @@ void Information::longText(QLabel *nameC, QString text)
     int wid = fontWidth.width(m_revisionTimeC->text());
     QString elideNote = fontWidth.elidedText(text, Qt::ElideRight, wid);//最大宽度wid像素
     nameC->setText(elideNote);//显示省略好的字符串
-    if(elideNote.contains("…",Qt::CaseInsensitive))
-    {
+    if (elideNote.contains("…",Qt::CaseInsensitive)) {
          nameC->setToolTip(text);//设置tooltips
     }
 }

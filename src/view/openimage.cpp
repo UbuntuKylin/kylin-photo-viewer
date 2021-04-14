@@ -11,16 +11,16 @@ OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
     //中间“+”号按钮
     m_addFile = new QPushButton(m_openInCenter);
     m_addFile->setFocusPolicy(Qt::NoFocus);
-    m_addFile->setFixedSize(ADDFILESIZE);
+    m_addFile->setFixedSize(ADD_FILESIZE);
     m_addFile->move(m_openInCenter->geometry().center()-m_addFile->rect().center());
     //按钮下的“打开图片”文字
     m_openText = new QLabel(this);   
     m_openText->setText(tr("Load picture"));
-    m_openText->setFixedWidth(OPENIMAGEFIX);
+    m_openText->setFixedWidth(OPEN_IMAGEFIX);
     m_openText->setAlignment(Qt::AlignCenter);
-    m_openText->move(0,OPENIMAGEFIX+30);
+    m_openText->move(0,OPEN_IMAGEFIX+30);
 
-    this->setFixedSize(OPENIMAGESIZE);
+    this->setFixedSize(OPEN_IMAGESIZE);
     this->initconnect();
     this->initGsettings();
 
@@ -48,8 +48,7 @@ void OpenImage::openimage()
     //打开文件夹中的图片文件
     file_path = QFileDialog::getOpenFileName(this,openFile,Variable::getSettings("imagePath").toString(),format);
     //空校验，点击“取消”
-    if(file_path.isEmpty())
-    {
+    if (file_path.isEmpty()) {
         return;
     }
     //写入配置
@@ -64,8 +63,9 @@ void OpenImage::initGsettings()
         m_pGsettingThemeData = new QGSettings(FITTHEMEWINDOW);
         connect(m_pGsettingThemeData,&QGSettings::changed,this,[=] (const QString &key)
         {
-            if(key == "styleName")
+            if (key == "styleName") {
                 dealSystemGsettingChange();
+            }
         });
     }
     dealSystemGsettingChange();
@@ -80,12 +80,12 @@ void OpenImage::dealSystemGsettingChange()
         m_openText->setStyleSheet("QLabel{background-color:transparent;color:rgba(255, 255, 255, 1);}");
         m_addFile->setStyleSheet("background-color:transparent;");
         m_addFile->setIcon(QIcon(":/res/res/1add_black.png"));
-        m_addFile->setIconSize(ICONSIZE);
-    }else{
+        m_addFile->setIconSize(ICON_SIZE);
+    } else {
         m_openInCenter->setStyleSheet("background-color:rgba(255, 255, 255, 0.4);border-radius:64;");
         m_openText->setStyleSheet("QLabel{background-color:transparent;color:rgba(38, 38, 38, 0.85);}");
         m_addFile->setStyleSheet("background-color:transparent;");
         m_addFile->setIcon(QIcon(":/res/res/addplus.png"));
-        m_addFile->setIconSize(ICONSIZE);
+        m_addFile->setIconSize(ICON_SIZE);
     }
 }

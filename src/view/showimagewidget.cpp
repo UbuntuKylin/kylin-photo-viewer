@@ -34,17 +34,17 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     m_imageMenu->addAction(m_showInFile);
     //上一张，下一张按钮
     g_next = new QPushButton(this);
-    g_next->resize(IMAGEBUTTON);
+    g_next->resize(IMAGE_BUTTON);
 
     g_back = new QPushButton(this);
-    g_back->resize(IMAGEBUTTON);
+    g_back->resize(IMAGE_BUTTON);
 
 
-    g_back->move(LEFTPOS,int((this->height() - g_back->height())/2));
-    g_next->move(this->width() - LEFTPOS - g_next->width(),int((this->height() - g_next->height())/2));
+    g_back->move(LEFT_POS,int((this->height() - g_back->height())/2));
+    g_next->move(this->width() - LEFT_POS - g_next->width(),int((this->height() - g_next->height())/2));
 
-    g_back->setIconSize(IMAGEICON);
-    g_next->setIconSize(IMAGEICON);
+    g_back->setIconSize(IMAGE_ICON);
+    g_next->setIconSize(IMAGE_ICON);
 
     g_back->setFocusPolicy(Qt::NoFocus);
     g_next->setFocusPolicy(Qt::NoFocus);
@@ -79,14 +79,12 @@ void ShowImageWidget::nextImage()
 {
     m_canSet = true;
     Interaction::getInstance()->nextImage();
-//    emit changeSideSelect(m_typeNum);
 }
 //上一张
 void ShowImageWidget::backImage()
 {
     m_canSet = true;
     Interaction::getInstance()->backImage();
-//    emit changeSideSelect(m_typeNum);
 }
 //复制
 void ShowImageWidget::copy()
@@ -117,11 +115,11 @@ void ShowImageWidget::deleteImage()
 void ShowImageWidget::showInFile()
 {
 
-    if (m_path == ""){
+    if (m_path == "") {
         return;
-    }else{
-        QDesktopServices::openUrl(QUrl::fromLocalFile(m_path));
     }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(m_path));
+
 }
 //显示右键菜单栏
 void ShowImageWidget::setMenuAction()
@@ -130,16 +128,14 @@ void ShowImageWidget::setMenuAction()
     QStringList formatList;
     QString format;
     format = "";
-    for (const QString &str:Variable::BACKGROUND_SUPPORT_FORMATS)
-    {
+    for (const QString &str:Variable::BACKGROUND_SUPPORT_FORMATS) {
         format = str;
         formatList.append(format);
     }
     //判断是否为可设置为壁纸的类型
-    if (formatList.contains(m_paperFormat))
-    {
+    if (formatList.contains(m_paperFormat)) {
 //      m_imageMenu->insertAction(m_deleteImage,m_setDeskPaper);
-    }else{
+    } else {
         m_imageMenu->removeAction(m_setDeskPaper);
     }
 
@@ -171,6 +167,14 @@ void ShowImageWidget::openFinish(QVariant var)
 {
 
     ImageAndInfo package =var.value<ImageAndInfo>();
+    QPixmap pixmap = package.image;//图片
+
+    //拿到返回信息
+    QFileInfo info = package.info;//详情信息
+    int proportion = package.proportion;//比例
+    QString imageSize = package.imageSize;
+    QString colorSpace = package.colorSpace;
+    QString num;
     int number = package.imageNumber;//在队列中的标签
     //判断有几张图片，分别进行处理：删除到0，显示打开界面；只有一张：不显示左右按钮。
     if (number == 0) {
@@ -182,23 +186,17 @@ void ShowImageWidget::openFinish(QVariant var)
     } else {
         g_buttonState = true;
     }
-    m_typeNum = number;
-    QPixmap pixmap = package.image;//图片
 
-    //拿到返回信息
-    QFileInfo info = package.info;//详情信息
-    int proportion = package.proportion;//比例
-    QString imageSize = package.imageSize;
-    QString colorSpace = package.colorSpace;
-    QString num;
     num = QString("%1").arg(proportion) + "%";
     m_path = info.absolutePath();//图片的路径
     m_paperFormat = info.suffix();
-
+    m_typeNum = number;
     //使用返回的信息进行设置界面
 
     emit toShowImage();//给主界面--展示图片
     emit perRate(num);//发送给toolbar来更改缩放数字
+    emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
+    emit titleName(info.fileName());//给顶栏图片的名字
 
     if (pixmap.isNull()) {
         this->m_showImage->setMovie(m_loadingMovie);
@@ -214,10 +212,12 @@ void ShowImageWidget::openFinish(QVariant var)
     if (m_canSet) {
 
         m_canSet = false;
-        emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
-        emit titleName(info.fileName());//给顶栏图片的名字
-        emit changeSideSelect(m_typeNum);
+        emit changeSideSize(m_typeNum);
         setMenuAction();
+    }
+    //必须在changeSideSize后进行确认是否展示相册
+    if (m_typeNum >= 2) {
+        emit toShowSide();
     }
 }
 //拉伸主界面时重新安排界面显示
@@ -227,8 +227,8 @@ void ShowImageWidget::reMove(int W, int H)
     this->resize(W,H);
     this->m_showImage->resize(W,H);
     this->m_showImage->move(int((W - this->m_showImage->width())/2),int((H - this->m_showImage->height())/2));
-    g_back->move(LEFTPOS,int((this->height() - g_back->height())/2));
-    g_next->move(W - LEFTPOS - g_next->width(),int((H - g_next->height())/2));
+    g_back->move(LEFT_POS,int((this->height() - g_back->height())/2));
+    g_next->move(W - LEFT_POS - g_next->width(),int((H - g_next->height())/2));
 }
 
 void ShowImageWidget::resizeEvent(QResizeEvent *event)
@@ -241,17 +241,12 @@ void ShowImageWidget::resizeEvent(QResizeEvent *event)
 bool ShowImageWidget::eventFilter(QObject *obj, QEvent *event)
 {
     //滚轮进行放大缩小图片
-    if(obj == m_showImage)
-    {
-        if(event->type()==QEvent::Wheel)
-        {
+    if (obj == m_showImage) {
+        if (event->type()==QEvent::Wheel) {
             QWheelEvent *wheelEvent=static_cast<QWheelEvent *>(event);
-            if(wheelEvent->delta()>0)
-            {
+            if (wheelEvent->delta()>0) {
                 emit enlargeChange();
-            }
-            else
-            {
+            } else {
                 emit reduceChange();
             }
         }

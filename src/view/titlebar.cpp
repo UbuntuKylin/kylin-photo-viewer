@@ -12,8 +12,8 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     m_logoBtn = new QLabel(this);
     //左上角APP名字
     m_logolb = new QLabel(this);
-    m_logoBtn->setFixedSize(LOGOBTN);
-    m_logoBtn->setFixedSize(LOGOBTN);//重置图标大小
+    m_logoBtn->setFixedSize(LOGO_BTN);
+    m_logoBtn->setFixedSize(LOGO_BTN);//重置图标大小
     m_logoBtn->setPixmap(QPixmap::fromImage(QImage(":/res/res/kyview_logo.png")));
     m_logoBtn->setScaledContents(true);
     m_logolb->setText(tr("Kylin Photo Viewer"));
@@ -26,7 +26,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     g_menu->setFocusPolicy(Qt::NoFocus);
     //窗口四联--最小化按钮
     m_minibtn = new QPushButton(this);
-    m_minibtn->setFixedSize(TITLEBTN);
+    m_minibtn->setFixedSize(TITLE_BTN);
     m_minibtn->setToolTip(tr("minimize"));
     m_minibtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     m_minibtn->setIcon(QIcon::fromTheme("window-minimize-symbolic"));//主题库的最小化图标
@@ -36,7 +36,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     //窗口四联--最大化/还原按钮
     g_fullscreen = new QPushButton(this);
     g_fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的最小化图标
-    g_fullscreen->setFixedSize(TITLEBTN);
+    g_fullscreen->setFixedSize(TITLE_BTN);
     g_fullscreen->setToolTip(tr("full screen"));
     g_fullscreen->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     g_fullscreen->setProperty("isWindowButton", 0x1);
@@ -46,13 +46,13 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     m_closebtn = new QPushButton(this);
     m_closebtn->setToolTip(tr("close"));
     m_closebtn->setIcon(QIcon::fromTheme("window-close-symbolic"));//主题库的叉子图标
-    m_closebtn->setFixedSize(TITLEBTN);
+    m_closebtn->setFixedSize(TITLE_BTN);
     m_closebtn->setFocusPolicy(Qt::NoFocus);//设置焦点类型
     m_closebtn->setProperty("isWindowButton", 0x2);
     m_closebtn->setProperty("useIconHighlightEffect", 0x8);
     m_closebtn->setFlat(true);
 
-    this->setFixedHeight(BARHEIGHT);
+    this->setFixedHeight(BAR_HEIGHT);
     this->initConnect();
     this->initControlQss();
 }
@@ -61,11 +61,11 @@ void TitleBar::showImageName(QString name)
 {
     if (name == "") {
         return;
-    }else{
-        longText(g_imageName,name);
-//        g_imageName->setText(name);
-        g_imageName->show();
     }
+    longText(g_imageName,name);
+//    g_imageName->setText(name);
+    g_imageName->show();
+
 }
 //名字过长显示...
 void TitleBar::longText(QLabel *nameC, QString text)
@@ -73,8 +73,7 @@ void TitleBar::longText(QLabel *nameC, QString text)
     QFontMetrics fontWidth(nameC->font());//得到每个字符的宽度
     QString elideNote = fontWidth.elidedText(text, Qt::ElideRight, this->width()/2);//最大宽度wid像素
     nameC->setText(elideNote);//显示省略好的字符串
-    if (elideNote.contains("…",Qt::CaseInsensitive))
-    {
+    if (elideNote.contains("…",Qt::CaseInsensitive)) {
          nameC->setToolTip(text);//设置tooltips
     }
 }
@@ -99,11 +98,10 @@ void TitleBar::initControlQss()
 //信号和槽
 void TitleBar::initConnect()
 {
-    m_interaction = Interaction::getInstance();
     connect(m_minibtn, &QPushButton::clicked, KyView::mutual, &KyView::showMinimized);
     connect(g_fullscreen, &QPushButton::clicked, this, &TitleBar::recovery);
-    connect(m_closebtn, &QPushButton::clicked, m_interaction, &Interaction::close);
-    connect(m_interaction,&Interaction::progremExit, KyView::mutual, &KyView::close);
+    connect(m_closebtn, &QPushButton::clicked, Interaction::getInstance(), &Interaction::close);
+    connect(Interaction::getInstance(),&Interaction::progremExit, KyView::mutual, &KyView::close);
     connect(g_menu,&menuModule::openSignal,this,&TitleBar::openSignal);
     connect(g_menu,&menuModule::aboutShow,this,&TitleBar::aboutShow);
 

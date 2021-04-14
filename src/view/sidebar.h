@@ -33,6 +33,8 @@ private:
 
 signals:
 
+private slots:
+    void setCUrrIndex(QModelIndex modelIndex);
 };
 
 #endif // SIDEBAR_H

@@ -50,8 +50,7 @@ private:
 
     QColor m_color = QColor(190 ,190, 190);
     QBrush m_brush = QBrush(Qt::white);
-
-    Interaction *m_interaction = nullptr;
+    QWidget *m_zoomWid;//缩放按钮和比例窗口
 
 
     void originalSize();//原始尺寸

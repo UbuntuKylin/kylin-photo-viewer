@@ -8,7 +8,7 @@ KyView::KyView(const QStringList &args)
     Interaction *m_interaction =Interaction::getInstance();
     m_interaction->creatCore(args);
 
-    this->resize(DEFAULTWIDTH, DEFAULTHEIGHT);
+    this->resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
     this ->setWindowIcon(QIcon(":/res/res/kyview_logo.png"));
     this ->setWindowTitle(tr("Kylin Photo Viewer"));
@@ -23,7 +23,7 @@ KyView::KyView(const QStringList &args)
     mutual = this;
     //应用居中
     QScreen *screen = QGuiApplication::primaryScreen();
-    this ->move((screen->geometry().width() - DEFAULTWIDTH) / 2,(screen->geometry().height() - DEFAULTHEIGHT) / 2);
+    this ->move((screen->geometry().width() - DEFAULT_WIDTH) / 2,(screen->geometry().height() - DEFAULT_HEIGHT) / 2);
 
     //标题栏
     m_titlebar = new TitleBar(this);
@@ -35,7 +35,7 @@ KyView::KyView(const QStringList &args)
 
     //默认打开--打开图片按钮widget
     m_openImage = new OpenImage(this);
-    m_openImage->setFixedSize(OPENIMAGESIZE);
+    m_openImage->setFixedSize(OPEN_IMAGESIZE);
     m_openImage->move(int((this->width()-m_openImage->width())/2),int((this->height()-m_openImage->height())/2));
 
     //工具栏
@@ -44,21 +44,21 @@ KyView::KyView(const QStringList &args)
     m_toolbar->show();
 
     //图片展示界面
-    m_showImageWidget = new ShowImageWidget(this,DEFAULTWIDTH,DEFAULTHEIGHT);
+    m_showImageWidget = new ShowImageWidget(this,DEFAULT_WIDTH,DEFAULT_HEIGHT);
     m_showImageWidget->setMouseTracking(true);
     m_showImageWidget->move(int((this->width() - m_showImageWidget->width())/2),int((this->height() - m_showImageWidget->height())/2));
     m_showImageWidget->hide();
 
     //导航器
     m_navigator = new Navigator(this);
-//    m_navigator->resize(NAVISIZE);
+//    m_navigator->resize(NAVI_SIZE);
     m_navigator->move(this->width()-7-m_navigator->width(),this->height()-52-m_navigator->height());
     m_navigator->hide();
 
     //信息栏
     m_information = new Information(this);
-    m_information->resize(INFORSIZE);
-    m_information->move(this->width()-m_information->width() +2,BARHEIGHT);
+    m_information->resize(INFOR_SIZE);
+    m_information->move(this->width()-m_information->width() +2,BAR_HEIGHT);
     this->installEventFilter(this);
     m_information->installEventFilter(this);
     m_titlebar->installEventFilter(this);
@@ -66,7 +66,7 @@ KyView::KyView(const QStringList &args)
 
     //相册
     m_sideBar = new SideBar(this);
-//    m_sideBar->resize(SIDEBARSIZE);
+//    m_sideBar->resize(SIDEBAR_SIZE);
 //    m_sideBar->move(-6,(this->height()-m_sideBar->height())/2 + 20);
     m_sideBar->hide();
 
@@ -75,11 +75,13 @@ KyView::KyView(const QStringList &args)
     m_timer->setSingleShot(true);
     m_timernavi = new QTimer(this);
     m_timernavi->setSingleShot(true);
+//    m_timeNomove = new QTimer(this);
+//    m_timeNomove->setSingleShot(true);
 
     // 用户手册功能
     m_DaemonIpcDbus = new DaemonDbus();
 
-    this->setMinimumSize(MINISIZE);
+    this->setMinimumSize(MINI_SIZE);
     this->initconnect();
     //要判断打开状态，是否隐藏主界面--打开按钮widget
     this->openState();
@@ -119,7 +121,8 @@ void KyView::initconnect()
     //滚轮放大和缩小
     connect(m_showImageWidget,&ShowImageWidget::reduceChange,m_toolbar,&ToolBar::reduceImage);
     connect(m_showImageWidget,&ShowImageWidget::enlargeChange,m_toolbar,&ToolBar::enlargeImage);
-
+    //当图片大于2张及以上，默认展示相册
+    connect(m_showImageWidget,&ShowImageWidget::toShowSide,this,&KyView::defaultSidebar);
     //展示或隐藏图片信息窗口
     connect(m_toolbar,&ToolBar::showInfor,this,&KyView::showInforWid);
     //导航器出现时，位置变化
@@ -129,15 +132,17 @@ void KyView::initconnect()
     //定时器
     connect(m_timer ,&QTimer::timeout, this, &KyView::delayHide);
     connect(m_timernavi ,&QTimer::timeout, this, &KyView::delayHide_navi);
-
+//    connect(m_timeNomove, &QTimer::timeout,this, [=] () {
+//        m_timeNomove->start(2000);
+//        delayHide_move();
+//    });
     //设置相册尺寸
-    connect(m_showImageWidget,&ShowImageWidget::changeSideSelect,m_sideBar,&SideBar::getSelect);
+    connect(m_showImageWidget,&ShowImageWidget::changeSideSize,m_sideBar,&SideBar::getSelect);
 }
 //打开首先检测是否需要展示工具栏
 void KyView::openState()
 {
-    if (!m_openImage->isHidden())
-    {
+    if (!m_openImage->isHidden()) {
         m_toolbar->hide();
         m_toolbar->move(int((this->width()-m_toolbar->width())/2),this->height() - m_toolbar->height() +4);
     }
@@ -145,8 +150,7 @@ void KyView::openState()
 //打卡关于，两栏隐藏
 void KyView::aboutShow()
 {
-    if (m_openImage->isHidden())
-    {
+    if (m_openImage->isHidden()) {
         if (!m_titlebar->isHidden()) {
             m_titlebar->hide();
             m_toolbar->hide();
@@ -159,25 +163,23 @@ void KyView::aboutShow()
 //顶栏大小随主界面大小改变的响应函数
 void KyView::titlebarChange()
 {
-    if (m_titlebar->isHidden())
-    {
+    if (m_titlebar->isHidden()) {
         return;
-    }else{
-        m_titlebar->move(0,0);
-        m_titlebar->resize(this->width(),BARHEIGHT);
-        m_titlebar->g_titleWid->resize(this->width(),BARHEIGHT);
     }
+    m_titlebar->move(0,0);
+    m_titlebar->resize(this->width(),BAR_HEIGHT);
+    m_titlebar->g_titleWid->resize(this->width(),BAR_HEIGHT);
+
 
 }
 //中间打开图片按钮大小随主界面大小改变的响应函数
 void KyView::openImageChange()
 {
-    if (m_openImage->isHidden())
-    {
+    if (m_openImage->isHidden()) {
         return;
-    }else{
-        m_openImage->move(int((this->width()-m_openImage->width())/2),int((this->height()-m_openImage->height())/2));
     }
+    m_openImage->move(int((this->width()-m_openImage->width())/2),int((this->height()-m_openImage->height())/2));
+
 }
 //主界面展示的图片大小随主界面大小改变的响应函数
 void KyView::showImageChange()
@@ -193,69 +195,63 @@ void KyView::showImageChange()
 //工具栏大小随主界面大小改变的响应函数
 void KyView::toolbarChange()
 {
-    if (m_toolbar->isHidden())
-    {
+    if (m_toolbar->isHidden()) {
         return;
-    }else{
-
-        m_toolbar->move(int((this->width()-m_toolbar->width())/2),this->height() - m_toolbar->height() + 4);
     }
+    m_toolbar->move(int((this->width()-m_toolbar->width())/2),this->height() - m_toolbar->height() + 4);
+
 }
 //导航栏位置变化
 void KyView::naviChange()
 {
-    if (m_navigator->isHidden())
-    {
+    if (m_navigator->isHidden()) {
         return;
-    }else{
-
-        m_navigator->move(this->width()-7-m_navigator->width(),this->height()-52-m_navigator->height());
     }
+    m_navigator->move(this->width()-7-m_navigator->width(),this->height()-52-m_navigator->height());
+
 }
 //信息栏随顶栏位置变化而变化
 void KyView::inforChange()
 {
-    if (m_information->isHidden())
-    {
+    if (m_information->isHidden()) {
         return;
-    }else{
-        if (m_titlebar->isHidden())
-        {
-//            timer_infor->start(2000);
-            m_information->move(this->width()-m_information->width() +2,0);
-
-        }else{
-            m_information->move(this->width()-m_information->width() +2, BARHEIGHT);
-        }
-
     }
+    if (m_titlebar->isHidden()) {
+        m_information->move(this->width()-m_information->width() +2,0);
+    } else {
+        m_information->move(this->width()-m_information->width() +2, BAR_HEIGHT);
+    }
+
+
 }
 
 void KyView::albumChange()
 {
     if (m_sideBar->isHidden()) {
         return;
-    } else {
-
-        m_sideBar->move(-6,(this->height()-m_sideBar->height())/2 + 20);
-
     }
+    m_sideBar->move(-6,(this->height()-m_sideBar->height())/2 + 20);
+
 }
 //延时隐藏
 void KyView::delayHide()
 {
-    if (this->mapFromGlobal(QCursor::pos()).y() > BARHEIGHT  && this->mapFromGlobal(QCursor::pos()).y() <this->height()- BARHEIGHT)
-    {
-        if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden())
-        {
-            m_titlebar->show();
-        }else{
-            m_titlebar->hide();
-        }
 
-        m_toolbar->hide();
-        inforChange();
+    if (this->mapFromGlobal(QCursor::pos()).y() < BAR_HEIGHT  || this->mapFromGlobal(QCursor::pos()).y() >= this->height()- BAR_HEIGHT) {
+        return;
     }
+//    if (this->mapFromGlobal(QCursor::pos()).y() > BAR_HEIGHT  && this->mapFromGlobal(QCursor::pos()).y() <this->height()- BAR_HEIGHT)
+//    {
+    if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden())
+    {
+        m_titlebar->show();
+    }else{
+        m_titlebar->hide();
+    }
+
+    m_toolbar->hide();
+    inforChange();
+//    }
 }
 
 //鼠标离开界面时需要触发，届时会加上对导航器的处理
@@ -266,15 +262,25 @@ void KyView::delayHide_navi()
     m_toolbar->hide();
     m_timernavi->stop();
 }
+
+void KyView::delayHide_move()
+{
+//    if (!m_titlebar->isHidden() && m_titlebar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+//        return;
+//    }
+//    m_titlebar->hide();
+//    m_toolbar->hide();
+//    m_timeNomove->stop();
+
+}
 //展示信息栏
 void KyView::showInforWid()
 {
-    if (m_inforState == true)
-    {
+    if (m_inforState == true) {
         m_information->show();
         m_inforState = false;
         inforChange();
-    }else{
+    } else {
         m_information->hide();
         m_inforState = true;
     }
@@ -286,27 +292,21 @@ void KyView::clearImage()
     m_showImageWidget->hide();
     m_toolbar->hide();
     m_information->hide();
-    if (m_titlebar->isHidden())
-    {
+    if (m_titlebar->isHidden()) {
         m_titlebar->show();
-        m_titlebar->g_imageName->clear();
-    }else{
-        m_titlebar->g_imageName->clear();
-        return;
     }
+    m_titlebar->g_imageName->clear();
+
 }
 //处理鼠标悬浮两栏的界面展示
 void KyView::hoverChange(int y)
 {
-    if (y <= BARHEIGHT  || y >= this->height() - BARHEIGHT )
-        {
+    if (y <= BAR_HEIGHT  || y >= this->height() - BAR_HEIGHT ) {
             //判断定时器是否正在计时。如是，则停止
-            if(m_timer->isActive())
-            {
+            if (m_timer->isActive()) {
                 m_timer->stop();
             }
-            if(m_timernavi->isActive())
-            {
+            if (m_timernavi->isActive()) {
                 m_timernavi->stop();
             }
 
@@ -322,25 +322,22 @@ void KyView::hoverChange(int y)
             this->m_showImageWidget->g_back->hide();
 
             //判断具体在顶栏或工具栏的区域，将其raise
-            if(y <= BARHEIGHT)
-            {
+            if (y <= BAR_HEIGHT) {
                 m_titlebar->raise();
-            }else if(y >= this->height() - BARHEIGHT){
+            } else if (y >= this->height() - BAR_HEIGHT) {
                 m_toolbar->raise();
             }
             //信息栏位置的变化
             inforChange();
-        }else{
-            if (!m_timer->isActive())
-            {
+        } else {
+            if (!m_timer->isActive()) {
                 m_timer->start(2000);
             }
             //判断列表中是否只有一张图，一张图片左右按钮不显示
-            if (m_showImageWidget->g_buttonState == false)
-            {
+            if (m_showImageWidget->g_buttonState == false) {
                 this->m_showImageWidget->g_next->hide();
                 this->m_showImageWidget->g_back->hide();
-            }else{
+            } else {
                 this->m_showImageWidget->g_next->show();
                 this->m_showImageWidget->g_back->show();
             }
@@ -349,32 +346,26 @@ void KyView::hoverChange(int y)
 //读取主题配置文件
 void KyView::initGsetting()
 {
-    if(QGSettings::isSchemaInstalled(FITTHEMEWINDOW))
-    {
+    if (QGSettings::isSchemaInstalled(FITTHEMEWINDOW)) {
         m_pGsettingThemeData = new QGSettings(FITTHEMEWINDOW);
-        connect(m_pGsettingThemeData,&QGSettings::changed,this, [=] (const QString &key){
-            if (key == "styleName")
-            {
+        connect(m_pGsettingThemeData,&QGSettings::changed,this, [=] (const QString &key) {
+            if (key == "styleName") {
                 themeChange();
             }
 
         });
     }
 
-    if(QGSettings::isSchemaInstalled(FITCONTROLTRANS)){
+    if (QGSettings::isSchemaInstalled(FITCONTROLTRANS)) {
         m_pGsettingControlTrans = new QGSettings(FITCONTROLTRANS);
-
+        connect(m_pGsettingControlTrans,&QGSettings::changed, this, [=] (const QString &key){
+            if (key == "transparency") {
+                transChange();
+            }
+        });
     }
-//    if(QGSettings::isSchemaInstalled(FITCONTROLTRANS))
-//    {
-//        m_pGsettingControlTrans = new QGSettings(FITCONTROLTRANS);
-//        connect(m_pGsettingControlTrans,&QGSettings::changed, this, [=] (const QString &key){
-//            if (key == "transparency")
-//                transChange();
-//        });
-//    }
     themeChange();
-//    transChange();
+    transChange();
     return;
 
 }
@@ -382,8 +373,7 @@ void KyView::initGsetting()
 void KyView::themeChange()
 {
     QString themeStyle = m_pGsettingThemeData->get("styleName").toString();
-    if ("ukui-dark" == themeStyle || "ukui-black" == themeStyle)
-    {
+    if ("ukui-dark" == themeStyle || "ukui-black" == themeStyle) {
         m_information->setStyleSheet("background-color:rgba(0,0,0,0.66);border-radius:4px;");
 //        m_sideBar->setStyleSheet("background-color:rgba(26,26,26,0.7);border-radius:6px;");
         m_titlebar->g_menu->setThemeDark();
@@ -393,7 +383,7 @@ void KyView::themeChange()
                                    "QListView::item{margin:0 8px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
                                    "QListView::item:selected:active{background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
                                    "QListView::item:hover{background:rgba(255, 255, 255, 0.9);border-radius:2px;}");
-    }else{
+    } else {
         m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-radius:4px;");
         m_sideBar->setStyleSheet("QListView{padding:8px;border:1px ;border-radius:4px;outline:none;background:rgba(245, 245, 245, 0.75)}"
                                    "QListView::item{margin:0 8px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
@@ -408,11 +398,12 @@ void KyView::themeChange()
 }
 
 
-//void KyView::transChange()
-//{
-//  m_tran = m_pGsettingControlTrans->get("transparency").toDouble() * 255;
+void KyView::transChange()
+{
+  m_tran = m_pGsettingControlTrans->get("transparency").toDouble() * 255;
+  this->update();
 
-//}
+}
 
 //最大化和还原
 void KyView::changOrigSize()
@@ -443,16 +434,21 @@ void KyView::toShowImage()
 void KyView::showSidebar()
 {
 
-    if (m_albumState == true)
-    {
-        m_sideBar->getAlbum();
-        m_sideBar->show();
-        m_albumState = false;
-        albumChange();
-    }else{
+    if (m_albumState == true) {
+        defaultSidebar();
+    } else {
         m_sideBar->hide();
         m_albumState = true;
     }
+
+}
+
+void KyView::defaultSidebar()
+{
+    m_sideBar->getAlbum();
+    m_sideBar->show();
+    m_albumState = false;
+    albumChange();
 
 }
 //检测鼠标位置--顶栏和工具栏的出现和隐藏
@@ -505,12 +501,10 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
     XFlush(display);
     event->accept();
 }
-
 void KyView::mousePressEvent(QMouseEvent * event)
 {
     //只能是鼠标左键移动和改变大小
-    if (event->button() == Qt::LeftButton)
-    {
+    if (event->button() == Qt::LeftButton) {
         m_mousePress = true;
     }
 }
@@ -541,8 +535,7 @@ void KyView::leaveEvent(QEvent *event)
         return;
     }
     if (m_openImage->isHidden()) {
-        if(!m_timernavi->isActive())
-        {
+        if (!m_timernavi->isActive()) {
             m_timernavi->start(2000);
         }
         m_showImageWidget->g_next->hide();
@@ -559,8 +552,7 @@ void KyView::leaveEvent(QEvent *event)
 //鼠标进入事件
 void KyView::enterEvent(QEvent *event)
 {
-    if(m_timernavi->isActive())
-    {
+    if (m_timernavi->isActive()) {
         m_timernavi->stop();
     }
 
@@ -573,18 +565,17 @@ void KyView::paintEvent(QPaintEvent *event)
     p.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
     QPainterPath rectPath;
     rectPath.addRoundedRect(this->rect(), 0, 0); // 左上右下
-    double tran=m_pGsettingControlTrans->get("transparency").toDouble()*255;
+//    double tran=m_pGsettingControlTrans->get("transparency").toDouble()*255;
     QStyleOption opt;
     opt.init(this);
 
     QColor mainColor;
 
-    if(QColor(255,255,255) == opt.palette.color(QPalette::Base) || QColor(248,248,248) == opt.palette.color(QPalette::Base))
-    {
+    if (QColor(255,255,255) == opt.palette.color(QPalette::Base) || QColor(248,248,248) == opt.palette.color(QPalette::Base)) {
 //        mainColor = QColor(254, 254, 254,155);
-        mainColor = QColor(254, 254, 254,tran);
-    }else{
-        mainColor = QColor(26, 26, 26,tran);
+        mainColor = QColor(254, 254, 254,m_tran);
+    } else {
+        mainColor = QColor(26, 26, 26,m_tran);
 //        mainColor = QColor(26, 26, 26,200);
     }
 
@@ -596,28 +587,23 @@ void KyView::keyPressEvent(QKeyEvent *event)
 
     // F1快捷键打开用户手册
     if (event->key() == Qt::Key_F1) {
-        if (!m_DaemonIpcDbus->daemonIsNotRunning())
-        {
+        if (!m_DaemonIpcDbus->daemonIsNotRunning()) {
             //F1快捷键打开用户手册，如kylin-photo-viewer
             //如果是小工具类，下面的showGuide参数要填写"tools/kylin-photo-viewer"
-            m_DaemonIpcDbus->showGuide(USERGUIDE);
+            m_DaemonIpcDbus->showGuide(USER_GUIDE);
         }
     }
     //上一张，下一张，delete按键响应
-    if(!m_openImage->isHidden())
-    {
+    if (!m_openImage->isHidden()) {
         return;
-    }else{
-        if(event->key() == Qt::Key_Delete)
-        {
+    } else {
+        if (event->key() == Qt::Key_Delete) {
             m_toolbar->delImage();
         }
-        if(event->key() == Qt::Key_Left)
-        {
+        if (event->key() == Qt::Key_Left) {
             m_showImageWidget->backImage();
         }
-        if(event->key() == Qt::Key_Right)
-        {
+        if (event->key() == Qt::Key_Right) {
             m_showImageWidget->nextImage();
         }
 
@@ -627,20 +613,21 @@ void KyView::keyPressEvent(QKeyEvent *event)
 void KyView::mouseDoubleClickEvent(QMouseEvent *event)
 {
     //判断左键双击
-    if(event->button() == Qt::LeftButton)
-    {
-        if (this->isMaximized()){
-            this->showNormal();
-            m_titlebar->g_fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的全屏图标
-            m_titlebar->g_fullscreen->setToolTip(tr("full srceen"));
-
-        }else{
-            this->showMaximized();
-            m_titlebar->g_fullscreen->setIcon(QIcon::fromTheme("window-restore-symbolic"));//主题库的恢复图标
-            m_titlebar->g_fullscreen->setToolTip(tr("recovery"));
+    if (event->button() != Qt::LeftButton) {
+        return;
+    }
+//    if (event->button() == Qt::LeftButton) {
+    if (this->isMaximized()) {
+        this->showNormal();
+        m_titlebar->g_fullscreen->setIcon(QIcon::fromTheme("window-maximize-symbolic"));//主题库的全屏图标
+        m_titlebar->g_fullscreen->setToolTip(tr("full srceen"));
+    } else {
+        this->showMaximized();
+        m_titlebar->g_fullscreen->setIcon(QIcon::fromTheme("window-restore-symbolic"));//主题库的恢复图标
+        m_titlebar->g_fullscreen->setToolTip(tr("recovery"));
 
         }
-    }
+//    }
 }
 //检测鼠标在信息栏上方进入，顶栏和工具栏要展示
 bool KyView::eventFilter(QObject *obj, QEvent *event)
@@ -651,12 +638,11 @@ bool KyView::eventFilter(QObject *obj, QEvent *event)
         if (!m_information->isHidden() && m_information->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
             int infor_y = m_information->mapFromGlobal(QCursor().pos()).y();
             //判断鼠标在信息栏的位置
-            if (infor_y <= BARHEIGHT)
-            {
-                if(m_timernavi->isActive()){
+            if (infor_y <= BAR_HEIGHT) {
+                if (m_timernavi->isActive()) {
                     m_timernavi->stop();
                 }
-                if(m_timer->isActive()){
+                if (m_timer->isActive()) {
                     m_timer->stop();
                 }
                 m_titlebar->show();
@@ -688,19 +674,15 @@ void KyView::dragEnterEvent(QDragEnterEvent *event)
     QStringList formatList;
     QString format;
     format = "";
-    for (const QString &str:Variable::SUPPORT_FORMATS)
-    {
+    for (const QString &str:Variable::SUPPORT_FORMATS) {
         format = str;
         formatList.append(format);
     }
     QString str = event->mimeData()->urls()[0].fileName();
     //判断图片是否支持被查看
-    if (formatList.contains( QFileInfo(str).suffix()))
-    {
+    if (formatList.contains( QFileInfo(str).suffix())) {
         event->acceptProposedAction();
-    }
-    else
-    {
+    } else {
         event->ignore();//否则不接受鼠标事件
     }
 
@@ -710,22 +692,21 @@ void KyView::dropEvent(QDropEvent *event)
 {
     QList<QUrl> urls = event->mimeData()->urls();
     //判断是否为空
-    if (urls.isEmpty())
-    {
+    if (urls.isEmpty()) {
         return;
     }
     //拿路径，发信号打开图片
     QString path = urls.first().toLocalFile();
-    if (path != "") {
-        emit m_openImage->openImage(path);
-    } else {
+    if (path == "") {
         return;
     }
+    emit m_openImage->openImage(path);
 
 }
 
 void KyView::initGrabGesture()
 {
+
     //手势需要关闭主题事件
     this->setProperty("useStyleWindowManager",false);
     // 注册手势
@@ -764,9 +745,9 @@ bool KyView::event(QEvent *event)
             int distance = eve->globalPos().rx() - m_touchPoint.rx();
             //移动距离超过此值才判定为滑动
             if (distance > 100) {
-                Interaction::getInstance()->backImage();
-            } else if (distance < -100) {
                 Interaction::getInstance()->nextImage();
+            } else if (distance < -100) {
+                Interaction::getInstance()->backImage();
             }
         }
         return QWidget::event(event);
