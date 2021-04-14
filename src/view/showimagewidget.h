@@ -77,7 +77,8 @@ signals:
     void clearImage();//删除完列表里的图片时需要清空界面，恢复默认状态
     void reduceChange();//滚轮对图片缩小，需要将此动作信号发送出去进行处理
     void enlargeChange();//滚轮对图片放大，需要将此动作信号发送出去进行处理
-    void changeSideSelect(int type);//将当前图片序号发送给相册进行切换
+    void changeSideSize(int type);//确定相册的尺寸
+    void toShowSide();//当图片大于2张及以上，默认打开侧栏
 };
 
 #endif // SHOWIMAGEWIDGET_H

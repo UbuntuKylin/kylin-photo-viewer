@@ -65,13 +65,15 @@ private:
 
     QTimer *m_timer;
     QTimer *m_timernavi;
+//    QTimer *m_timeNomove;//鼠标两秒不动
 
     // 用户手册功能
     DaemonDbus *m_DaemonIpcDbus;
 
     bool m_mousePress; //按下鼠标左键
     bool m_inforState = true;//信息栏状态
-    bool m_albumState = true;//信息栏状态
+    bool m_albumState = true;//相册状态
+    double m_tran = 0.75;
     void initconnect();//初始化连接
 
 
@@ -125,9 +127,11 @@ private slots:
     void changOrigSize();//主界面最大化和还原
     void toShowImage();//显示图片
     void showSidebar();//显示相册
+    void defaultSidebar();
 
     void delayHide();//顶栏工具栏的延时隐藏
     void delayHide_navi();//导航栏在鼠标离开界面时隐藏
+    void delayHide_move();//鼠标两秒不动，隐藏两栏
     void openState();//  判断打开应用应该是什么状态
     void aboutShow();//关于界面打开，两栏隐藏
     void showInforWid();//展示或隐藏图片信息窗口

@@ -49,8 +49,6 @@ private:
     QString m_appDesc = "appDesc字段未填充!";
     QString m_iconPath;
     QString m_confPath = "org.china-weather-data.settings";
-
-    Interaction *m_interaction = nullptr;
     QMenu *m_themeMenu = nullptr;
     QDialog *m_aboutWindow = nullptr;
     QGSettings *m_pGsettingThemeData = nullptr;

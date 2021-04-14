@@ -9,10 +9,9 @@ Navigator::Navigator(QWidget *parent) : QWidget(parent)
     m_bottomImage->resize(this->width(),this->height());
     m_bottomImage->move(0,0);
     this->setMouseTracking(true);
-    m_interaction = Interaction::getInstance();
     //此处绑定信号和槽
-    connect(m_interaction,&Interaction::showNavigation,this,&Navigator::showNavigation);//启动时打开图片
-    connect(this,&Navigator::posChange,m_interaction,&Interaction::clickNavigation);
+    connect(Interaction::getInstance(),&Interaction::showNavigation,this,&Navigator::showNavigation);//启动时打开图片
+    connect(this,&Navigator::posChange,Interaction::getInstance(),&Interaction::clickNavigation);
 
 }
 //显示导航器
@@ -37,8 +36,7 @@ void Navigator::mouseMoveEvent(QMouseEvent *event)
 //发送鼠标按下坐标
 void Navigator::mousePressEvent(QMouseEvent *event)
 {
-    if(event->type() == QEvent::MouseButtonPress)
-    {
+    if (event->type() == QEvent::MouseButtonPress) {
         QPoint currpos =this->mapFromGlobal(QCursor().pos());
         emit posChange(currpos);
     }

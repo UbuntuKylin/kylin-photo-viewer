@@ -7,114 +7,121 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
 //    this->resize(678 +4 ,40 + 4);
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
-    this->resize(TOOLBARSIZE);
+    this->resize(TOOLBAR_SIZE);
     //布局
     g_tooleWid = new QFrame(this);
     m_toolLayout = new QHBoxLayout(this);
+    //缩放widget
+    m_zoomWid = new QWidget(this);
+    m_zoomWid->setFixedSize(TOOLZOOM_SIZE);
     //缩小
-    m_reduce = new QPushButton(this);
-    m_reduce->setFixedSize(TOOLBUTTON);
+    m_reduce = new QPushButton(m_zoomWid);
+    m_reduce->setFixedSize(TOOL_BUTTON);
     m_reduce->setFocusPolicy(Qt::NoFocus);
-//    reduce->setAutoRepeat(true);
-//    reduce->setAutoRepeatDelay(ms++);
+    m_reduce->move(0,0);
+//    m_reduce->setAutoRepeat(true);
+//    m_reduce->setAutoRepeatDelay(1000);
     //百分比
-    m_percentage = new QLabel(this);
-    m_percentage->resize(TOOLPER);
-    m_percentage->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    m_percentage = new QLabel(m_zoomWid);
+    m_percentage->setFixedSize(TOOL_PER);
+    m_percentage->setAlignment(Qt::AlignCenter);
+//    m_percentage->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    m_percentage->move(m_reduce->x()+m_reduce->width()+10,2);
 //    m_percentage->setText("98%");
     //放大
-    m_enlarge = new QPushButton(this);
-    m_enlarge->setFixedSize(TOOLBUTTON);
+    m_enlarge = new QPushButton(m_zoomWid);
+    m_enlarge->setFixedSize(TOOL_BUTTON);
     m_enlarge->setFocusPolicy(Qt::NoFocus);
-//    enlarge->setAutoRepeat(true);
-//    enlarge->setAutoRepeatDelay(ms++);
+    m_enlarge->move(m_percentage->x() + m_percentage->width() + 10, 0);
+//    m_enlarge->setAutoRepeat(true);
+//    m_enlarge->setAutoRepeatDelay(15);
     //原始尺寸
     m_originalSize = new QPushButton(this);
-    m_originalSize->setFixedSize(TOOLBUTTON);
+    m_originalSize->setFixedSize(TOOL_BUTTON);
     m_originalSize->setFocusPolicy(Qt::NoFocus);
     //适应窗口
     m_adaptiveWidget = new QPushButton(this);
-    m_adaptiveWidget->setFixedSize(TOOLBUTTON);
+    m_adaptiveWidget->setFixedSize(TOOL_BUTTON);
     m_adaptiveWidget->setFocusPolicy(Qt::NoFocus);
     //旋转
     m_rotate = new QPushButton(this);
-    m_rotate->setFixedSize(TOOLBUTTON);
+    m_rotate->setFixedSize(TOOL_BUTTON);
     m_rotate->setFocusPolicy(Qt::NoFocus);
     //水平翻转
     m_flipH = new QPushButton(this);
-    m_flipH->setFixedSize(TOOLBUTTON);
+    m_flipH->setFixedSize(TOOL_BUTTON);
     m_flipH->setFocusPolicy(Qt::NoFocus);
     //垂直翻转
     m_flipV = new QPushButton(this);
-    m_flipV->setFixedSize(TOOLBUTTON);
+    m_flipV->setFixedSize(TOOL_BUTTON);
     m_flipV->setFocusPolicy(Qt::NoFocus);
 //裁剪
 //    cutImage = new QPushButton(this);
-//    cutImage->setFixedSize(TOOLBUTTON);
+//    cutImage->setFixedSize(TOOL_BUTTON);
 //    cutImage->setFocusPolicy(Qt::NoFocus);
 
     m_line1 = new QLabel(this);
-    m_line1->setFixedSize(TOOLLINE);
+    m_line1->setFixedSize(TOOL_LINE);
 //滤镜
 //    filter = new QPushButton(this);
-//    filter->setFixedSize(TOOLBUTTON);
+//    filter->setFixedSize(TOOL_BUTTON);
 //    filter->setFocusPolicy(Qt::NoFocus);
 //标注
 //    labelbar = new QPushButton(this);//
-//    labelbar->setFixedSize(TOOLBUTTON);
+//    labelbar->setFixedSize(TOOL_BUTTON);
 //    labelbar->setFocusPolicy(Qt::NoFocus);
 
 //    line2 = new QLabel(this);
-//    line2->setFixedSize(TOOLLINE);
+//    line2->setFixedSize(TOOL_LINE);
     //侧边栏--相册
     m_sidebar = new QPushButton(this);
-    m_sidebar->setFixedSize(TOOLBUTTON);
+    m_sidebar->setFixedSize(TOOL_BUTTON);
     m_sidebar->setFocusPolicy(Qt::NoFocus);
     //信息栏
     m_information = new QPushButton(this);//
-    m_information->setFixedSize(TOOLBUTTON);
+    m_information->setFixedSize(TOOL_BUTTON);
     m_information->setFocusPolicy(Qt::NoFocus);
     //删除
     m_delImage = new QPushButton(this);
-    m_delImage->setFixedSize(TOOLBUTTON);
+    m_delImage->setFixedSize(TOOL_BUTTON);
     m_delImage->setFocusPolicy(Qt::NoFocus);
     //绘制阴影
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
     effect->setOffset(0, 0);          //设置向哪个方向产生阴影效果(dx,dy)，特别地，(0,0)代表向四周发散
-    effect->setColor(TOOLCOLOR);       //设置阴影颜色，也可以setColor(QColor(220,220,220))
-    effect->setBlurRadius(BLURRADIUS);        //设定阴影的模糊半径，数值越大越模糊
+    effect->setColor(TOOL_COLOR);       //设置阴影颜色，也可以setColor(QColor(220,220,220))
+    effect->setBlurRadius(BLUR_RADIUS);        //设定阴影的模糊半径，数值越大越模糊
     g_tooleWid->setGraphicsEffect(effect);
 
     this->initGsetting();
     this->initControlQss();
     this->initConnect();
 
-    m_interaction=Interaction::getInstance();
+
 }
 //布局
 void ToolBar::initControlQss()
 {
 
-    m_toolLayout->addWidget(m_reduce,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(10);
-    m_toolLayout->addWidget(m_percentage,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(10);
-    m_toolLayout->addWidget(m_enlarge,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(20);
+    m_toolLayout->addWidget(m_zoomWid,0,Qt::AlignCenter);
+//    m_toolLayout->setSpacing(10);
+//    m_toolLayout->addWidget(m_percentage,0,Qt::AlignCenter);
+//    m_toolLayout->setSpacing(10);
+//    m_toolLayout->addWidget(m_enlarge,0,Qt::AlignCenter);
+    m_toolLayout->setSpacing(15);
     m_toolLayout->addWidget(m_adaptiveWidget,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(20);
+    m_toolLayout->setSpacing(15);
     m_toolLayout->addWidget(m_originalSize,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(20);
+    m_toolLayout->setSpacing(15);
     m_toolLayout->addWidget(m_rotate,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(20);
+    m_toolLayout->setSpacing(15);
     m_toolLayout->addWidget(m_flipH,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(20);
+    m_toolLayout->setSpacing(15);
     m_toolLayout->addWidget(m_flipV,0,Qt::AlignCenter);
 //    m_toolLayout->setSpacing(20);
 //    m_toolLayout->addWidget(m_cutImage,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(10);
+    m_toolLayout->setSpacing(5);
     m_toolLayout->addWidget(m_line1,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(10);
+    m_toolLayout->setSpacing(5);
 //    m_toolLayout->addWidget(m_filter,0,Qt::AlignCenter);
 //    m_toolLayout->setSpacing(20);
 //    m_toolLayout->addWidget(m_labelbar,0,Qt::AlignCenter);
@@ -122,9 +129,9 @@ void ToolBar::initControlQss()
 //    m_toolLayout->addWidget(m_line2,0,Qt::AlignCenter);
 //    m_toolLayout->setSpacing(20);
     m_toolLayout->addWidget(m_sidebar,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(20);
+    m_toolLayout->setSpacing(15);
     m_toolLayout->addWidget(m_information,0,Qt::AlignCenter);
-    m_toolLayout->setSpacing(20);
+    m_toolLayout->setSpacing(15);
     m_toolLayout->addWidget(m_delImage,0,Qt::AlignCenter);
 //    m_toolLayout->setMargin(20);
     m_toolLayout->setContentsMargins(18,8,18,12);
@@ -162,38 +169,38 @@ void ToolBar::changePerRate(QString num)
 void ToolBar::reduceImage()
 {
 
-    m_interaction->watchSmallImage();
+    Interaction::getInstance()->watchSmallImage();
 }
 //放大
 void ToolBar::enlargeImage()
 {
-    m_interaction->watchBigImage();
+    Interaction::getInstance()->watchBigImage();
 }
 
 //原始大小
 void ToolBar::originalSize()
 {
-    m_interaction->watchOriginalImage();
+    Interaction::getInstance()->watchOriginalImage();
 }
 //适应窗口
 void ToolBar::adaptiveWidget()
 {
-    m_interaction->watchAutoImage();
+    Interaction::getInstance()->watchAutoImage();
 }
 //旋转
 void ToolBar::rotate()
 {
-    m_interaction->rotate();
+    Interaction::getInstance()->rotate();
 }
 //水平镜像
 void ToolBar::flipH()
 {
-    m_interaction->flipH();
+    Interaction::getInstance()->flipH();
 }
 //垂直镜像
 void ToolBar::flipV()
 {
-    m_interaction->flipV();
+    Interaction::getInstance()->flipV();
 }
 //裁剪
 void ToolBar::cutImage()
@@ -223,7 +230,7 @@ void ToolBar::information()
 //删除图片
 void ToolBar::delImage()
 {
-    m_interaction->deleteImage();
+    Interaction::getInstance()->deleteImage();
 }
 //监听主题
 void ToolBar::initGsetting(){
@@ -242,9 +249,9 @@ void ToolBar::dealSystemGsettingChange(const QString key){
 void ToolBar::changeStyle()
 {
     QString nowThemeStyle = m_pGsettingThemeData->get("styleName").toString();
-    if ("ukui-dark" == nowThemeStyle || "ukui-black" == nowThemeStyle)
-    {
+    if ("ukui-dark" == nowThemeStyle || "ukui-black" == nowThemeStyle) {
         this->setStyleSheet("QWidget{border-radius:4px;}");
+        m_zoomWid->setStyleSheet("QWidget{background-color:transparent;}");
         g_tooleWid->setStyleSheet("background-color:rgba(0,0,0,0.66);border-radius:4px;");
         m_percentage->setStyleSheet("QLabel{background-color:transparent;}");
         m_line1->setStyleSheet("QLabel{border: 1px solid #393939;background-color: #393939;}");
@@ -301,8 +308,9 @@ void ToolBar::changeStyle()
                                 "QPushButton::hover{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1delImage_hover.png);}"
                                 "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;background-image: url(:/res/res/1delImage_hover.png);}");
 
-    }else{
+    } else {
         this->setStyleSheet("QWidget{border-radius:4px;}");
+        m_zoomWid->setStyleSheet("QWidget{background-color:transparent;}");
         g_tooleWid->setStyleSheet("background-color:rgba(255,255,255,1);");
         m_percentage->setStyleSheet("QLabel{background-color:transparent;}");
         m_line1->setStyleSheet("QLabel{border: 1px solid #393939;background-color: #393939;}");

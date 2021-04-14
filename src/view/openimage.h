@@ -18,7 +18,6 @@ public:
     explicit OpenImage(QWidget *parent = nullptr);
     void openimage();
 private:
-    Interaction *m_interaction = nullptr;
     QGSettings *m_pGsettingThemeData = nullptr;
     QPushButton *m_openInCenter;//圆形图标
     QPushButton *m_addFile;//“+”图标
