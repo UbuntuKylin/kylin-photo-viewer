@@ -865,15 +865,8 @@ void Core::findAllImageFromDir(QString fullPath)
 
 void Core::loadAlbum(QString path, QStringList list)
 {
-    QList<QStandardItem*> oldItemList;
-    QList<QStandardItem*> newItemList;
-    QList<QStandardItem*> allItemList;
-    //将之前的item放入队列
-    for (int i = 0 ;i < m_albumModel->rowCount() ; i++) {
-        oldItemList.append(m_albumModel->item(i));
-    }
-
     //将所有图片存入队列
+    int i = 0;
     for (QString &filename : list) {
         QString tmpFullPath = path+"/"+filename;
         //构造item
@@ -882,19 +875,13 @@ void Core::loadAlbum(QString path, QStringList list)
         item->setSizeHint(Variable::ALBUM_IMAGE_SIZE);
         item->setIcon(m_defultPixmap);
         item->setPath(tmpFullPath);//用来保存地址路径
-        newItemList.append(item);
-    }
-    allItemList.append(newItemList);
-    allItemList.append(oldItemList);
-    m_albumModel->insertColumn(0,newItemList);
-
-    //只加载未加载的缩略图,虽多遍历一遍，但节省加载效率
-    for (QString &filename : list) {
-        QString tmpFullPath = path+"/"+filename;
+        m_albumModel->insertRow(i,item);//插入model
+        //加载缩略图
         AlbumThumbnail* thread= new AlbumThumbnail(tmpFullPath);
         connect(thread,&AlbumThumbnail::finished,thread,&AlbumThumbnail::deleteLater);
         connect(thread,&AlbumThumbnail::albumFinish,this,&Core::albumLoadFinish);
         thread->start();
+        i++;
     }
 }
 

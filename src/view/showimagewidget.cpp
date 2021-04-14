@@ -214,10 +214,10 @@ void ShowImageWidget::openFinish(QVariant var)
         m_canSet = false;
         emit changeSideSize(m_typeNum);
         setMenuAction();
-    }
-    //必须在changeSideSize后进行确认是否展示相册
-    if (m_typeNum >= 2) {
-        emit toShowSide();
+        //必须在changeSideSize后进行确认是否展示相册
+        if (m_typeNum >= 2) {
+            emit toShowSide();
+        }
     }
 }
 //拉伸主界面时重新安排界面显示

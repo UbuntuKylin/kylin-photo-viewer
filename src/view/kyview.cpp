@@ -745,9 +745,9 @@ bool KyView::event(QEvent *event)
             int distance = eve->globalPos().rx() - m_touchPoint.rx();
             //移动距离超过此值才判定为滑动
             if (distance > 100) {
-                Interaction::getInstance()->nextImage();
-            } else if (distance < -100) {
                 Interaction::getInstance()->backImage();
+            } else if (distance < -100) {
+                Interaction::getInstance()->nextImage();
             }
         }
         return QWidget::event(event);
