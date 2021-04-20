@@ -4,8 +4,9 @@ SideBarDelegate::SideBarDelegate()
 {
 
 }
+
 QSize SideBarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(index)
-    return QSize(104, 56);
+    return QSize(94 +6, 56 +6);
 }

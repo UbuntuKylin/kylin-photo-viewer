@@ -16,7 +16,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     m_logoBtn->setFixedSize(LOGO_BTN);//重置图标大小
     m_logoBtn->setPixmap(QPixmap::fromImage(QImage(":/res/res/kyview_logo.png")));
     m_logoBtn->setScaledContents(true);
-    m_logolb->setText(tr("Kylin Photo Viewer"));
+    m_logolb->setText(tr("Pictures"));
 
     //中间图片名字
     g_imageName = new QLabel(this);

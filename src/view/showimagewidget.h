@@ -22,12 +22,15 @@ public:
     QPushButton *g_next; //下一张
     QPushButton *g_back; //上一张
     bool g_buttonState = true; //用来判断只有一张图片时隐藏左右滑动按钮
-
+    bool m_canSet = true;//针对于动图，只响应第一次的结果显示。
     void reMove(int w, int h);
     void openImage(QString path);//打开图片
     void nextImage();//下一张
     void backImage();//上一张
-
+    void delayShow(bool isLoading);//图片加载过慢时，进行延时展示
+public slots:
+    void albumSlot(bool isOpen);//判断是否发送相册展示的事件
+    void isDelete(bool isDel);//判断是删除
 private:
     QGSettings *m_pGsettingThemeData = nullptr;
 //    QWidget *imageWid;
@@ -46,11 +49,14 @@ private:
     QString m_paperFormat;//用来判断可设置为壁纸的样式
 
     QMovie *m_loadingMovie = nullptr;
-    bool m_canSet = true;//针对于动图，只响应第一次的结果显示。
+
     int m_typeNum;
+    bool m_isOpen = true;//是否自动打开相册
+    bool m_isDelete = false;//判断是删除
     void initInteraction();
     void openFinish(QVariant var);//打开结束
     void initConnect();
+    void sideState(int num);//需要根据条件判断侧栏的显示和大小相关信息
 
 
 
@@ -79,6 +85,7 @@ signals:
     void enlargeChange();//滚轮对图片放大，需要将此动作信号发送出去进行处理
     void changeSideSize(int type);//确定相册的尺寸
     void toShowSide();//当图片大于2张及以上，默认打开侧栏
+//    void toSelectHigh(bool isHigh);//判断删除时高亮的选择
 };
 
 #endif // SHOWIMAGEWIDGET_H

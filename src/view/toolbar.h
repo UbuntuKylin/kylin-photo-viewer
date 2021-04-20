@@ -27,6 +27,7 @@ public:
     void delImage();//删除
     void changeStyle();
     QFrame *g_tooleWid;//布局
+
 private:
 
     QHBoxLayout *m_toolLayout;
@@ -75,6 +76,7 @@ private slots:
 signals:
     void showInfor();//主界面显示信息栏
     void showSidebar();//主界面显示相册
+    void isDelete(bool isDel);//判断删除
 
 };
 

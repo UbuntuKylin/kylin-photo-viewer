@@ -131,7 +131,7 @@ QString Core::processingApi(const QStringList &cmd)
             qInfo()<<"参数不合规，使用-h查看帮助";
             return "";
         }
-        apiCmd.append(cmd[2]);
+        m_apiCmd.append(cmd[2]);
         if (!QFileInfo::exists(cmd[3])) {
             qInfo()<<"文件不存在";
             return "";
@@ -142,7 +142,7 @@ QString Core::processingApi(const QStringList &cmd)
             qInfo()<<"不支持的格式";
             return "";
         }
-        apiCmd.append(cmd[3]);
+        m_apiCmd.append(cmd[3]);
         QString flipCmd = cmd[4];
         int hNum = flipCmd.count('h');
         hNum = hNum % 2;//保留有效操作
@@ -160,16 +160,16 @@ QString Core::processingApi(const QStringList &cmd)
         for (int i = 0;i < cNum;i++) {
             flipCmdResult+="c";
         }
-        apiCmd.append(flipCmdResult);
+        m_apiCmd.append(flipCmdResult);
 
         if (cmd.length() > 5) {
             QString saveWay = cmd[5];
             if (saveWay.indexOf('r') > 0) {
-                apiReplaceFile = true;
+                m_apiReplaceFile = true;
             }
         }
 
-        isApi = true;
+        m_isApi = true;
         return Variable::API_TYPE;
     }
     return "";
@@ -188,17 +188,29 @@ void Core::setHighLight(const QString &path)
 
 void Core::openImage(QString fullPath)
 {
+
     if (fullPath.isEmpty()) {
         return;
     }
+//    if (j != 0) {
+
+//        for (int i = 0;i<m_albumModel->rowCount();i++) {
+//            MyStandardItem * item =dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
+//            if (item->getPath() == fullPath) {
+//                return;
+//            }
+//        }
+//    }
+//    j++;
+
 
     //如果正在播放动图，则停止
     if (m_playMovieTimer->isActive()) {
         m_playMovieTimer->stop();
     }
-
-
+//    emit delayShow(true);
     MatAndFileinfo maf = File::loadImage(fullPath);
+//    emit delayShow(false);
     if (!maf.mat.data) {
         //如果图片打开失败则回滚
         ChamgeImageType type = nextOrBack(m_backpath,fullPath);
@@ -212,7 +224,7 @@ void Core::openImage(QString fullPath)
         changeImage(type);
         return;
     }
-    setHighLight(m_nowpath);//设置相册选中
+    setHighLight(fullPath);//设置相册选中
     m_nowImage = Processing::converFormat(maf.mat);
     //记录状态
     changeMat(maf.mat);
@@ -253,6 +265,7 @@ void Core::showImage(const QPixmap &pix)
 
 void Core::creatImage(const int &proportion)
 {
+
     if (m_nowImage.isNull()) {
         return;
     }
@@ -291,6 +304,7 @@ void Core::creatImage(const int &proportion)
 
 void Core::showImageOrMovie()
 {
+
     //动画类格式循环播放
     if (m_matList!=nullptr) {
         if (m_matList->length()>2) {
@@ -396,7 +410,7 @@ void Core::clickNavigation(const QPoint &point)
 void Core::saveMovieFinish(const QString &path)
 {
     //如果收到关闭信号，保存完再退出
-    if (shouldClose) {
+    if (m_shouldClose) {
         //双层判断，避免多次确认状态，提升效率
         if (m_file->allSaveFinish()) {
             progremExit();
@@ -458,6 +472,8 @@ void Core::deleteImage()
     //删除文件
     m_file->deleteImage(m_backpath);
 
+    emit setHighLight(m_nowpath);
+
     //删除后队列中无图片，返回状态
     if(m_albumModel->rowCount() == 0){
         navigation();//关闭导航器
@@ -486,7 +502,7 @@ void Core::setAsBackground()
 void Core::close()
 {
     //如果已经触发过关闭事件不响应
-    if (shouldClose) {
+    if (m_shouldClose) {
         return;
     }
 
@@ -496,23 +512,27 @@ void Core::close()
             if (m_playMovieTimer->isActive()) {
                 m_playMovieTimer->stop();
             }
-            shouldClose = true;
+            m_shouldClose = true;
             showImage(QPixmap());
             return;
         }
         progremExit();
         return;
     }
+    //如果不是作为外部API调用则默认覆盖保存
+    if (!m_isApi) {
+        m_apiReplaceFile = true;
+    }
     //如果正在播放动图，则停止
     if (m_playMovieTimer->isActive()) {
         m_playMovieTimer->stop();
         showImage(QPixmap());
         //保存动图
-        m_file->saveImage(m_matList,m_fps,m_nowpath,apiReplaceFile);
-        shouldClose = true;
+        m_file->saveImage(m_matList,m_fps,m_nowpath,m_apiReplaceFile);
+        m_shouldClose = true;
     } else {
         //保存图片
-        m_file->saveImage(m_nowMat,m_nowpath,apiReplaceFile);
+        m_file->saveImage(m_nowMat,m_nowpath,m_apiReplaceFile);
         progremExit();
     }
 }
@@ -529,8 +549,8 @@ void Core::changeImage(const int &type)
         return;
     }
 
-    //如果图片队列小于1，不处理
-    if (m_albumModel->rowCount()<1) {
+    //如果图片队列小于2，不处理
+    if (m_albumModel->rowCount()<2) {
         m_backpath = m_nowpath;
         return;
     }
@@ -550,7 +570,6 @@ void Core::changeImage(const int &type)
             m_file->saveImage(m_nowMat,m_nowpath);
         }
     }
-
     m_processed=false;//重置是否操作过的状态
     if (type == NEXT_IMAGE) {
         QString key = nextImagePath(m_nowpath);
@@ -819,14 +838,14 @@ void Core::albumLoadFinish(QVariant var)
 
 bool Core::apiFunction()
 {
-    if (!isApi) {
+    if (!m_isApi) {
        return false;
     }
-    QString fullPath = apiCmd[1];
+    QString fullPath = m_apiCmd[1];
     openImage(fullPath);
     //翻转
-    if (apiCmd[0]=="-flip") {
-        QString cmd = apiCmd[2];
+    if (m_apiCmd[0]=="-flip") {
+        QString cmd = m_apiCmd[2];
         for (QChar &ch : cmd) {
             if (ch == 'h') {
                 flipImage(Processing::FlipWay::horizontal);
@@ -847,7 +866,20 @@ void Core::findAllImageFromDir(QString fullPath)
     if (apiFunction()) {
         return;
     }
-
+    //判断两次路径是否相同
+    m_newPath = fullPath.mid(0,fullPath.lastIndexOf("/"));;
+    if (j == 0) {
+        m_oldPath = fullPath.mid(0,fullPath.lastIndexOf("/"));
+        j++;
+    } else {
+        //路径相同，不添加至相册和界面展示
+        if (m_newPath == m_oldPath) {
+            return;
+        } else {
+            //对比后，不同，需要更新一次路径
+            m_oldPath = fullPath.mid(0,fullPath.lastIndexOf("/"));
+        }
+    }
     QFileInfo info(fullPath);
     QString path = info.absolutePath();//转成绝对路径
     QString filepath = info.absoluteFilePath();//转成绝对路径
@@ -874,6 +906,7 @@ void Core::loadAlbum(QString path, QStringList list)
         item->setDragEnabled(false);
         item->setSizeHint(Variable::ALBUM_IMAGE_SIZE);
         item->setIcon(m_defultPixmap);
+
         item->setPath(tmpFullPath);//用来保存地址路径
         m_albumModel->insertRow(i,item);//插入model
         //加载缩略图

@@ -57,6 +57,7 @@ void OpenImage::openimage()
     emit openImage(file_path);
 }
 
+
 void OpenImage::initGsettings()
 {
     if (QGSettings::isSchemaInstalled(FITTHEMEWINDOW)) {

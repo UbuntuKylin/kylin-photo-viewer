@@ -2,6 +2,8 @@
 #define ALBUMTHUMBNAIL_H
 
 #include <QThread>
+#include <QStyleOptionViewItem>
+#include <QPainter>
 #include "global/variable.h"
 #include "model/processing/processing.h"
 #include "model/file/file.h"

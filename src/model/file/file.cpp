@@ -7,7 +7,6 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     //获取文件信息
     QFileInfo info(path);
     maf.info=info;
-
     //svg、gif等opencv不支持的格式
     QString suffix = info.suffix().toLower();
     if (suffix == "gif" || suffix == "apng" || suffix == "png") {
