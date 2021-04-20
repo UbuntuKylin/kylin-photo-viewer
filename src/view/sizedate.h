@@ -35,8 +35,8 @@ static const int NAME_HEIGHT = 28;//菜单-关于界面appname高度
 static const int VERSION_HEI = 24;//菜单-关于界面AppVersion高度
 static const QString VERSION_NEM = "1.0.0";//菜单-关于界面版本号
 static const QString USER_GUIDE = "kylin-photo-viewer";//菜单-关于界面用户手册
-static const QSize SIDEBAR_SIZE = QSize(126 + 6,590);//相册尺寸
-static const QSize SIDEITEM_SIZE = QSize(94,56);//相册item尺寸
+static const QSize SIDEBAR_SIZE = QSize(126 ,590);//相册尺寸
+static const QSize SIDEITEM_SIZE = QSize(94 + 12,56 +8 );//相册item尺寸
 static const QSize TOOLZOOM_SIZE = QSize(113,24);//工具栏缩放widget尺寸
 
 #endif // SIZEDATE_H

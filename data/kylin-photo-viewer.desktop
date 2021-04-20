@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Kylin Photo Viewer
-Name[zh_CN]=麒麟看图
+Name=Pictures
+Name[zh_CN]=看图
 Comment=Photo viewer, support to view, zoom and rotate images of various formats
 Comment[zh_CN]=图片查看器，支持多种格式的图片的查看、缩放和旋转
 GenericName=Photo Viewer

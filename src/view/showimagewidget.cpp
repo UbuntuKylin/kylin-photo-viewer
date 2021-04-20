@@ -74,6 +74,23 @@ void ShowImageWidget::initConnect()
     connect(m_showInFile, &QAction::triggered, this,&ShowImageWidget::showInFile);
 
 }
+
+void ShowImageWidget::sideState(int num)
+{
+    //判断是不是点击删除按钮触发切换图片
+    if (m_isDelete == false) {
+       emit changeSideSize(num);
+    } else {
+        emit changeSideSize(num - 1);
+    }
+    //判断是否应该显示侧栏
+    if (num >= 2) {
+        if (m_isOpen != true) {
+            return;
+        }
+        emit toShowSide();
+    }
+}
 //下一张
 void ShowImageWidget::nextImage()
 {
@@ -86,6 +103,33 @@ void ShowImageWidget::backImage()
     m_canSet = true;
     Interaction::getInstance()->backImage();
 }
+//备用，图片加载过慢时，ui的处理--暂缓
+void ShowImageWidget::delayShow(bool isLoading)
+{
+    if (isLoading == false) {
+        if (m_loadingMovie->state() != QMovie::NotRunning) {
+            m_loadingMovie->stop();
+        }
+        return;
+    } else {
+        this->m_showImage->setMovie(m_loadingMovie);
+        m_loadingMovie->start();
+        emit toShowImage();//给主界面--展示图片
+    }
+
+}
+
+void ShowImageWidget::albumSlot(bool isOpen)
+{
+    m_isOpen = isOpen;
+}
+
+void ShowImageWidget::isDelete(bool isDel)
+{
+    m_isDelete = isDel;
+//    emit toSelectHigh(isDel);
+}
+
 //复制
 void ShowImageWidget::copy()
 {
@@ -109,6 +153,7 @@ void ShowImageWidget::print()
 //删除
 void ShowImageWidget::deleteImage()
 {
+    emit isDelete(true);
     Interaction::getInstance()->deleteImage();
 }
 //在文件夹中显示
@@ -134,7 +179,7 @@ void ShowImageWidget::setMenuAction()
     }
     //判断是否为可设置为壁纸的类型
     if (formatList.contains(m_paperFormat)) {
-//      m_imageMenu->insertAction(m_deleteImage,m_setDeskPaper);
+      m_imageMenu->insertAction(m_deleteImage,m_setDeskPaper);
     } else {
         m_imageMenu->removeAction(m_setDeskPaper);
     }
@@ -145,6 +190,7 @@ void ShowImageWidget::initInteraction()
 {
     connect(Interaction::getInstance(),&Interaction::startWithOpenImage,this,&ShowImageWidget::startWithOpenImage);//启动时打开图片
     connect(Interaction::getInstance(),&Interaction::openFinish,this,&ShowImageWidget::openFinish);//图片打开完成，获取数据
+    connect(Interaction::getInstance(),&Interaction::delayShow,this,&ShowImageWidget::delayShow);
 }
 //双击或带参数打开
 void ShowImageWidget::startWithOpenImage(QString path)
@@ -160,6 +206,7 @@ void ShowImageWidget::startWithOpenImage(QString path)
 //打开图片
 void ShowImageWidget::openImage(QString path)
 {
+//    delayShow();
     Interaction::getInstance()->openImage(path);
 }
 //拿到图片信息，进行处理
@@ -192,7 +239,6 @@ void ShowImageWidget::openFinish(QVariant var)
     m_paperFormat = info.suffix();
     m_typeNum = number;
     //使用返回的信息进行设置界面
-
     emit toShowImage();//给主界面--展示图片
     emit perRate(num);//发送给toolbar来更改缩放数字
     emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
@@ -208,17 +254,21 @@ void ShowImageWidget::openFinish(QVariant var)
         }
     }
     this->m_showImage->setPixmap(pixmap);
-    //设置壁纸--动图在传来时是一帧一帧，只判断并添加一次右键菜单选项
-    if (m_canSet) {
-
-        m_canSet = false;
-        emit changeSideSize(m_typeNum);
-        setMenuAction();
-        //必须在changeSideSize后进行确认是否展示相册
-        if (m_typeNum >= 2) {
-            emit toShowSide();
+    //区分动图和静态图
+    if (m_paperFormat == "gif" || m_paperFormat == "apng") {
+        //设置壁纸--动图在传来时是一帧一帧，只判断并添加一次右键菜单选项
+        if (m_canSet)  {
+            m_canSet = false;
+            //设置右键菜单
+            setMenuAction();
         }
+    } else {
+        setMenuAction();
     }
+    sideState(m_typeNum);
+    m_isDelete = false;
+//    emit toSelectHigh(false);
+
 }
 //拉伸主界面时重新安排界面显示
 void ShowImageWidget::reMove(int W, int H)

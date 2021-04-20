@@ -27,6 +27,7 @@
 #include <QSwipeGesture>
 #include <QTapGesture>
 #include <QImageReader>
+#include <QLocale>
 
 #include <QX11Info>
 
@@ -42,6 +43,8 @@
 #include "global/variable.h"
 #include "controller/interaction.h"
 #include "global/variable.h"
+
+#include <QThread>
 
 class KyView : public QWidget
 {
@@ -65,14 +68,17 @@ private:
 
     QTimer *m_timer;
     QTimer *m_timernavi;
-//    QTimer *m_timeNomove;//鼠标两秒不动
+    QTimer *m_timeNomove;//鼠标两秒不动
 
     // 用户手册功能
     DaemonDbus *m_DaemonIpcDbus;
 
+    QLocale m_local;
+
     bool m_mousePress; //按下鼠标左键
     bool m_inforState = true;//信息栏状态
     bool m_albumState = true;//相册状态
+    bool m_albumShow = true;//切换图片时，相册状态
     double m_tran = 0.75;
     void initconnect();//初始化连接
 
@@ -104,6 +110,8 @@ private:
     void dragEnterEvent(QDragEnterEvent *event);//文件拖拽显示事件--判断是否响应dropevent
     void dropEvent(QDropEvent *event);//文件拖拽响应
 
+    void x11EventEnd();
+    QPoint m_mousePointFromWindow;//记录拖动时鼠标位置
 
 
     //手势相关
@@ -139,8 +147,7 @@ private slots:
 
 
 signals:
-
-
+    void albumState(bool isOpen);//相册在主界面隐藏或show的状态需要确定
 
 };
 

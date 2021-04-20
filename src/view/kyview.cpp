@@ -11,7 +11,7 @@ KyView::KyView(const QStringList &args)
     this->resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
     this ->setWindowIcon(QIcon(":/res/res/kyview_logo.png"));
-    this ->setWindowTitle(tr("Kylin Photo Viewer"));
+    this ->setWindowTitle(tr("Pictures"));
     //毛玻璃
     this->setProperty("useSystemStyleBlur",true);
     this->setAttribute(Qt::WA_TranslucentBackground,true);
@@ -57,8 +57,12 @@ KyView::KyView(const QStringList &args)
 
     //信息栏
     m_information = new Information(this);
-    m_information->resize(INFOR_SIZE);
-    m_information->move(this->width()-m_information->width() +2,BAR_HEIGHT);
+    if (m_local.system().name() == "en_US") {
+        m_information->resize(INFOR_SIZE.width()+7,INFOR_SIZE.height() + 20);
+    } else if (m_local.system().name() == "zh_CN") {
+        m_information->resize(INFOR_SIZE.width(),INFOR_SIZE.height() +20);
+    }
+    m_information->move(this->width()-m_information->width() ,BAR_HEIGHT);
     this->installEventFilter(this);
     m_information->installEventFilter(this);
     m_titlebar->installEventFilter(this);
@@ -75,8 +79,9 @@ KyView::KyView(const QStringList &args)
     m_timer->setSingleShot(true);
     m_timernavi = new QTimer(this);
     m_timernavi->setSingleShot(true);
-//    m_timeNomove = new QTimer(this);
+    m_timeNomove = new QTimer(this);
 //    m_timeNomove->setSingleShot(true);
+
 
     // 用户手册功能
     m_DaemonIpcDbus = new DaemonDbus();
@@ -132,12 +137,14 @@ void KyView::initconnect()
     //定时器
     connect(m_timer ,&QTimer::timeout, this, &KyView::delayHide);
     connect(m_timernavi ,&QTimer::timeout, this, &KyView::delayHide_navi);
-//    connect(m_timeNomove, &QTimer::timeout,this, [=] () {
-//        m_timeNomove->start(2000);
-//        delayHide_move();
-//    });
+    connect(m_timeNomove ,&QTimer::timeout, this, &KyView::delayHide_move);
+    m_timeNomove->start(2000);
     //设置相册尺寸
     connect(m_showImageWidget,&ShowImageWidget::changeSideSize,m_sideBar,&SideBar::getSelect);
+    connect(this,&KyView::albumState,m_showImageWidget,&ShowImageWidget::albumSlot);
+    //删除时界面变化
+    connect(m_toolbar,&ToolBar::isDelete,m_showImageWidget,&ShowImageWidget::isDelete);
+//    connect(m_showImageWidget,&ShowImageWidget::toSelectHigh,m_sideBar,&SideBar::isDelete);
 }
 //打开首先检测是否需要展示工具栏
 void KyView::openState()
@@ -147,7 +154,7 @@ void KyView::openState()
         m_toolbar->move(int((this->width()-m_toolbar->width())/2),this->height() - m_toolbar->height() +4);
     }
 }
-//打卡关于，两栏隐藏
+//打开关于，两栏隐藏
 void KyView::aboutShow()
 {
     if (m_openImage->isHidden()) {
@@ -156,7 +163,7 @@ void KyView::aboutShow()
             m_toolbar->hide();
         }
        if (!m_information->isHidden()) {
-            m_information->move(this->width()-m_information->width() +2,0);
+            m_information->move(this->width()-m_information->width() ,0);
        }
     }
 }
@@ -217,9 +224,9 @@ void KyView::inforChange()
         return;
     }
     if (m_titlebar->isHidden()) {
-        m_information->move(this->width()-m_information->width() +2,0);
+        m_information->move(this->width()-m_information->width() ,0);
     } else {
-        m_information->move(this->width()-m_information->width() +2, BAR_HEIGHT);
+        m_information->move(this->width()-m_information->width() , BAR_HEIGHT);
     }
 
 
@@ -230,7 +237,7 @@ void KyView::albumChange()
     if (m_sideBar->isHidden()) {
         return;
     }
-    m_sideBar->move(-6,(this->height()-m_sideBar->height())/2 + 20);
+    m_sideBar->move(0,(this->height()-m_sideBar->height())/2 + 20);
 
 }
 //延时隐藏
@@ -257,21 +264,27 @@ void KyView::delayHide()
 //鼠标离开界面时需要触发，届时会加上对导航器的处理
 void KyView::delayHide_navi()
 {
-
     m_titlebar->hide();
     m_toolbar->hide();
+    inforChange();
     m_timernavi->stop();
 }
-
+//鼠标静止不动，延时两秒两栏隐藏
 void KyView::delayHide_move()
 {
-//    if (!m_titlebar->isHidden() && m_titlebar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
-//        return;
-//    }
-//    m_titlebar->hide();
-//    m_toolbar->hide();
-//    m_timeNomove->stop();
-
+    if (!m_openImage->isHidden()) {
+        return;
+    }
+    if (!m_titlebar->isHidden() && m_titlebar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+        return;
+    }
+    if (!m_toolbar->isHidden() && m_toolbar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+        return;
+    }
+    m_titlebar->hide();
+    m_toolbar->hide();
+    inforChange();
+    m_timeNomove->stop();
 }
 //展示信息栏
 void KyView::showInforWid()
@@ -294,6 +307,9 @@ void KyView::clearImage()
     m_information->hide();
     if (m_titlebar->isHidden()) {
         m_titlebar->show();
+    }
+    if (!m_sideBar->isHidden()) {
+        m_sideBar->hide();
     }
     m_titlebar->g_imageName->clear();
 
@@ -379,15 +395,15 @@ void KyView::themeChange()
         m_titlebar->g_menu->setThemeDark();
         m_showImageWidget->g_next->setIcon(QIcon(":/res/res/1right.png"));
         m_showImageWidget->g_back->setIcon(QIcon(":/res/res/1left.png"));
-        m_sideBar->setStyleSheet("QListView{padding:8px;border:1px ;border-radius:4px;outline:none;background:rgba(26, 26, 26, 0.7)}"
-                                   "QListView::item{margin:0 8px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
-                                   "QListView::item:selected:active{background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
+        m_sideBar->setStyleSheet("QListView{border:1px ;border-radius:4px;outline:none;background:rgba(26, 26, 26, 0.7)}"
+                                   "QListView::item{margin:0 2px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
+                                   "QListView::item:selected{border:2px solid rgba(13, 135, 255, 0.86);background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
                                    "QListView::item:hover{background:rgba(255, 255, 255, 0.9);border-radius:2px;}");
     } else {
         m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-radius:4px;");
-        m_sideBar->setStyleSheet("QListView{padding:8px;border:1px ;border-radius:4px;outline:none;background:rgba(245, 245, 245, 0.75)}"
-                                   "QListView::item{margin:0 8px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
-                                   "QListView::item:selected:active{background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
+        m_sideBar->setStyleSheet("QListView{border:1px ;border-radius:4px;outline:none;background:rgba(227, 235, 239, 0.7)}"
+                                   "QListView::item{margin:0 2px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
+                                   "QListView::item:selected{border:2px solid rgba(13, 135, 255, 0.86);background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
                                    "QListView::item:hover{background:rgba(255, 255, 255, 0.9);border-radius:2px;}");
         m_titlebar->g_menu->setThemeLight();
         m_showImageWidget->g_next->setIcon(QIcon(":/res/res/right.png"));
@@ -438,6 +454,7 @@ void KyView::showSidebar()
         defaultSidebar();
     } else {
         m_sideBar->hide();
+        emit albumState(false);
         m_albumState = true;
     }
 
@@ -445,8 +462,9 @@ void KyView::showSidebar()
 
 void KyView::defaultSidebar()
 {
-    m_sideBar->getAlbum();
+//    m_sideBar->showItem();
     m_sideBar->show();
+    emit albumState(true);
     m_albumState = false;
     albumChange();
 
@@ -462,7 +480,7 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
         m_toolbar->hide();
         m_titlebar->show();
     }
-    //无法响应窗口最大化等主题控制的事件，目前只能拖拽,存在拖拽太快时窗口跟不上位置的问题
+    //窗口拖拽
     if (m_titlebar == nullptr) {
         return;
     }
@@ -472,6 +490,9 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
     if (!m_mousePress) {
         return;
     }
+
+    m_mousePointFromWindow = event->pos();
+
     //移动窗口
     this->setCursor(Qt::DragMoveCursor);//改变鼠标样式
 
@@ -516,7 +537,8 @@ void KyView::mouseReleaseEvent(QMouseEvent * event)
 }
 
 //拖拽主窗口--各控件需要改变位置或尺寸
-void KyView::resizeEvent(QResizeEvent *event){
+void KyView::resizeEvent(QResizeEvent *event)
+{
 
     titlebarChange();
     openImageChange();
@@ -554,6 +576,13 @@ void KyView::enterEvent(QEvent *event)
 {
     if (m_timernavi->isActive()) {
         m_timernavi->stop();
+    }
+    if (m_sideBar->isHidden()) {
+        return;
+    }
+    if (m_sideBar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+        m_showImageWidget->g_back->show();
+        m_showImageWidget->g_next->show();
     }
 
 }
@@ -601,9 +630,11 @@ void KyView::keyPressEvent(QKeyEvent *event)
             m_toolbar->delImage();
         }
         if (event->key() == Qt::Key_Left) {
+            m_showImageWidget->m_canSet = true;
             m_showImageWidget->backImage();
         }
         if (event->key() == Qt::Key_Right) {
+            m_showImageWidget->m_canSet = true;
             m_showImageWidget->nextImage();
         }
 
@@ -718,6 +749,13 @@ void KyView::initGrabGesture()
 
 bool KyView::event(QEvent *event)
 {
+    //判断列表中是否只有一张图，一张图片左右按钮不显示--解决静止鼠标，按钮仍然显示的问题
+    if (m_openImage != nullptr && m_openImage->isHidden()) {
+        if (m_showImageWidget->g_buttonState == false) {
+            this->m_showImageWidget->g_next->hide();
+            this->m_showImageWidget->g_back->hide();
+        }
+    }
     //手势处理
     if (event->type() ==  QEvent::Gesture) {
         return gestureEvent(event);
@@ -728,9 +766,7 @@ bool KyView::event(QEvent *event)
         if (event->type() == QEvent::Move) {
             //本次不响应切换手势
             m_panTriggered = false;
-            //模拟释放一次
-            QMouseEvent event1(QEvent::MouseButtonRelease, QPoint(0,0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-            QApplication::sendEvent(this, &event1);
+            x11EventEnd();
         }
     }
 
@@ -745,8 +781,10 @@ bool KyView::event(QEvent *event)
             int distance = eve->globalPos().rx() - m_touchPoint.rx();
             //移动距离超过此值才判定为滑动
             if (distance > 100) {
+                m_showImageWidget->m_canSet = true;
                 Interaction::getInstance()->backImage();
             } else if (distance < -100) {
+                m_showImageWidget->m_canSet = true;
                 Interaction::getInstance()->nextImage();
             }
         }
@@ -754,6 +792,27 @@ bool KyView::event(QEvent *event)
     }
 
     return QWidget::event(event);
+}
+
+void KyView::x11EventEnd()
+{
+    int x = m_mousePointFromWindow.x() + this->pos().x();
+    int y = m_mousePointFromWindow.y() + this->pos().y();
+
+    XEvent xEvent;
+    memset(&xEvent, 0, sizeof(XEvent));
+    Display *display = QX11Info::display();
+    xEvent.type = ButtonRelease;
+    xEvent.xbutton.button = Button1;
+    xEvent.xbutton.window = this->effectiveWinId();
+    xEvent.xbutton.x = m_mousePointFromWindow.x();
+    xEvent.xbutton.y = m_mousePointFromWindow.y();
+    xEvent.xbutton.x_root = x;
+    xEvent.xbutton.y_root = y;
+    xEvent.xbutton.display = display;
+
+    XSendEvent(display,this->effectiveWinId(),False,ButtonReleaseMask,&xEvent);
+    XFlush(display);
 }
 
 // 手势识别

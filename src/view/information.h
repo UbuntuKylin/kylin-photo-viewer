@@ -8,6 +8,7 @@
 #include <QFileInfo>
 #include <QDateTime>
 #include <QFont>
+#include <QLocale>
 class Information : public QWidget
 {
     Q_OBJECT
@@ -36,6 +37,7 @@ private:
     QGridLayout *m_gdLayout;
 
     QFont m_ft;
+    QLocale m_local;
 
     void layout();
     void longText(QLabel *nameC, QString text);

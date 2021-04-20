@@ -9,7 +9,7 @@
 #include <QStandardItem>
 #include <QDebug>
 #include <QScrollArea>
-
+#include <QGraphicsDropShadowEffect>
 #include <QMovie>
 #include <QScrollBar>
 #include "controller/interaction.h"
@@ -21,15 +21,19 @@ class SideBar : public QListView
     Q_OBJECT
 public:
     explicit SideBar(QWidget *parent = nullptr);
-    void getAlbum();
+    void showItem();
 public slots:
     void getSelect(int type);
+//    void isDelete(bool isDel);
 private:
 
-    QListView *m_albumView= nullptr;
-    QStandardItemModel *m_itemModel;
+//    QListView *m_albumView= nullptr;
+//    QStandardItemModel *m_itemModel;
     QMovie *m_loadingMovie = nullptr;//没有处理完，则显示此动图
     SideBarDelegate * m_delegate = nullptr;
+//    bool m_isDelete = false;
+    void initConnect();
+
 
 signals:
 

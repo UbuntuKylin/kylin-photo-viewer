@@ -40,7 +40,7 @@ void menuModule::initAction(){
 
     QList<QAction *> actions ;
     QAction *actionOpen = new QAction(m_menu);
-    actionOpen->setText(tr("Open.."));
+    actionOpen->setText(tr("Open..."));
     QAction *actionTheme = new QAction(m_menu);
     actionTheme->setText(tr("Theme"));
     QAction *actionHelp = new QAction(m_menu);
@@ -102,7 +102,7 @@ void menuModule::triggerMenu(QAction *act){
         aboutAction();
     } else if (tr("Help") == str) {
         helpAction();
-    } else if (tr("Open..") == str) {
+    } else if (tr("Open...") == str) {
         emit openSignal();
     }
 }
@@ -164,7 +164,7 @@ QHBoxLayout* menuModule::initTitleBar(){
     QLabel* titleIcon = new QLabel();
     titleIcon->setFixedSize(MICON_SIZEM);
 
-    m_appShowingName = tr("kylin photo view");
+    m_appShowingName = tr("Pictures");
     m_iconPath = ":/res/res/kyview_logo.png";
     titleIcon->setPixmap(QPixmap::fromImage(QImage(m_iconPath)));
     titleIcon->setScaledContents(true);
@@ -180,7 +180,7 @@ QHBoxLayout* menuModule::initTitleBar(){
     connect(titleBtnClose,&QPushButton::clicked,[=](){m_aboutWindow->close();});
 
     QHBoxLayout *hlyt = new QHBoxLayout;
-    m_titleText->setText(tr("Kylin Photo View"));
+    m_titleText->setText(tr("Pictures"));
     hlyt->setSpacing(0);
     hlyt->setMargin(4);
     hlyt->addSpacing(4);

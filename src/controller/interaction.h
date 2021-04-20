@@ -65,6 +65,12 @@ signals:
      * 接口类型：信号，需要绑定QListView的setCurrentIndex槽
      */
     void changeAlbumHighLight(QModelIndex modelIndex);//在相册中选中到所切换的图片
+    /*
+     * 接口功能：切换图片时，图片加载缓慢需要前端对应做处理
+     * 接口场景：切换图片时
+     * 接口类型：信号，需要绑定前端图片未加载时的界面显示函数
+     */
+    void delayShow(bool isLoading);//处理图片加载缓慢
 
 public:
 

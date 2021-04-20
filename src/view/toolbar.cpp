@@ -8,6 +8,7 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
     this->resize(TOOLBAR_SIZE);
+    this->setFocusPolicy(Qt::NoFocus);
     //布局
     g_tooleWid = new QFrame(this);
     m_toolLayout = new QHBoxLayout(this);
@@ -19,6 +20,9 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     m_reduce->setFixedSize(TOOL_BUTTON);
     m_reduce->setFocusPolicy(Qt::NoFocus);
     m_reduce->move(0,0);
+//    m_reduce->setToolTip(tr("Zoom out"));
+
+//    m_reduce->setToolTip(tr("缩小图片"));
 //    m_reduce->setAutoRepeat(true);
 //    m_reduce->setAutoRepeatDelay(1000);
     //百分比
@@ -33,32 +37,46 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     m_enlarge->setFixedSize(TOOL_BUTTON);
     m_enlarge->setFocusPolicy(Qt::NoFocus);
     m_enlarge->move(m_percentage->x() + m_percentage->width() + 10, 0);
+//    m_enlarge->setToolTip(tr("Zoom in"));
+//    m_enlarge->setToolTip(tr("放大图片"));
 //    m_enlarge->setAutoRepeat(true);
 //    m_enlarge->setAutoRepeatDelay(15);
     //原始尺寸
     m_originalSize = new QPushButton(this);
     m_originalSize->setFixedSize(TOOL_BUTTON);
     m_originalSize->setFocusPolicy(Qt::NoFocus);
+//    m_originalSize->setToolTip(tr("Original size"));
+//    m_originalSize->setToolTip(tr("原始尺寸"));
     //适应窗口
     m_adaptiveWidget = new QPushButton(this);
     m_adaptiveWidget->setFixedSize(TOOL_BUTTON);
     m_adaptiveWidget->setFocusPolicy(Qt::NoFocus);
+//    m_adaptiveWidget->setToolTip(tr("Adaptive widget"));
+//    m_adaptiveWidget->setToolTip(tr("图像适应窗口"));
     //旋转
     m_rotate = new QPushButton(this);
     m_rotate->setFixedSize(TOOL_BUTTON);
     m_rotate->setFocusPolicy(Qt::NoFocus);
+//    m_rotate->setToolTip(tr("Rorate"));
+//    m_rotate->setToolTip(tr("旋转"));
     //水平翻转
     m_flipH = new QPushButton(this);
     m_flipH->setFixedSize(TOOL_BUTTON);
     m_flipH->setFocusPolicy(Qt::NoFocus);
+//    m_flipH->setToolTip(tr("Horizontal mirror"));
+//    m_flipH->setToolTip(tr("水平镜像"));
     //垂直翻转
     m_flipV = new QPushButton(this);
     m_flipV->setFixedSize(TOOL_BUTTON);
     m_flipV->setFocusPolicy(Qt::NoFocus);
+//    m_flipV->setToolTip(tr("Vertical mirror"));
+//    m_flipV->setToolTip(tr("垂直镜像"));
 //裁剪
-//    cutImage = new QPushButton(this);
+//    m_cutImage = new QPushButton(this);
 //    cutImage->setFixedSize(TOOL_BUTTON);
 //    cutImage->setFocusPolicy(Qt::NoFocus);
+//    cutImage->setToolTip(tr("Tailoring"));
+//    cutImage->setToolTip(tr("裁剪"));
 
     m_line1 = new QLabel(this);
     m_line1->setFixedSize(TOOL_LINE);
@@ -66,10 +84,14 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
 //    filter = new QPushButton(this);
 //    filter->setFixedSize(TOOL_BUTTON);
 //    filter->setFocusPolicy(Qt::NoFocus);
+//    filter->setToolTip(tr("Filter"));
+//    filter->setToolTip(tr("滤镜"));
 //标注
 //    labelbar = new QPushButton(this);//
 //    labelbar->setFixedSize(TOOL_BUTTON);
 //    labelbar->setFocusPolicy(Qt::NoFocus);
+//    labelbar->setToolTip(tr("Label"));
+//    labelbar->setToolTip(tr("标注"));
 
 //    line2 = new QLabel(this);
 //    line2->setFixedSize(TOOL_LINE);
@@ -77,14 +99,20 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     m_sidebar = new QPushButton(this);
     m_sidebar->setFixedSize(TOOL_BUTTON);
     m_sidebar->setFocusPolicy(Qt::NoFocus);
+//    m_sidebar->setToolTip(tr("Thumbnail"));
+//    m_sidebar->setToolTip(tr("缩略图侧栏"));
     //信息栏
     m_information = new QPushButton(this);//
     m_information->setFixedSize(TOOL_BUTTON);
     m_information->setFocusPolicy(Qt::NoFocus);
+//    m_information->setToolTip(tr("Information"));
+//    m_information->setToolTip(tr("信息"));
     //删除
     m_delImage = new QPushButton(this);
     m_delImage->setFixedSize(TOOL_BUTTON);
     m_delImage->setFocusPolicy(Qt::NoFocus);
+//    m_delImage->setToolTip(tr("Delete"));
+//    m_delImage->setToolTip(tr("删除"));
     //绘制阴影
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
     effect->setOffset(0, 0);          //设置向哪个方向产生阴影效果(dx,dy)，特别地，(0,0)代表向四周发散
@@ -230,6 +258,7 @@ void ToolBar::information()
 //删除图片
 void ToolBar::delImage()
 {
+    emit isDelete(true);
     Interaction::getInstance()->deleteImage();
 }
 //监听主题

@@ -25,6 +25,7 @@ signals:
     void showNavigation(QPixmap pix);//操作导航器
     void coreProgremExit();//结束进程
     void changeAlbumHighLight(QModelIndex modelIndex);//在相册中选中到所切换的图片
+    void delayShow(bool isLoading);//处理图片加载缓慢问题
 
 public:
     Core();
@@ -64,12 +65,15 @@ private:
     QString nextImagePath(const QString & oldPath);
     QString backImagePath(const QString & oldPath);
     void setHighLight(const QString &path);
-    bool shouldClose = false;//可以关闭
-    bool isApi = false;//作为API接口运行
-    bool apiReplaceFile = false;//api替换原图
-    QStringList apiCmd;//保存操作命令
+    bool m_shouldClose = false;//可以关闭
+    bool m_isApi = false;//作为API接口运行
+    bool m_apiReplaceFile = false;//api替换原图
+    QStringList m_apiCmd;//保存操作命令
     void progremExit();//结束进程
     bool apiFunction();//处理api函数
+    int j = 0;//判断是第一次打开图片
+    QString m_oldPath;
+    QString m_newPath;
 
 };
 
