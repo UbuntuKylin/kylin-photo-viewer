@@ -21,7 +21,6 @@ QPixmap Processing::converFormat(const Mat &mat)
     case CV_8UC3: {
         QImage tmp(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888 );
         QImage image =tmp.rgbSwapped();
-        QPixmap::fromImage(image);
         return QPixmap::fromImage(image);
     }
     case CV_8UC1: {

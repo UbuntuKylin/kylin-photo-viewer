@@ -231,7 +231,13 @@ void ShowImageWidget::openFinish(QVariant var)
     if (number == 1) {
         g_buttonState = false;
     } else {
-        g_buttonState = true;
+        //删除时逻辑导致item总是比实际多一张，暂时先在前端进行判断来解决相关问题
+        if (number == 2 && m_isDelete == true) {
+            g_buttonState = false;
+        } else {
+            g_buttonState = true;
+        }
+
     }
 
     num = QString("%1").arg(proportion) + "%";

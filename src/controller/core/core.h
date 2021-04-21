@@ -71,9 +71,7 @@ private:
     QStringList m_apiCmd;//保存操作命令
     void progremExit();//结束进程
     bool apiFunction();//处理api函数
-    int j = 0;//判断是第一次打开图片
-    QString m_oldPath;
-    QString m_newPath;
+    bool isSamePath(QString path);//判断打开的是不是相同路径
 
 };
 
