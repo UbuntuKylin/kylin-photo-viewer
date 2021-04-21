@@ -192,16 +192,6 @@ void Core::openImage(QString fullPath)
     if (fullPath.isEmpty()) {
         return;
     }
-//    if (j != 0) {
-
-//        for (int i = 0;i<m_albumModel->rowCount();i++) {
-//            MyStandardItem * item =dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
-//            if (item->getPath() == fullPath) {
-//                return;
-//            }
-//        }
-//    }
-//    j++;
 
 
     //如果正在播放动图，则停止
@@ -859,6 +849,26 @@ bool Core::apiFunction()
     }
     return true;
 }
+//判断是不是一个文件路径
+bool Core::isSamePath(QString path)
+{
+
+    QString pathDir = QFileInfo(path).absolutePath();
+    int num = m_albumModel->rowCount();
+    if (num > 0) {
+        for (int i = 0 ; i < num;i++) {
+            MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
+            if (item->getPath().mid(0,item->getPath().lastIndexOf("/")) == pathDir) {
+                    return true;
+                } else {
+                return false;
+            }
+      }
+    } else {
+        return false;
+    }
+
+}
 
 
 void Core::findAllImageFromDir(QString fullPath)
@@ -866,20 +876,11 @@ void Core::findAllImageFromDir(QString fullPath)
     if (apiFunction()) {
         return;
     }
-    //判断两次路径是否相同
-    m_newPath = fullPath.mid(0,fullPath.lastIndexOf("/"));;
-    if (j == 0) {
-        m_oldPath = fullPath.mid(0,fullPath.lastIndexOf("/"));
-        j++;
-    } else {
-        //路径相同，不添加至相册和界面展示
-        if (m_newPath == m_oldPath) {
-            return;
-        } else {
-            //对比后，不同，需要更新一次路径
-            m_oldPath = fullPath.mid(0,fullPath.lastIndexOf("/"));
-        }
+    if (isSamePath(fullPath)) {
+        openImage(fullPath);
+        return;
     }
+
     QFileInfo info(fullPath);
     QString path = info.absolutePath();//转成绝对路径
     QString filepath = info.absoluteFilePath();//转成绝对路径

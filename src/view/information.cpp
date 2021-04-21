@@ -3,9 +3,9 @@
 Information::Information(QWidget *parent) : QWidget(parent)
 {
     if (m_local.system().name() == "en_US") {
-        this->resize(INFOR_SIZE.width()+7,INFOR_SIZE.height() + 20);
+        this->resize(INFOR_SIZE.width()+7,INFOR_SIZE.height());
     } else if (m_local.system().name() == "zh_CN") {
-        this->resize(INFOR_SIZE.width(),INFOR_SIZE.height() +20);
+        this->resize(INFOR_SIZE);
     }
 //    this->adjustSize();
     m_ft.setBold(true);

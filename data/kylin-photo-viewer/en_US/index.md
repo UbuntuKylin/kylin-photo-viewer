@@ -3,7 +3,7 @@
 Pictures is a simple, user-friendly image viewer that supports multiple image formats. While viewing the picture, you can also edit and process the picture simply, such as zooming in,
 zooming out, rotating, flipping, deleting, etc. In addition, you can view the details of the picture. The main interface is shown in Figure 1.
 
-![Fig 1 Eyes of Kylin Photo Viewer-big](image/main.png)
+![Fig 1 Eyes of Pictures-big](image/main.png)
 <br>
 
 ## Basic Function
@@ -16,7 +16,8 @@ Icons and Function:
 |![](image/btn4.png)|	Shrink|![](image/btn5.png)|	Show as normal size
 |![](image/btn6.png)|	Fit to the window|![](image/btn7.png)|Rotate 90 degrees
 |![](image/btn8.png)|	Flip horizontally|![](image/btn9.png)|Flip vertical
-|![](image/btn10.png)|	View details|![](image/btn11.png)| Delete to trash
+|![](image/btn10.png)|	View details|![](image/btn12.png)| View album
+|![](image/btn11.png)| Delete to trash
 
 <br>
 
@@ -40,9 +41,14 @@ The functions of image rotation include: rotation, horizontal mirror and vertica
 
 ![Fig 4 Rorate-big](image/rorate.png)
 
+Click the "![](image/btn12.png)" button in the toolbar to view the thumbnails of all supported pictures in the folder where the current picture is located on the left side of the main
+interface. Click one to switch the display of the current picture in the main interface. As shown in Figure 5.
+
+![Fig 5 View album-big](image/side.png)
+
 Click the "![](image/btn10.png)" button in the toolbar to view the details of the current picture in the upper right window of the main interface. As shown in Figure 5.
 
-![Fig 5 View details-big](image/information1.png)
+![Fig 6 View details-big](image/information1.png)
 
 Click the "![](image/btn11.png)" button in the toolbar to delete the current picture to the recycle bin.
 

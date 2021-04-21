@@ -17,7 +17,8 @@ SideBar::SideBar(QWidget *parent) : QListView(parent)
     m_delegate = new SideBarDelegate();
     this->setItemDelegate(m_delegate);
     this->showItem();
-
+    //响应拖拽事件
+    this->setAcceptDrops(false);
     this->setFocusPolicy(Qt::NoFocus);
     this->initConnect();
 

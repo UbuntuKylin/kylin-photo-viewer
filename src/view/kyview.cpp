@@ -58,9 +58,9 @@ KyView::KyView(const QStringList &args)
     //信息栏
     m_information = new Information(this);
     if (m_local.system().name() == "en_US") {
-        m_information->resize(INFOR_SIZE.width()+7,INFOR_SIZE.height() + 20);
+        m_information->resize(INFOR_SIZE.width()+7,INFOR_SIZE.height());
     } else if (m_local.system().name() == "zh_CN") {
-        m_information->resize(INFOR_SIZE.width(),INFOR_SIZE.height() +20);
+        m_information->resize(INFOR_SIZE);
     }
     m_information->move(this->width()-m_information->width() ,BAR_HEIGHT);
     this->installEventFilter(this);
@@ -224,9 +224,9 @@ void KyView::inforChange()
         return;
     }
     if (m_titlebar->isHidden()) {
-        m_information->move(this->width()-m_information->width() ,0);
+        m_information->move(this->width()-m_information->width(),0);
     } else {
-        m_information->move(this->width()-m_information->width() , BAR_HEIGHT);
+        m_information->move(this->width()-m_information->width(), BAR_HEIGHT);
     }
 
 
@@ -445,6 +445,10 @@ void KyView::toShowImage()
         this->m_showImageWidget->lower();
     }
     inforChange();
+    if (m_timeNomove->isActive()) {
+        return;
+    }
+    m_timeNomove->start(2000);
 }
 //显示相册
 void KyView::showSidebar()
@@ -493,9 +497,6 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
 
     m_mousePointFromWindow = event->pos();
 
-    //移动窗口
-    this->setCursor(Qt::DragMoveCursor);//改变鼠标样式
-
     QPoint pos = this->mapToGlobal(event->pos());
 
     XEvent xEvent;
@@ -533,7 +534,6 @@ void KyView::mousePressEvent(QMouseEvent * event)
 void KyView::mouseReleaseEvent(QMouseEvent * event)
 {
     m_mousePress = false;
-    this->setCursor(Qt::ArrowCursor);
 }
 
 //拖拽主窗口--各控件需要改变位置或尺寸
@@ -757,7 +757,7 @@ bool KyView::event(QEvent *event)
         }
     }
     //手势处理
-    if (event->type() ==  QEvent::Gesture) {
+    if (event->type() ==  QEvent::GestureOverride ||event->type() ==  QEvent::Gesture) {
         return gestureEvent(event);
     }
 
@@ -769,7 +769,6 @@ bool KyView::event(QEvent *event)
             x11EventEnd();
         }
     }
-
     if (m_panTriggered) {
         if (event->type() == QEvent::MouseButtonRelease) {
             m_panTriggered = false;
@@ -796,8 +795,7 @@ bool KyView::event(QEvent *event)
 
 void KyView::x11EventEnd()
 {
-    int x = m_mousePointFromWindow.x() + this->pos().x();
-    int y = m_mousePointFromWindow.y() + this->pos().y();
+    QPoint globalPoints = QCursor::pos();
 
     XEvent xEvent;
     memset(&xEvent, 0, sizeof(XEvent));
@@ -805,14 +803,20 @@ void KyView::x11EventEnd()
     xEvent.type = ButtonRelease;
     xEvent.xbutton.button = Button1;
     xEvent.xbutton.window = this->effectiveWinId();
-    xEvent.xbutton.x = m_mousePointFromWindow.x();
-    xEvent.xbutton.y = m_mousePointFromWindow.y();
-    xEvent.xbutton.x_root = x;
-    xEvent.xbutton.y_root = y;
+    if (globalPoints.y() < 5) {
+        xEvent.xbutton.x = globalPoints.x();
+        xEvent.xbutton.y = globalPoints.y();
+    } else {
+        xEvent.xbutton.x = this->mapFromGlobal(globalPoints).x();
+        xEvent.xbutton.y = this->mapFromGlobal(globalPoints).y();
+    }
+    xEvent.xbutton.x_root = globalPoints.x();
+    xEvent.xbutton.y_root = globalPoints.y();
     xEvent.xbutton.display = display;
 
     XSendEvent(display,this->effectiveWinId(),False,ButtonReleaseMask,&xEvent);
     XFlush(display);
+
 }
 
 // 手势识别

@@ -30,16 +30,16 @@ const qint64 Variable::MAX_LOG_SIZE = 1024*1024; //1MB
 const QMap<QString,QString> Variable::SUPPORT_CMD = Variable::getSupportCmd();
 
 //opencv支持的格式列表
-const QStringList Variable::opencvCanSupportFormats={
-    "JPG","JPE","JPEG","EXR","PBM","PGM","PPM","SR","RAS","PNG","BMP","DIB","TIFF","TIF","PNM","WEBP",
-    "jpg","jpe","jpeg","exr","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","pnm","webp"};
+const QStringList Variable::opencvCanSupportFormats={//"exr","EXR",有问题，opencv只支持其查看，不支持写入。此格式支持设置为壁纸
+    "JPG","JPE","JPEG","PBM","PGM","PPM","SR","RAS","PNG","BMP","DIB","TIFF","TIF","PNM","WEBP",
+    "jpg","jpe","jpeg","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","pnm","webp"};
 //opencv不支持的格式列表
-const QStringList Variable::opencvCannotSupportFormats={//"JP2"待添加
+const QStringList Variable::opencvCannotSupportFormats={//"JP2"待添加,xbm不支持
     "TGA","SVG","GIF","APNG","ICO"
     "tga","svg","gif","apng","ico"};
 //壁纸支持的格式列表
 const QStringList Variable::BACKGROUND_SUPPORT_FORMATS={//经测试 "jp2","tga","dib","pbm","ppm"这几种格式不支持设置为壁纸
-                                                        "jpg","jpe","jpeg","exr","pgm","pnm","sr","ras","png","bmp","tiff","tif","svg","gif","apng"};
+                                                        "jpg","jpe","jpeg","pgm","pnm","sr","ras","png","bmp","tiff","tif","svg","gif","apng"};
 //支持的格式列表
 const QStringList Variable::SUPPORT_FORMATS=Variable::creatSupportFormats();
 
