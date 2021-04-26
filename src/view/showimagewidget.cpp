@@ -159,7 +159,7 @@ void ShowImageWidget::deleteImage()
 //在文件夹中显示
 void ShowImageWidget::showInFile()
 {
-
+//    Interaction::getInstance()->openImageInfile();---接口没通，暂不使用
     if (m_path == "") {
         return;
     }
@@ -179,7 +179,7 @@ void ShowImageWidget::setMenuAction()
     }
     //判断是否为可设置为壁纸的类型
     if (formatList.contains(m_paperFormat)) {
-      m_imageMenu->insertAction(m_deleteImage,m_setDeskPaper);
+        m_imageMenu->insertAction(m_deleteImage,m_setDeskPaper);
     } else {
         m_imageMenu->removeAction(m_setDeskPaper);
     }
@@ -226,6 +226,8 @@ void ShowImageWidget::openFinish(QVariant var)
     //判断有几张图片，分别进行处理：删除到0，显示打开界面；只有一张：不显示左右按钮。
     if (number == 0) {
         emit clearImage();
+        //点击删除按钮删除全部文件时，此标志位应该重设为默认状态，防止之后继续打开图片造成相册大小有误差
+        m_isDelete = false;
         return;
     }
     if (number == 1) {

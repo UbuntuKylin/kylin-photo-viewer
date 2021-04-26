@@ -29,12 +29,12 @@ OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
 //信号槽
 void OpenImage::initconnect()
 {
-    connect(m_openInCenter,&QPushButton::clicked,this,&OpenImage::openimage);
-    connect(m_addFile,&QPushButton::clicked,this,&OpenImage::openimage);
+    connect(m_openInCenter,&QPushButton::clicked,this,&OpenImage::openImagePath);
+    connect(m_addFile,&QPushButton::clicked,this,&OpenImage::openImagePath);
 
 }
 //打开图片
-void OpenImage::openimage()
+void OpenImage::openImagePath()
 {
     QString file_path;
     QString format;
@@ -54,7 +54,7 @@ void OpenImage::openimage()
     //写入配置
     QFileInfo info(file_path);
     Variable::setSettings("imagePath",info.absolutePath());
-    emit openImage(file_path);
+    emit openImageSignal(file_path);
 }
 
 

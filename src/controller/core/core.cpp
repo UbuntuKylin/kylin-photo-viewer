@@ -188,8 +188,9 @@ void Core::setHighLight(const QString &path)
 
 void Core::openImage(QString fullPath)
 {
-
+    //1.文件路径为空；2.从外部删除文件夹下的所有图片时，传空图片列表，不展示图片，回到开始界面
     if (fullPath.isEmpty()) {
+        showImage(QPixmap());
         return;
     }
 
@@ -489,6 +490,18 @@ void Core::setAsBackground()
     }
 }
 
+void Core::openInfile()
+{
+    QDBusInterface iface("org.ukui.peony",
+                         "org/freedesktop/FileManager1",
+                         "org.freedesktop.FileManager1",
+                        QDBusConnection::sessionBus());
+    QList<QVariant> args;
+    args << QStringList(m_nowpath) << QString();
+
+    iface.callWithArgumentList(QDBus::AutoDetect,"ShowItems",args);
+}
+
 void Core::close()
 {
     //如果已经触发过关闭事件不响应
@@ -539,8 +552,8 @@ void Core::changeImage(const int &type)
         return;
     }
 
-    //如果图片队列小于2，不处理
-    if (m_albumModel->rowCount()<2) {
+    //如果图片队列小于1，不处理。小于2时，相册文件清空时，会一直显示当前图片
+    if (m_albumModel->rowCount()<1) {
         m_backpath = m_nowpath;
         return;
     }

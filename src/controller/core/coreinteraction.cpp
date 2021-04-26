@@ -48,6 +48,7 @@ void CoreInteraction::initConnect()
     connect(this,&CoreInteraction::coreFlip,m_core,&Core::flipImage);//翻转
     connect(this,&CoreInteraction::coreDeleteImage,m_core,&Core::deleteImage);//删除图片
     connect(this,&CoreInteraction::coreSetAsBackground,m_core,&Core::setAsBackground);//设置为背景图
+    connect(this,&CoreInteraction::coreOpenInfile,m_core,&Core::openInfile);//文件夹中打开
     connect(this,&CoreInteraction::coreClose,m_core,&Core::close);//关闭事件
     connect(m_core,&Core::coreProgremExit,this,&CoreInteraction::progremExit);//发送信号让主界面结束进程
     connect(this,&CoreInteraction::changeImageFromClick,m_core,&Core::changeImageFromClick);//点击相册事件
@@ -188,6 +189,14 @@ void CoreInteraction::setAsBackground()
         return;
     }
     emit coreSetAsBackground();
+}
+
+void CoreInteraction::openImageInfile()
+{
+    if (coreOperateTooOften()) {
+        return;
+    }
+    emit coreOpenInfile();
 }
 
 void CoreInteraction::close()

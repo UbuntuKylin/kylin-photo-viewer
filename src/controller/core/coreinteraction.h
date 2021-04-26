@@ -21,6 +21,7 @@ signals:
     void coreFlip(const Processing::FlipWay &way);//翻转处理
     void coreDeleteImage();//删除图片
     void coreSetAsBackground();//设置为背景图
+    void coreOpenInfile();//文件夹中打开
     void coreClose();//结束进程
 
 public:
@@ -44,6 +45,7 @@ protected:
     virtual void flipV();//垂直翻转
     virtual void deleteImage();//删除图片
     virtual void setAsBackground();//设置为背景图
+    virtual void openImageInfile();//在文件夹中打开
     virtual void close();//关闭进程
     virtual QStandardItemModel * getAlbumModel();//获取相册model指针
 

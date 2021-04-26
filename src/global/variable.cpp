@@ -35,11 +35,11 @@ const QStringList Variable::opencvCanSupportFormats={//"exr","EXR",有问题，o
     "jpg","jpe","jpeg","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","pnm","webp"};
 //opencv不支持的格式列表
 const QStringList Variable::opencvCannotSupportFormats={//"JP2"待添加,xbm不支持
-    "TGA","SVG","GIF","APNG","ICO"
+    "TGA","SVG","GIF","APNG","ICO",
     "tga","svg","gif","apng","ico"};
 //壁纸支持的格式列表
-const QStringList Variable::BACKGROUND_SUPPORT_FORMATS={//经测试 "jp2","tga","dib","pbm","ppm"这几种格式不支持设置为壁纸
-                                                        "jpg","jpe","jpeg","pgm","pnm","sr","ras","png","bmp","tiff","tif","svg","gif","apng"};
+const QStringList Variable::BACKGROUND_SUPPORT_FORMATS={//经测试 "jp2","tga","dib","pbm","ppm"，"sr","ras",这几种格式不支持设置为壁纸
+                                                        "jpg","jpe","jpeg","pgm","pnm","png","bmp","tiff","tif","svg","gif","apng"};
 //支持的格式列表
 const QStringList Variable::SUPPORT_FORMATS=Variable::creatSupportFormats();
 

@@ -42,11 +42,6 @@ void SideBar::getSelect(int type)
     }
 }
 
-//void SideBar::isDelete(bool isDel)
-//{
-//    m_isDelete = isDel;
-//}
-
 void SideBar::initConnect()
 {
     connect(this,&SideBar::clicked,Interaction::getInstance(),&Interaction::changeImageFromClick);
