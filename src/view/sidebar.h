@@ -22,18 +22,15 @@ class SideBar : public QListView
 public:
     explicit SideBar(QWidget *parent = nullptr);
     void showItem();
+
 public slots:
     void getSelect(int type);
-//    void isDelete(bool isDel);
+
 private:
 
-//    QListView *m_albumView= nullptr;
-//    QStandardItemModel *m_itemModel;
     QMovie *m_loadingMovie = nullptr;//没有处理完，则显示此动图
     SideBarDelegate * m_delegate = nullptr;
-//    bool m_isDelete = false;
     void initConnect();
-
 
 signals:
 

@@ -171,7 +171,12 @@ public:
      * 备注：在生成鼠标右键菜单时要进行校验，只有Variable::BACKGROUND_SUPPORT_FORMATS中存在的格式才显示这个选项
      */
     virtual void setAsBackground()=0;//设置为背景图
-
+    /*
+     * 接口功能：查看当前图片所在文件夹并选中
+     * 接口场景：鼠标右键菜单中的在文件夹中显示选项
+     * 接口类型：函数，直接调用
+     */
+    virtual void openImageInfile()=0;//在文件夹中打开
     /*
      * 接口功能：结束当前进程
      * 接口场景：点击退出按钮时

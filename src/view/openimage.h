@@ -16,7 +16,7 @@ class OpenImage : public QWidget
     Q_OBJECT
 public:
     explicit OpenImage(QWidget *parent = nullptr);
-    void openimage();
+    void openImagePath();//获取并存入配置文件图片路径
 private:
     QGSettings *m_pGsettingThemeData = nullptr;
     QPushButton *m_openInCenter;//圆形图标
@@ -32,7 +32,7 @@ private:
 private slots:
 
 signals:
-    void openImage(QString path);
+    void openImageSignal(QString path);
 };
 
 #endif // OPENIMAGE_H

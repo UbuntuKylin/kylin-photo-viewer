@@ -79,6 +79,7 @@ private:
     bool m_inforState = true;//信息栏状态
     bool m_albumState = true;//相册状态
     bool m_albumShow = true;//切换图片时，相册状态
+    bool m_titleState = true; //鼠标离开进入时，有关菜单下拉列表show时的问题，先默认没有离开界面
     double m_tran = 0.75;
     void initconnect();//初始化连接
 

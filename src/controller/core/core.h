@@ -40,6 +40,7 @@ public:
     void flipImage(const Processing::FlipWay &way);//翻转处理
     void deleteImage();//删除图片
     void setAsBackground();//设置为背景图
+    void openInfile();//文件夹中打开
     void saveMovieFinish(const QString &path);//异步处理完成
     void close();//关闭进程
     QStandardItemModel * getAlbumModel();//获取相册model指针

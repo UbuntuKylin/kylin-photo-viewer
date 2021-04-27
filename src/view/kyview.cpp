@@ -106,12 +106,12 @@ void KyView::initconnect()
     //最大化和还原
     connect(m_titlebar,&TitleBar::recovery,this,&KyView::changOrigSize);
     //右上菜单--打开
-    connect(m_titlebar,&TitleBar::openSignal,m_openImage,&OpenImage::openimage);
+    connect(m_titlebar,&TitleBar::openSignal,m_openImage,&OpenImage::openImagePath);
     //打开关于，两栏隐藏
     connect(m_titlebar,&TitleBar::aboutShow,this,&KyView::aboutShow);
 
     //打开图片
-    connect(m_openImage,&OpenImage::openImage,m_showImageWidget,&ShowImageWidget::openImage);
+    connect(m_openImage,&OpenImage::openImageSignal,m_showImageWidget,&ShowImageWidget::openImage);
 
     //改变顶栏显示的图片名字
     connect(m_showImageWidget,&ShowImageWidget::perRate,m_toolbar,&ToolBar::changePerRate);
@@ -301,13 +301,21 @@ void KyView::showInforWid()
 //列表为空-清空图片--回到默认的打开界面
 void KyView::clearImage()
 {
+    //三个time->stop,解当图片全部删除时返回默认界面，两栏偶现消失的问题
+    if (m_timeNomove->isActive()) {
+        m_timeNomove->stop();
+    }
+    if (m_timer->isActive()) {
+        m_timer->stop();
+    }
+    if (m_timernavi->isActive()) {
+        m_timernavi->stop();
+    }
     m_openImage->show();
     m_showImageWidget->hide();
     m_toolbar->hide();
-    m_information->hide();
-    if (m_titlebar->isHidden()) {
-        m_titlebar->show();
-    }
+    m_information->hide();   
+    m_titlebar->show();
     if (!m_sideBar->isHidden()) {
         m_sideBar->hide();
     }
@@ -552,6 +560,7 @@ void KyView::resizeEvent(QResizeEvent *event)
 //鼠标离开事件
 void KyView::leaveEvent(QEvent *event)
 {
+    m_titleState = false;
     //点出顶栏的下拉菜单时，不隐藏
     if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden()) {
         return;
@@ -574,6 +583,7 @@ void KyView::leaveEvent(QEvent *event)
 //鼠标进入事件
 void KyView::enterEvent(QEvent *event)
 {
+    m_titleState = true;
     if (m_timernavi->isActive()) {
         m_timernavi->stop();
     }
@@ -731,7 +741,7 @@ void KyView::dropEvent(QDropEvent *event)
     if (path == "") {
         return;
     }
-    emit m_openImage->openImage(path);
+    emit m_showImageWidget->openImage(path);
 
 }
 
@@ -754,6 +764,14 @@ bool KyView::event(QEvent *event)
         if (m_showImageWidget->g_buttonState == false) {
             this->m_showImageWidget->g_next->hide();
             this->m_showImageWidget->g_back->hide();
+        }
+    }
+    //解决点击下拉菜单出现，鼠标移出窗体，点击窗体外部，两秒后两栏未隐藏的问题。
+    if (m_titleState == false) {
+        if (m_titlebar->g_menu->m_menu->isHidden() && !m_titlebar->isHidden()) {
+            if (!m_timeNomove->isActive()) {
+                m_timeNomove->start(2000);
+            }
         }
     }
     //手势处理
