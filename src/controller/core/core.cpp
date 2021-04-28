@@ -767,7 +767,7 @@ Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &n
 
 QString Core::nextImagePath(const QString &oldPath)
 {
-    if (m_albumModel->rowCount()<2) {
+    if (m_albumModel->rowCount()<1) {
         return "";
     }
     MyStandardItem * item =nullptr;
@@ -793,7 +793,7 @@ QString Core::nextImagePath(const QString &oldPath)
 
 QString Core::backImagePath(const QString &oldPath)
 {
-    if (m_albumModel->rowCount()<2) {
+    if (m_albumModel->rowCount()<1) {
         return "";
     }
     MyStandardItem * item =nullptr;

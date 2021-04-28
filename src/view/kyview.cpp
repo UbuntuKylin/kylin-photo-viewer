@@ -281,6 +281,10 @@ void KyView::delayHide_move()
     if (!m_toolbar->isHidden() && m_toolbar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
         return;
     }
+    //如果下拉菜单show，则标题栏必须show
+    if (!m_titlebar->g_menu->m_menu->isHidden()) {
+        return;
+    }
     m_titlebar->hide();
     m_toolbar->hide();
     inforChange();
@@ -398,18 +402,18 @@ void KyView::themeChange()
 {
     QString themeStyle = m_pGsettingThemeData->get("styleName").toString();
     if ("ukui-dark" == themeStyle || "ukui-black" == themeStyle) {
-        m_information->setStyleSheet("background-color:rgba(0,0,0,0.66);border-radius:4px;");
+        m_information->setStyleSheet("background-color:rgba(0,0,0,0.66);border-top-left-radius:0px;border-top-right-radius：0px;border-bottom-left-radius:4px;border-bottom-right-radius:0px;");
 //        m_sideBar->setStyleSheet("background-color:rgba(26,26,26,0.7);border-radius:6px;");
         m_titlebar->g_menu->setThemeDark();
         m_showImageWidget->g_next->setIcon(QIcon(":/res/res/1right.png"));
         m_showImageWidget->g_back->setIcon(QIcon(":/res/res/1left.png"));
-        m_sideBar->setStyleSheet("QListView{border:1px ;border-radius:4px;outline:none;background:rgba(26, 26, 26, 0.7)}"
+        m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(26, 26, 26, 0.7)}"
                                    "QListView::item{margin:0 2px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
                                    "QListView::item:selected{border:2px solid rgba(13, 135, 255, 0.86);background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
                                    "QListView::item:hover{background:rgba(255, 255, 255, 0.9);border-radius:2px;}");
     } else {
-        m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-radius:4px;");
-        m_sideBar->setStyleSheet("QListView{border:1px ;border-radius:4px;outline:none;background:rgba(227, 235, 239, 0.7)}"
+        m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-top-left-radius:0px;border-top-right-radius：0px;border-bottom-left-radius:4px;border-bottom-right-radius:0px;");
+        m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(227, 235, 239, 0.7)}"
                                    "QListView::item{margin:0 2px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
                                    "QListView::item:selected{border:2px solid rgba(13, 135, 255, 0.86);background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
                                    "QListView::item:hover{background:rgba(255, 255, 255, 0.9);border-radius:2px;}");
@@ -774,6 +778,15 @@ bool KyView::event(QEvent *event)
             }
         }
     }
+    //解决点击导航器，触发图片切换的问题。
+    if (m_navigator != nullptr) {
+        if (!m_navigator->isHidden() && m_navigator->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+            m_panTriggered = false;
+        } else {
+            m_panTriggered = true;
+        }
+    }
+
     //手势处理
     if (event->type() ==  QEvent::GestureOverride ||event->type() ==  QEvent::Gesture) {
         return gestureEvent(event);
@@ -963,7 +976,11 @@ void KyView::tapAndHoldGesture(QTapAndHoldGesture *gesture)
         return;
     }
     m_touchPoint = gesture->position();
+    if (!m_openImage->isHidden()) {
+        return;
+    }
     m_panTriggered = true;
+
 }
 
 
