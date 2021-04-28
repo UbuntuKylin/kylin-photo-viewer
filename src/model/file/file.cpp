@@ -67,17 +67,15 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     //其他情况下尝试正常读取图像
     if (!mat.data) {
         mat = imread(path.toLocal8Bit().data(), modes);
+        //通用加载方法的缩略图尺寸优化
+         if (mat.cols < Variable::ALBUM_IMAGE_SIZE.width() && mat.rows < Variable::ALBUM_IMAGE_SIZE.height()) {
+             mat = imread(path.toLocal8Bit().data());
+         }
     }
     //判断图像是否有效
     if (!mat.data) {
         qDebug() << "读取图片失败："<< path;
         return maf;
-    }
-    //通用加载方法的缩略图尺寸优化
-    if (modes == IMREAD_REDUCED_COLOR_8) {
-        if (mat.cols < Variable::ALBUM_IMAGE_SIZE.width() || mat.rows < Variable::ALBUM_IMAGE_SIZE.height()) {
-            mat = imread(path.toLocal8Bit().data());
-        }
     }
     maf.mat = mat;
     return maf;
