@@ -16,7 +16,7 @@ public:
     static QPixmap converFormat(const Mat &mat);
     static QPixmap resizePix(const QPixmap &pixmap ,const QSize &size);
     static QImage pictureDeepen(const QImage &img , const QSize &hightlightSize, const QPoint &point);//图片加深
-
+    static QPixmap localAmplification(const QPixmap &orgPix, QSize showSize, QPoint local, QSize widSize);
 private:
     static inline int minNumIsZero(const int &num1 ,const int &num2);
 };

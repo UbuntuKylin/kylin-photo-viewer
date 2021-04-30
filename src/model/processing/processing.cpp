@@ -51,6 +51,17 @@ QPixmap Processing::resizePix(const QPixmap &pixmap , const QSize &size)
     return pixmap.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);  // 按比例缩放
 }
 
+QPixmap Processing::localAmplification(const QPixmap &orgPix,QSize showSize, QPoint local, QSize widSize)
+{
+    //orgPix——原图   showSize——目标大小   local——基于showSize的起始坐标   widSize——窗口尺寸
+    double proportion =  double(showSize.width())/double(orgPix.width());
+    QPoint locaPoint(local.rx()/proportion,local.ry()/proportion);
+    QSize locaSize(widSize.width()/proportion,widSize.height()/proportion);
+    QPixmap localPix = orgPix.copy(locaPoint.rx(),locaPoint.ry(),locaSize.width(),locaSize.height());
+
+    return Processing::resizePix(localPix,widSize);;
+}
+
 QImage Processing::pictureDeepen(const QImage &img , const QSize &hightlightSize , const QPoint &point)
 {
     QImage image = img.copy();

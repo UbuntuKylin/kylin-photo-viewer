@@ -319,12 +319,13 @@ void Core::playMovie()
     QPixmap nowIndexPix = Processing::converFormat(mat);
     m_matListIndex++;
 
-    QPixmap pix = Processing::resizePix(nowIndexPix,m_tmpSize);
     if (m_isNavigationShow) {
-        QPixmap result = pix.copy(m_startShowPoint.x(),m_startShowPoint.y(),m_size.width(),m_size.height());
+
+        QPixmap result = Processing::localAmplification(nowIndexPix,m_tmpSize,m_startShowPoint,m_size);
         showImage(result);
         return;
     }
+    QPixmap pix = Processing::resizePix(nowIndexPix,m_tmpSize);
     showImage(pix);
 }
 
@@ -388,13 +389,13 @@ void Core::clickNavigation(const QPoint &point)
     emit showNavigation(QPixmap::fromImage(image));
 
     //处理待显示区域
-    m_startShowPoint = startPoint * m_showPix.width() / m_navigationImage.width();
+    m_startShowPoint = startPoint * m_tmpSize.width() / m_navigationImage.width();
 
     //如果是动图，则交给动图显示事件去处理，避免闪屏
     if (m_playMovieTimer->isActive()) {
         return;
     }
-    QPixmap result = m_showPix.copy(m_startShowPoint.x(),m_startShowPoint.y(),m_size.width(),m_size.height());
+    QPixmap result = Processing::localAmplification(m_nowImage,m_tmpSize,m_startShowPoint,m_size);
     showImage(result);
 }
 
@@ -492,14 +493,11 @@ void Core::setAsBackground()
 
 void Core::openInfile()
 {
-    QDBusInterface iface("org.ukui.peony",
-                         "org/freedesktop/FileManager1",
-                         "org.freedesktop.FileManager1",
-                        QDBusConnection::sessionBus());
-    QList<QVariant> args;
-    args << QStringList(m_nowpath) << QString();
-
-    iface.callWithArgumentList(QDBus::AutoDetect,"ShowItems",args);
+    QProcess process;
+    process.start("peony --show-items " + m_nowpath);
+    process.waitForFinished();
+    process.waitForReadyRead();
+    process.close();
 }
 
 void Core::close()
@@ -722,12 +720,11 @@ void Core::creatNavigation()
     m_spaceHeight = (navigationSize.height()-m_navigationImage.height())/2;
 
     //待显示图
-    QSize pixSize = m_nowImage.size() * m_proportion / 100;
-    m_showPix = Processing::resizePix(m_nowImage,pixSize);
+    m_tmpSize = m_nowImage.size() * m_proportion / 100;
 
     //高亮区域大小
-    m_hightlightSize.setWidth(m_navigationImage.width() * m_size.width() /  m_showPix.width());
-    m_hightlightSize.setHeight(m_navigationImage.height() * m_size.height() /  m_showPix.height());
+    m_hightlightSize.setWidth(m_navigationImage.width() * m_size.width() /  m_tmpSize.width());
+    m_hightlightSize.setHeight(m_navigationImage.height() * m_size.height() /  m_tmpSize.height());
     if (m_hightlightSize.width()>m_navigationImage.width()) {
         m_hightlightSize.setWidth(m_navigationImage.width());
     }
@@ -767,6 +764,7 @@ Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &n
 
 QString Core::nextImagePath(const QString &oldPath)
 {
+    //相册中没有文件时，不进行处理
     if (m_albumModel->rowCount()<1) {
         return "";
     }
@@ -793,6 +791,7 @@ QString Core::nextImagePath(const QString &oldPath)
 
 QString Core::backImagePath(const QString &oldPath)
 {
+    //相册中没有文件时，不进行处理
     if (m_albumModel->rowCount()<1) {
         return "";
     }

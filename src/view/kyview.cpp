@@ -778,15 +778,34 @@ bool KyView::event(QEvent *event)
             }
         }
     }
+    //暂时用此方法解决鼠标在子上释放事件不被检测的bug，以后如有更好的办法再更改。
     //解决点击导航器，触发图片切换的问题。
     if (m_navigator != nullptr) {
         if (!m_navigator->isHidden() && m_navigator->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
             m_panTriggered = false;
-        } else {
+        } /*else { //此部分会导致打开相册后就将m_panTriggered设为true，导致->左右滑动事件点击即触发
+            if (m_navigator->isHidden())
             m_panTriggered = true;
+        }*/
+    }
+    //解决点击侧栏，触发图片切换的问题。
+    if (m_sideBar != nullptr) {
+        if (!m_sideBar->isHidden() && m_sideBar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+            m_panTriggered = false;
         }
     }
-
+    //解决点击左右按钮，触发图片切换的问题。
+    if (m_showImageWidget != nullptr) {
+        if (!m_showImageWidget->g_back->isHidden() && (m_showImageWidget->g_back->geometry().contains(this->mapFromGlobal(QCursor::pos())) ||m_showImageWidget->g_next->geometry().contains(this->mapFromGlobal(QCursor::pos())) )) {
+            m_panTriggered = false;
+        }
+    }
+    //解决点击顶栏，触发图片切换的问题。
+    if (m_titlebar != nullptr) {
+        if (!m_titlebar->isHidden() && m_titlebar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+            m_panTriggered = false;
+        }
+    }
     //手势处理
     if (event->type() ==  QEvent::GestureOverride ||event->type() ==  QEvent::Gesture) {
         return gestureEvent(event);
