@@ -22,6 +22,9 @@ void Core::initCore()
 
     m_playMovieTimer = new QTimer(this);
     connect(m_playMovieTimer,&QTimer::timeout,this,&Core::playMovie);
+
+    m_canProcess = new QTimer(this);
+    m_canProcess->setSingleShot(true);
 }
 
 QString Core::initDbus(const QStringList &arguments)
@@ -88,6 +91,9 @@ QString Core::initDbus(const QStringList &arguments)
 
 void Core::processingCommand(const QStringList &cmd)
 {
+    if (coreOperateTooOften()) {
+        return;
+    }
     qDebug()<<"响应外部命令"<<cmd;
 
     if (cmd[0] == "-next") {
@@ -221,10 +227,7 @@ void Core::openImage(QString fullPath)
     changeMat(maf.mat);
     m_info = maf.info;
     if (m_matList!=nullptr) {
-        for (Mat &tmpMat : *m_matList) {
-            tmpMat.release();
-        }
-        delete m_matList;
+        m_matList->clear();
     }
     m_matList = maf.matList;
     m_fps = maf.fps;
@@ -298,7 +301,7 @@ void Core::showImageOrMovie()
 
     //动画类格式循环播放
     if (m_matList!=nullptr) {
-        if (m_matList->length()>2) {
+        if (m_matList->length()>1) {
             playMovie();//立即播放第一帧
             m_playMovieTimer->start(m_fps);
             return;
@@ -685,9 +688,6 @@ void Core::changeImageType(QString path)
 
 Mat Core::changeMat(Mat mat)
 {
-    if (m_backMat.data) {
-        m_backMat.release();
-    }
     m_backMat = m_nowMat;
     m_nowMat = mat;
     m_imageSize = QString::number(m_nowImage.width())+"x"+QString::number(m_nowImage.height());
@@ -931,6 +931,14 @@ void Core::loadAlbum(QString path, QStringList list)
     }
 }
 
+bool Core::coreOperateTooOften()
+{
+    if (m_canProcess->isActive()) {
+        return true;
+    }
+    m_canProcess->start(Variable::REFRESH_RATE);//刷新间隔
+    return false;
+}
 
 void MyStandardItem::setPath(const QString &path)
 {

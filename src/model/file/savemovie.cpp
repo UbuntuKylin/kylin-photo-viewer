@@ -33,10 +33,7 @@ void SaveMovie::run()
         imwrite(str.toStdString(),mat);
     }
     //析构临时队列
-    for (Mat &mat : *m_list) {
-        mat.release();
-    }
-    delete m_list;
+    m_list->clear();
     //构造命令
     QString tmpFilePath = tmpDir + tmpName + "." + "apng";
     QString cmd = "apngasm ";

@@ -20,21 +20,29 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             maf.mat=mat;
             return maf;
         }
-        //获取帧率
-        auto tmpMovie = new QMovie(path, "apng");
+        auto *tmpMovie = new QMovie(path, "apng");
+        tmpMovie->jumpToFrame(0);
+        QImage image = tmpMovie->currentImage();
+        mat = Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone();
+        maf.mat=mat;
+        //如果大于一帧
         if (tmpMovie->frameCount()>1) {
+            maf.matList = new QList<Mat>;
+            //获取帧率
             maf.fps =getDelay(path,suffix);
+            //获取第二帧
+            tmpMovie->jumpToFrame(1);
+            image = tmpMovie->currentImage();
+            Mat secondMat = Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone();
+            //存放前两帧
+            maf.matList->append(mat);
+            maf.matList->append(secondMat);
+            //从第三帧开始，在线程中加载
+            LoadMovie *loadMovie = new LoadMovie(maf.matList,tmpMovie);
+            loadMovie->start();
         }
-        QList<Mat> *frames = new QList<Mat>;  //存放gif的所有帧，每个frame都是Mat格式
-        for (int i =0; i< tmpMovie->frameCount(); ++i) {
-            tmpMovie->jumpToFrame(i);
-            QImage image = tmpMovie->currentImage();
-            frames->push_back(Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone());
-        }
-        tmpMovie->deleteLater();
-        if (frames->length()>0) {
-            maf.matList=frames;
-            mat = frames->first();
+        if (tmpMovie->frameCount()<3) {
+            tmpMovie->deleteLater();
         }
     } else if (suffix == "svg") {
         QSvgRenderer svgRender(path);
