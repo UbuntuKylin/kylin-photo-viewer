@@ -81,6 +81,7 @@ private:
     bool m_albumShow = true;//切换图片时，相册状态
     bool m_titleState = true; //鼠标离开进入时，有关菜单下拉列表show时的问题，先默认没有离开界面
     double m_tran = 0.75;
+    QString m_icon;
     void initconnect();//初始化连接
 
 
@@ -96,7 +97,7 @@ private:
 //    void initGSetting_tran();//监听控制面板变化
     void themeChange();//主题变化
     void transChange();//控制面板变化
-
+    void avoidChange();//防止点击即切换的情况
 
     void mouseMoveEvent(QMouseEvent *event);//hover态时两栏和按钮状态--检测鼠标所在区域
     void mousePressEvent(QMouseEvent *event);

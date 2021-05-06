@@ -30,7 +30,4 @@ Depends:
                apngasm,
                apng2gif,
                ${misc:Depends},${shlibs:Depends}
-Description: Indicator that displays China weather information
- Kylin Weather displays detail weather information for one place,
- including weather forecast and observe weather, and you can
- change it.
+Description: Photo viewer, support to view, zoom and rotate images of various formats

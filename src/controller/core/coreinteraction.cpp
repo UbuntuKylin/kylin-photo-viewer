@@ -14,8 +14,8 @@ Interaction *Interaction::getInstance()
 
 CoreInteraction::CoreInteraction()
 {
-    m_canResize = new QTimer(this);
-    m_canResize->setSingleShot(true);
+    m_canProcess = new QTimer(this);
+    m_canProcess->setSingleShot(true);
 }
 
 void CoreInteraction::creatCore(const QStringList &list)
@@ -58,10 +58,10 @@ void CoreInteraction::initConnect()
 
 bool CoreInteraction::coreOperateTooOften()
 {
-    if (m_canResize->isActive()) {
+    if (m_canProcess->isActive()) {
         return true;
     }
-    m_canResize->start(Variable::REFRESH_RATE);//刷新间隔
+    m_canProcess->start(Variable::REFRESH_RATE);//刷新间隔
     return false;
 }
 

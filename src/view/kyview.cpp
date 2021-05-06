@@ -10,7 +10,6 @@ KyView::KyView(const QStringList &args)
 
     this->resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-    this ->setWindowIcon(QIcon(":/res/res/kyview_logo.png"));
     this ->setWindowTitle(tr("Pictures"));
     //毛玻璃
     this->setProperty("useSystemStyleBlur",true);
@@ -329,47 +328,47 @@ void KyView::clearImage()
 //处理鼠标悬浮两栏的界面展示
 void KyView::hoverChange(int y)
 {
-    if (y <= BAR_HEIGHT  || y >= this->height() - BAR_HEIGHT ) {
-            //判断定时器是否正在计时。如是，则停止
-            if (m_timer->isActive()) {
-                m_timer->stop();
-            }
-            if (m_timernavi->isActive()) {
-                m_timernavi->stop();
-            }
+    if (y <= BAR_HEIGHT  || y >= this->height() - BAR_HEIGHT) {
+        //判断定时器是否正在计时。如是，则停止
+        if (m_timer->isActive()) {
+            m_timer->stop();
+        }
+        if (m_timernavi->isActive()) {
+            m_timernavi->stop();
+        }
 
-            m_toolbar->show();
-            m_titlebar->show();
+        m_toolbar->show();
+        m_titlebar->show();
 
-            //顶栏和标题栏位置的变化
-            toolbarChange();
-            titlebarChange();
+        //顶栏和标题栏位置的变化
+        toolbarChange();
+        titlebarChange();
 
-            this->m_showImageWidget->lower();
+        this->m_showImageWidget->lower();
+        this->m_showImageWidget->g_next->hide();
+        this->m_showImageWidget->g_back->hide();
+
+        //判断具体在顶栏或工具栏的区域，将其raise
+        if (y <= BAR_HEIGHT) {
+            m_titlebar->raise();
+        } else if (y >= this->height() - BAR_HEIGHT) {
+            m_toolbar->raise();
+        }
+        //信息栏位置的变化
+        inforChange();
+    } else {
+        if (!m_timer->isActive()) {
+            m_timer->start(2000);
+        }
+        //判断列表中是否只有一张图，一张图片左右按钮不显示
+        if (m_showImageWidget->g_buttonState == false) {
             this->m_showImageWidget->g_next->hide();
             this->m_showImageWidget->g_back->hide();
-
-            //判断具体在顶栏或工具栏的区域，将其raise
-            if (y <= BAR_HEIGHT) {
-                m_titlebar->raise();
-            } else if (y >= this->height() - BAR_HEIGHT) {
-                m_toolbar->raise();
-            }
-            //信息栏位置的变化
-            inforChange();
         } else {
-            if (!m_timer->isActive()) {
-                m_timer->start(2000);
-            }
-            //判断列表中是否只有一张图，一张图片左右按钮不显示
-            if (m_showImageWidget->g_buttonState == false) {
-                this->m_showImageWidget->g_next->hide();
-                this->m_showImageWidget->g_back->hide();
-            } else {
-                this->m_showImageWidget->g_next->show();
-                this->m_showImageWidget->g_back->show();
-            }
-            }
+            this->m_showImageWidget->g_next->show();
+            this->m_showImageWidget->g_back->show();
+        }
+    }
 }
 //读取主题配置文件
 void KyView::initGsetting()
@@ -379,6 +378,10 @@ void KyView::initGsetting()
         connect(m_pGsettingThemeData,&QGSettings::changed,this, [=] (const QString &key) {
             if (key == "styleName") {
                 themeChange();
+            }
+            if (key == "iconThemeName") {
+                m_icon = m_pGsettingThemeData->get("iconThemeName").toString();
+                this->setWindowIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
             }
 
         });
@@ -431,6 +434,38 @@ void KyView::transChange()
   m_tran = m_pGsettingControlTrans->get("transparency").toDouble() * 255;
   this->update();
 
+}
+
+void KyView::avoidChange()
+{
+    //暂时用此方法解决鼠标在子上释放事件不被检测的bug，以后如有更好的办法再更改。
+    //解决点击导航器，触发图片切换的问题。
+    if (m_navigator != nullptr) {
+        if (!m_navigator->isHidden() && m_navigator->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+            m_panTriggered = false;
+        } /*else { //此部分会导致打开相册后就将m_panTriggered设为true，导致->左右滑动事件点击即触发
+            if (m_navigator->isHidden())
+            m_panTriggered = true;
+        }*/
+    }
+    //解决点击侧栏，触发图片切换的问题。
+    if (m_sideBar != nullptr) {
+        if (!m_sideBar->isHidden() && m_sideBar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+            m_panTriggered = false;
+        }
+    }
+    //解决点击左右按钮，触发图片切换的问题。
+    if (m_showImageWidget != nullptr) {
+        if (!m_showImageWidget->g_back->isHidden() && (m_showImageWidget->g_back->geometry().contains(this->mapFromGlobal(QCursor::pos())) ||m_showImageWidget->g_next->geometry().contains(this->mapFromGlobal(QCursor::pos())) )) {
+            m_panTriggered = false;
+        }
+    }
+    //解决点击顶栏，触发图片切换的问题。
+    if (m_titlebar != nullptr) {
+        if (!m_titlebar->isHidden() && m_titlebar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+            m_panTriggered = false;
+        }
+    }
 }
 
 //最大化和还原
@@ -760,7 +795,6 @@ void KyView::initGrabGesture()
     this->grabGesture(Qt::TapAndHoldGesture);//长按手势
     QTapAndHoldGesture::setTimeout(1);//按下n毫秒判定为长按
 }
-
 bool KyView::event(QEvent *event)
 {
     //判断列表中是否只有一张图，一张图片左右按钮不显示--解决静止鼠标，按钮仍然显示的问题
@@ -778,34 +812,7 @@ bool KyView::event(QEvent *event)
             }
         }
     }
-    //暂时用此方法解决鼠标在子上释放事件不被检测的bug，以后如有更好的办法再更改。
-    //解决点击导航器，触发图片切换的问题。
-    if (m_navigator != nullptr) {
-        if (!m_navigator->isHidden() && m_navigator->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
-            m_panTriggered = false;
-        } /*else { //此部分会导致打开相册后就将m_panTriggered设为true，导致->左右滑动事件点击即触发
-            if (m_navigator->isHidden())
-            m_panTriggered = true;
-        }*/
-    }
-    //解决点击侧栏，触发图片切换的问题。
-    if (m_sideBar != nullptr) {
-        if (!m_sideBar->isHidden() && m_sideBar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
-            m_panTriggered = false;
-        }
-    }
-    //解决点击左右按钮，触发图片切换的问题。
-    if (m_showImageWidget != nullptr) {
-        if (!m_showImageWidget->g_back->isHidden() && (m_showImageWidget->g_back->geometry().contains(this->mapFromGlobal(QCursor::pos())) ||m_showImageWidget->g_next->geometry().contains(this->mapFromGlobal(QCursor::pos())) )) {
-            m_panTriggered = false;
-        }
-    }
-    //解决点击顶栏，触发图片切换的问题。
-    if (m_titlebar != nullptr) {
-        if (!m_titlebar->isHidden() && m_titlebar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
-            m_panTriggered = false;
-        }
-    }
+    avoidChange();
     //手势处理
     if (event->type() ==  QEvent::GestureOverride ||event->type() ==  QEvent::Gesture) {
         return gestureEvent(event);

@@ -70,6 +70,8 @@ private:
     bool m_isApi = false;//作为API接口运行
     bool m_apiReplaceFile = false;//api替换原图
     QStringList m_apiCmd;//保存操作命令
+    QTimer *m_canProcess = nullptr;//限制操作频率，降低cpu占用
+    bool coreOperateTooOften();//操作过于频繁
     void progremExit();//结束进程
     bool apiFunction();//处理api函数
     bool isSamePath(QString path);//判断打开的是不是相同路径

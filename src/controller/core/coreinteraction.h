@@ -54,7 +54,7 @@ private:
     bool coreOperateTooOften();//操作过于频繁
     bool m_isCoreInit = false;//防止多次初始化核心
     QString m_needStartWithOpenImagePath = "";//UI未初始化时设置，使其初始化完成立即加载图片
-    QTimer *m_canResize = nullptr;//限制修改大小频率，降低cpu占用
+    QTimer *m_canProcess = nullptr;//限制操作频率，降低cpu占用
     Core *m_core = nullptr;//核心对象
 
 };

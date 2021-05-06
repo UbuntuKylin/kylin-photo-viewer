@@ -39,6 +39,7 @@ SOURCES += main.cpp \
     model/dbus.cpp \
     controller/core/core.cpp \
     model/file/file.cpp \
+    model/file/loadmovie.cpp \
     model/file/savemovie.cpp \
     model/processing/flip.cpp \
     model/processing/processing.cpp \
@@ -65,6 +66,7 @@ HEADERS += \
     controller/interaction.h \
     controller/core/core.h \
     model/file/file.h \
+    model/file/loadmovie.h \
     model/file/savemovie.h \
     model/processing/processingbase.h \
     model/processing/flip.h \

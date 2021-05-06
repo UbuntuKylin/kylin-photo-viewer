@@ -12,6 +12,7 @@
 #include <stb/stb_image.h>
 #include "model/processing/processing.h"
 #include "savemovie.h"
+#include "loadmovie.h"
 #include <gif_lib.h>
 
 class MatAndFileinfo
