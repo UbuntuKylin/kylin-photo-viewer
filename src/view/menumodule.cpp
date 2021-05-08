@@ -40,7 +40,7 @@ void menuModule::initAction(){
 
     QList<QAction *> actions ;
     QAction *actionOpen = new QAction(m_menu);
-    actionOpen->setText(tr("Open..."));
+    actionOpen->setText(tr("Open"));
     QAction *actionTheme = new QAction(m_menu);
     actionTheme->setText(tr("Theme"));
     QAction *actionHelp = new QAction(m_menu);
@@ -102,7 +102,7 @@ void menuModule::triggerMenu(QAction *act){
         aboutAction();
     } else if (tr("Help") == str) {
         helpAction();
-    } else if (tr("Open...") == str) {
+    } else if (tr("Open") == str) {
         emit openSignal();
     }
 }

@@ -9,56 +9,85 @@ Information::Information(QWidget *parent) : QWidget(parent)
     }
 //    this->adjustSize();
     m_ft.setBold(true);
+    m_ft.setPixelSize(14);
+    m_ftContent.setPixelSize(14);
     m_widName = new QLabel(this);
     m_widName->setAttribute(Qt::WA_TranslucentBackground);
     m_widName->setFont(m_ft);
 //    m_widName->setAttribute();
     m_widName->setText(tr("Info"));
 //    m_widName->setText(tr("信息"));
+
     m_name = new QLabel(this);
     m_name->setAttribute(Qt::WA_TranslucentBackground);
     m_name->setText(tr("Name"));
+    m_name->setFont(m_ftContent);
 //    m_name->setText(tr("名称"));
+
     m_format = new QLabel(this);
     m_format->setAttribute(Qt::WA_TranslucentBackground);
 //    m_format->setFixedHeight(16);
     m_format->setText(tr("Type"));
+    m_format->setFont(m_ftContent);
 //    m_format->setText(tr("格式"));
+
     m_storageSize = new QLabel(this);
     m_storageSize->setAttribute(Qt::WA_TranslucentBackground);
     m_storageSize->setText(tr("Capacity"));
 //    storageSize->setText(tr("大小"));
+    m_storageSize->setFont(m_ftContent);
+
     m_pixelSize = new QLabel(this);
     m_pixelSize->setAttribute(Qt::WA_TranslucentBackground);
     m_pixelSize->setText(tr("Size"));
 //    pixelSize->setText(tr("尺寸"));
+    m_pixelSize->setFont(m_ftContent);
+
     m_colorSpace = new QLabel(this);
     m_colorSpace->setAttribute(Qt::WA_TranslucentBackground);
     m_colorSpace->setText(tr("Color"));
 //    colorSpace->setText(tr("颜色空间"));
+    m_colorSpace->setFont(m_ftContent);
+
     m_creationTime = new QLabel(this);
     m_creationTime->setAttribute(Qt::WA_TranslucentBackground);
     m_creationTime->setText(tr("Created"));
 //    creationTime->setText(tr("创建时间"));
+    m_creationTime->setFont(m_ftContent);
+
     m_revisionTime = new QLabel(this);
     m_revisionTime->setAttribute(Qt::WA_TranslucentBackground);
     m_revisionTime->setText(tr("Modified"));
 //    revisionTime->setText(tr("修改时间"));
+    m_revisionTime->setFont(m_ftContent);
 
     m_nameC = new QLabel(this);
     m_nameC->setAttribute(Qt::WA_TranslucentBackground);
+    m_nameC->setFont(m_ftContent);
+
     m_formatC = new QLabel(this);
     m_formatC->setAttribute(Qt::WA_TranslucentBackground);
+    m_formatC->setFont(m_ftContent);
+
     m_storageSizeC = new QLabel(this);
     m_storageSizeC->setAttribute(Qt::WA_TranslucentBackground);
+    m_storageSizeC->setFont(m_ftContent);
+
     m_pixelSizeC = new QLabel(this);
     m_pixelSizeC->setAttribute(Qt::WA_TranslucentBackground);
+    m_pixelSizeC->setFont(m_ftContent);
+
     m_colorSpaceC = new QLabel(this);
     m_colorSpaceC->setAttribute(Qt::WA_TranslucentBackground);
+    m_colorSpaceC->setFont(m_ftContent);
+
     m_creationTimeC = new QLabel(this);
     m_creationTimeC->setAttribute(Qt::WA_TranslucentBackground);
+    m_creationTimeC->setFont(m_ftContent);
+
     m_revisionTimeC = new QLabel(this);
     m_revisionTimeC->setAttribute(Qt::WA_TranslucentBackground);
+    m_revisionTimeC->setFont(m_ftContent);
     //布局
     m_inforWid = new QWidget(this);
     m_gdLayout =new QGridLayout(this);

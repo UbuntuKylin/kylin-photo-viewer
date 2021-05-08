@@ -36,7 +36,8 @@ private:
     QWidget *m_inforWid;
     QGridLayout *m_gdLayout;
 
-    QFont m_ft;
+    QFont m_ft;//标题字号字重设置
+    QFont m_ftContent;//内容字号固定
     QLocale m_local;
 
     void layout();

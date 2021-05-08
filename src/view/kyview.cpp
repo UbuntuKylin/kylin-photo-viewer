@@ -466,6 +466,12 @@ void KyView::avoidChange()
             m_panTriggered = false;
         }
     }
+    //解决点击工具栏，触发图片切换的问题。
+    if (m_toolbar != nullptr) {
+        if (!m_toolbar->isHidden() && m_toolbar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+            m_panTriggered = false;
+        }
+    }
 }
 
 //最大化和还原
