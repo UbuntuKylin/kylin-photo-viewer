@@ -1,10 +1,18 @@
+kylin-photo-viewer (1.0.0-11) v101; urgency=medium
+  
+  * BUG号：52136,53003
+  * 需求号：无(任务号：26473)
+  * 其他改动说明：desktop文件的MimeType去掉jp2格式的支持，添加sr格式。
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Sat,08  May 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-10) v101; urgency=medium
   
-  * BUG号：51270，51196，50947，50654，50236，51374，51443，51469，50254，52359，50826，52736
+  * BUG号：51270，51196，50947，50654，50236，51374，51443，51469，50254，52359，50826
   * 需求号：无
-  * 其他改动说明：desktop文件的MimeType去掉jp2格式的支持，添加sr格式；icon改为调用主题库图标。
+  * 其他改动说明：desktop文件的MimeType去掉jp2格式的支持，添加sr格式。
 
- -- zoujunnan <zoujunnan@kylinos.cn> Thu,06  May 2021 09:46:00 +0800
+ -- zoujunnan <zoujunnan@kylinos.cn>  Thu,06  May 2021 09:46:00 +0800
 
 kylin-photo-viewer (1.0.0-9) v101; urgency=medium
   

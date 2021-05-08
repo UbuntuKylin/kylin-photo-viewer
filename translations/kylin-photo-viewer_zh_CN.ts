@@ -8,42 +8,42 @@
         <translation type="vanished">信息</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="15"/>
+        <location filename="../src/view/information.cpp" line="16"/>
         <source>Info</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="19"/>
+        <location filename="../src/view/information.cpp" line="20"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="24"/>
+        <location filename="../src/view/information.cpp" line="25"/>
         <source>Type</source>
         <translation>格式</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="28"/>
+        <location filename="../src/view/information.cpp" line="29"/>
         <source>Capacity</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="32"/>
+        <location filename="../src/view/information.cpp" line="33"/>
         <source>Size</source>
         <translation>尺寸</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="36"/>
+        <location filename="../src/view/information.cpp" line="37"/>
         <source>Color</source>
         <translation>颜色空间</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="40"/>
+        <location filename="../src/view/information.cpp" line="41"/>
         <source>Created</source>
         <translation>创建时间</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="44"/>
+        <location filename="../src/view/information.cpp" line="45"/>
         <source>Modified</source>
         <translation>修改时间</translation>
     </message>
@@ -79,21 +79,21 @@
         <translation type="vanished">麒麟看图</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="14"/>
+        <location filename="../src/view/kyview.cpp" line="13"/>
         <source>Pictures</source>
         <translation>看图</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="437"/>
-        <location filename="../src/view/kyview.cpp" line="667"/>
-        <location filename="../src/view/kyview.cpp" line="707"/>
+        <location filename="../src/view/kyview.cpp" line="478"/>
+        <location filename="../src/view/kyview.cpp" line="703"/>
+        <location filename="../src/view/kyview.cpp" line="743"/>
         <source>full srceen</source>
         <translation>最大化</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="441"/>
-        <location filename="../src/view/kyview.cpp" line="671"/>
-        <location filename="../src/view/kyview.cpp" line="704"/>
+        <location filename="../src/view/kyview.cpp" line="482"/>
+        <location filename="../src/view/kyview.cpp" line="707"/>
+        <location filename="../src/view/kyview.cpp" line="740"/>
         <source>recovery</source>
         <translation>还原</translation>
     </message>
@@ -256,9 +256,8 @@
         <translation>菜单</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="105"/>
         <source>Open..</source>
-        <translation>打开..</translation>
+        <translation type="vanished">打开..</translation>
     </message>
     <message>
         <location filename="../src/view/menumodule.cpp" line="45"/>
@@ -266,9 +265,14 @@
         <translation>主题</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="43"/>
         <source>Open...</source>
-        <translation>打开...</translation>
+        <translation type="vanished">打开...</translation>
+    </message>
+    <message>
+        <location filename="../src/view/menumodule.cpp" line="43"/>
+        <location filename="../src/view/menumodule.cpp" line="105"/>
+        <source>Open</source>
+        <translation>打开</translation>
     </message>
     <message>
         <location filename="../src/view/menumodule.cpp" line="47"/>
