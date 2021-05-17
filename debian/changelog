@@ -1,3 +1,11 @@
+kylin-photo-viewer (1.0.0-12) v101; urgency=medium
+  
+  * BUG号：44692,54136，55275，55269
+  * 需求号：无
+  * 其他改动说明：调用主题提供的属性，添加字体不跟随控制面板变化。
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Mon,17  May 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-11) v101; urgency=medium
   
   * BUG号：52136,53003

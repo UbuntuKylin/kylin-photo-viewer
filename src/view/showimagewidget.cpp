@@ -159,11 +159,11 @@ void ShowImageWidget::deleteImage()
 //在文件夹中显示
 void ShowImageWidget::showInFile()
 {
-//    Interaction::getInstance()->openImageInfile();---接口没通，暂不使用
-    if (m_path == "") {
-        return;
-    }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(m_path));
+    Interaction::getInstance()->openImageInfile();
+//    if (m_path == "") {
+//        return;
+//    }
+//    QDesktopServices::openUrl(QUrl::fromLocalFile(m_path));
 
 }
 //显示右键菜单栏

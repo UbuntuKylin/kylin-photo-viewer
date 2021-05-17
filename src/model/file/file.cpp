@@ -215,6 +215,14 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
         list->append(mat);
         return save(list,0,savepath);
     }
+    if (type == "pbm") {
+        QPixmap pix = Processing::converFormat(mat);
+        return pix.save(savepath);
+    }
+    if (type == "ppm") {
+        QPixmap pix = Processing::converFormat(mat);
+        return pix.save(savepath);
+    }
     //非特殊情况
     return imwrite(savepath.toStdString(),mat);
 }
@@ -233,7 +241,12 @@ bool File::saveMovie(QList<Mat> *list,const int &fps, const QString &savepath)
     m_list.append(savepath);
     SaveMovie *saveMovie = new SaveMovie(list,fps,savepath);
     connect(saveMovie,&SaveMovie::saveMovieFinish,this,&File::saveMovieFinishSlot);
+    saveMovie->m_sema = new QSemaphore(1);
+    saveMovie->m_sema2 = new QSemaphore(1);
+    saveMovie->m_sema->acquire();
     saveMovie->start();
+    saveMovie->m_sema->acquire();
+    saveMovie->m_sema2->acquire();
 
     //    Gif_H m_Gif;
     //    Gif_H::GifWriter m_GifWriter;

@@ -31,12 +31,25 @@ const QMap<QString,QString> Variable::SUPPORT_CMD = Variable::getSupportCmd();
 
 //opencv支持的格式列表
 const QStringList Variable::opencvCanSupportFormats={//"exr","EXR",有问题，opencv只支持其查看，不支持写入。此格式支持设置为壁纸
-    "JPG","JPE","JPEG","PBM","PGM","PPM","SR","RAS","PNG","BMP","DIB","TIFF","TIF","PNM","WEBP",
     "jpg","jpe","jpeg","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","pnm","webp"};
+//const QStringList Variable::opencvCanSupportFormats={//"exr","EXR",有问题，opencv只支持其查看，不支持写入。此格式支持设置为壁纸
+//    "JPG","JPE","JPEG","PBM","PGM","PPM","SR","RAS","PNG","BMP","DIB","TIFF","TIF","PNM","WEBP",
+//    "jpg","jpe","jpeg","pbm","pgm","ppm","sr","ras","png","bmp","dib","tiff","tif","pnm","webp"};
 //opencv不支持的格式列表
 const QStringList Variable::opencvCannotSupportFormats={//"JP2"待添加,xbm不支持
-    "TGA","SVG","GIF","APNG","ICO",
     "tga","svg","gif","apng","ico"};
+//const QStringList Variable::opencvCannotSupportFormats={//"JP2"待添加,xbm不支持
+//    "TGA","SVG","GIF","APNG","ICO",
+//    "tga","svg","gif","apng","ico"};
+const QString Variable::SUPPORT_FORMATS_CLASSIFY="(*.jpg *.jpe *.jpeg);;"
+                                                 "(*.pnm *.pbm);;"
+                                                 "(*.pgm *.ppm);;"
+                                                 "(*.tiff *.tif);;"
+                                                 "(*.png *.apng);;"
+                                                 "(*.ico);;(*.sr);;"
+                                                 "(*.ras);;(*.tga);;"
+                                                 "(*.svg);;(*.gif);;"
+                                                 "(*.webp);;(*.bmp *.dib)";
 //壁纸支持的格式列表
 const QStringList Variable::BACKGROUND_SUPPORT_FORMATS={//经测试 "jp2","tga","dib","pbm","ppm"，"sr","ras",这几种格式不支持设置为壁纸
                                                         "jpg","jpe","jpeg","pgm","pnm","png","bmp","tiff","tif","svg","gif","apng"};

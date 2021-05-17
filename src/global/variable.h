@@ -40,6 +40,7 @@ public:
     static const qint64 MAX_LOG_SIZE;//最大日志文件大小
     static const QMap<QString,QString> SUPPORT_CMD; //支持的命令列表
     static const QStringList SUPPORT_FORMATS; //支持的格式列表
+    static const QString SUPPORT_FORMATS_CLASSIFY; //支持的格式列表分类
     static const QStringList BACKGROUND_SUPPORT_FORMATS; //壁纸支持的格式列表
     static const QSize ALBUM_IMAGE_SIZE; //相册缩略图尺寸
     static const QSize NAVIGATION_SIZE; //导航器尺寸
