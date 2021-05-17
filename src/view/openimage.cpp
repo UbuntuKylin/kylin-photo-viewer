@@ -40,11 +40,15 @@ void OpenImage::openImagePath()
     QString format;
     QString openFile = tr("Open Image");
     QString fileType = tr("Image Files(");
+
     //构造打开条件
-    format = fileType;
+    format = "(";
     for(const QString &str:Variable::SUPPORT_FORMATS )
         format += "*."+str +" ";
-    format += ")";
+    format += ");;";
+    //所有类型都放在一起，类型名显示不全，故增加分层，将同一类型的放在一起，分层显示
+    format = format + Variable::SUPPORT_FORMATS_CLASSIFY;
+
     //打开文件夹中的图片文件
     file_path = QFileDialog::getOpenFileName(this,openFile,Variable::getSettings("imagePath").toString(),format);
     //空校验，点击“取消”

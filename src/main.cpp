@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 
     //注册MessageHandler
     qInstallMessageHandler(Log::msgHandler);
+    qApp->setProperty("noChangeSystemFontSize",true);
 
     //翻译
     QTranslator app_trans;
