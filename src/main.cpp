@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
     //注册MessageHandler
     qInstallMessageHandler(Log::msgHandler);
     qApp->setProperty("noChangeSystemFontSize",true);
+    qApp->setWindowIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
 
     //翻译
     QTranslator app_trans;

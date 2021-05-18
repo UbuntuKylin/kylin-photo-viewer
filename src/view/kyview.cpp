@@ -379,10 +379,9 @@ void KyView::initGsetting()
             if (key == "styleName") {
                 themeChange();
             }
-            if (key == "iconThemeName") {
-                m_icon = m_pGsettingThemeData->get("iconThemeName").toString();
-                this->setWindowIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
-            }
+//            if (key == "iconThemeName") {
+//                this->setWindowIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
+//            }
 
         });
     }

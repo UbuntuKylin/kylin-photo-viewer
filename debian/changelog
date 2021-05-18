@@ -2,9 +2,9 @@ kylin-photo-viewer (1.0.0-12) v101; urgency=high
   
   * BUG号：44692，54136，55275，55269，55266
   * 需求号：无
-  * 其他改动说明：调用主题提供的属性，添加字体不跟随控制面板变化。
+  * 其他改动说明：调用主题提供的属性，添加字体不跟随控制面板变化；添加MimeType的ras支持；修改主题图标调用。
 
- -- zoujunnan <zoujunnan@kylinos.cn>  Mon,17  May 2021 09:46:00 +0800
+ -- zoujunnan <zoujunnan@kylinos.cn>  Tue,18  May 2021 09:46:00 +0800
 
 kylin-photo-viewer (1.0.0-11) v101; urgency=medium
   
