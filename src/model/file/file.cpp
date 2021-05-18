@@ -55,8 +55,16 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     } else if (suffix == "tga") {
         int w,h,a;
         unsigned char *data =stbi_load(path.toLocal8Bit().data(),&w,&h,&a,0);
-        if(!data) return maf;
-        Mat tmpMat = Mat(h,w,CV_8UC4,const_cast<uchar*>(data)).clone();
+        if (!data) {
+            return maf;
+        }
+        Mat tmpMat;
+        if (3 == a) {
+            tmpMat = Mat(h,w,CV_8UC3,const_cast<uchar*>(data)).clone();
+        } else if (4 == a) {
+            tmpMat = Mat(h,w,CV_8UC4,const_cast<uchar*>(data)).clone();
+        }
+
         stbi_image_free(data);
         cvtColor(tmpMat,mat,cv::COLOR_BGRA2RGBA);
     } else if (suffix == "ico") {
@@ -241,13 +249,7 @@ bool File::saveMovie(QList<Mat> *list,const int &fps, const QString &savepath)
     m_list.append(savepath);
     SaveMovie *saveMovie = new SaveMovie(list,fps,savepath);
     connect(saveMovie,&SaveMovie::saveMovieFinish,this,&File::saveMovieFinishSlot);
-    saveMovie->m_sema = new QSemaphore(1);
-    saveMovie->m_sema2 = new QSemaphore(1);
-    saveMovie->m_sema->acquire();
     saveMovie->start();
-    saveMovie->m_sema->acquire();
-    saveMovie->m_sema2->acquire();
-
     //    Gif_H m_Gif;
     //    Gif_H::GifWriter m_GifWriter;
     //    for (int i=0; i<list->length(); ++i){

@@ -535,8 +535,13 @@ void Core::close()
         m_file->saveImage(m_matList,m_fps,m_nowpath,m_apiReplaceFile);
         m_shouldClose = true;
     } else {
+        QString suffix = QFileInfo(m_nowpath).suffix().toLower();
         //保存图片
         m_file->saveImage(m_nowMat,m_nowpath,m_apiReplaceFile);
+        if (suffix == "apng" || suffix == "png" || suffix == "gif") {
+            m_shouldClose = true;
+            return;
+        }
         progremExit();
     }
 }

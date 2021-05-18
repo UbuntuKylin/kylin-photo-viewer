@@ -19,8 +19,6 @@ signals:
 
 public:
     SaveMovie(QList<Mat> *list, const int &fps, const QString &savepath);
-    QSemaphore *m_sema = nullptr;
-    QSemaphore *m_sema2 = nullptr;
 
 protected:
     void run();
