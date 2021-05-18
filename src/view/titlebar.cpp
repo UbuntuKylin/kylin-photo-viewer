@@ -9,13 +9,19 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     g_titleWid = new QWidget(this);
     m_titleLayout = new QHBoxLayout(this);
     //左上角图标
-    m_logoBtn = new QLabel(this);
+//    m_logoBtn = new QLabel(this);
+//    m_logoBtn->setFixedSize(LOGO_BTN);
+//    m_logoBtn->setFixedSize(LOGO_BTN);//重置图标大小
+//    m_logoBtn->setPixmap(QPixmap::fromImage(QImage(":/res/res/kyview_logo.png")));
+//    m_logoBtn->setScaledContents(true);
+
+    m_logoBtn = new QPushButton(this);
+    m_logoBtn->setFixedSize(LOGO_BTN);//重置图标大小
+    m_logoBtn->setIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
+    m_logoBtn->setIconSize(LOGO_BTN);
     //左上角APP名字
     m_logolb = new QLabel(this);
-    m_logoBtn->setFixedSize(LOGO_BTN);
-    m_logoBtn->setFixedSize(LOGO_BTN);//重置图标大小
-    m_logoBtn->setPixmap(QPixmap::fromImage(QImage(":/res/res/kyview_logo.png")));
-    m_logoBtn->setScaledContents(true);
+
     m_logolb->setText(tr("Pictures"));
 
     //中间图片名字
@@ -51,7 +57,9 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     m_closebtn->setProperty("isWindowButton", 0x2);
     m_closebtn->setProperty("useIconHighlightEffect", 0x8);
     m_closebtn->setFlat(true);
-
+    m_logoBtn->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
+                             "QPushButton::hover{border:0px;border-radius:4px;background:transparent;}"
+                             "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;}");
     this->setFixedHeight(BAR_HEIGHT);
     this->initConnect();
     this->initControlQss();

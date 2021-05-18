@@ -161,13 +161,18 @@ void menuModule::initAbout(){
 }
 
 QHBoxLayout* menuModule::initTitleBar(){
-    QLabel* titleIcon = new QLabel();
+//    QLabel* titleIcon = new QLabel();
+    QPushButton *titleIcon = new QPushButton();
     titleIcon->setFixedSize(MICON_SIZEM);
-
+    titleIcon->setIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
+    titleIcon->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
+                             "QPushButton::hover{border:0px;border-radius:4px;background:transparent;}"
+                             "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;}");
+    titleIcon->setIconSize(MICON_SIZEM);
     m_appShowingName = tr("Pictures");
     m_iconPath = ":/res/res/kyview_logo.png";
-    titleIcon->setPixmap(QPixmap::fromImage(QImage(m_iconPath)));
-    titleIcon->setScaledContents(true);
+//    titleIcon->setPixmap(QPixmap::fromImage(QImage(m_iconPath)));
+//    titleIcon->setScaledContents(true);
 
     QPushButton *titleBtnClose = new QPushButton;
     titleBtnClose->setIcon(QIcon::fromTheme("window-close-symbolic"));
@@ -194,11 +199,17 @@ QHBoxLayout* menuModule::initTitleBar(){
 
 QVBoxLayout* menuModule::initBody(){
     m_appVersion = VERSION_NEM;
-    QLabel* bodyIcon = new QLabel();
+//    QLabel* bodyIcon = new QLabel();
+    QPushButton *bodyIcon = new QPushButton();
     bodyIcon->setFixedSize(MICON_SIZEB);
-    bodyIcon->setPixmap(QPixmap::fromImage(QImage(m_iconPath)));
-    bodyIcon->setStyleSheet("font-size:14px;");
-    bodyIcon->setScaledContents(true);
+//    bodyIcon->setPixmap(QPixmap::fromImage(QImage(m_iconPath)));
+    bodyIcon->setIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
+//    bodyIcon->setStyleSheet("font-size:14px;background-color:transparent;");
+    bodyIcon->setStyleSheet("QPushButton{border:0px;border-radius:4px;background:transparent;}"
+                            "QPushButton::hover{border:0px;border-radius:4px;background:transparent;}"
+                            "QPushButton::pressed{border:0px;border-radius:4px;background:transparent;}");
+    bodyIcon->setIconSize(MICON_SIZEB);
+//    bodyIcon->setScaledContents(true);
     m_bodyAppName->setFixedHeight(NAME_HEIGHT);
     m_bodyAppName->setText(tr(m_appShowingName.toLocal8Bit()));
     m_bodyAppVersion->setFixedHeight(VERSION_HEI);

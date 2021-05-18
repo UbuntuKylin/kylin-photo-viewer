@@ -23,8 +23,8 @@ public:
 private:
 
     QHBoxLayout *m_titleLayout;
-
-    QLabel *m_logoBtn;//左上角logo
+    QPushButton *m_logoBtn;//左上角logo
+//    QLabel *m_logoBtn;//左上角logo
     QLabel *m_logolb;//左上角logoname
     QPushButton *m_minibtn;//最小化按钮
 
