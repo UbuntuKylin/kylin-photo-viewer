@@ -14,8 +14,6 @@ SaveMovie::SaveMovie(QList<Mat> *list, const int &fps, const QString &savepath)
 
 void SaveMovie::run()
 {
-    m_sema2->acquire();
-    m_sema->release();
     m_process =new QProcess;
     connect(m_process,&QProcess::readyReadStandardError,this,&SaveMovie::processLog);
 
@@ -72,7 +70,6 @@ void SaveMovie::run()
     qDebug()<<"动图保存完成";
     m_process->deleteLater();
     emit saveMovieFinish(m_savepath);
-    m_sema2->release();
 }
 
 void SaveMovie::processLog()
