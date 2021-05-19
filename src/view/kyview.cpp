@@ -763,6 +763,10 @@ void KyView::dragEnterEvent(QDragEnterEvent *event)
         format = str;
         formatList.append(format);
     }
+    //检查当前拖入的否为url，暂时只支持以url形式拖入
+    if (!event->mimeData()->hasUrls()) {
+        return;
+    }
     QString str = event->mimeData()->urls()[0].fileName();
     //判断图片是否支持被查看
     if (formatList.contains( QFileInfo(str).suffix())) {

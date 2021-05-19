@@ -1,3 +1,11 @@
+kylin-photo-viewer (1.0.0-13) v101; urgency=medium
+  
+  * BUG号：55787
+  * 需求号：无
+  * 其他改动说明：添加按键响应按钮过滤，修复按键不响应切换图片的问题。
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Wed,19  May 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-12) v101; urgency=high
   
   * BUG号：44692，54136，55275，55269，55266
