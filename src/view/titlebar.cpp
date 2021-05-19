@@ -19,6 +19,7 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     m_logoBtn->setFixedSize(LOGO_BTN);//重置图标大小
     m_logoBtn->setIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
     m_logoBtn->setIconSize(LOGO_BTN);
+    m_logoBtn->setFocusPolicy(Qt::NoFocus);
     //左上角APP名字
     m_logolb = new QLabel(this);
 
