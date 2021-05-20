@@ -199,6 +199,9 @@ void Core::openImage(QString fullPath)
         showImage(QPixmap());
         return;
     }
+    if (m_isclose == true) {
+        return;
+    }
     needSave();
 
 //    emit delayShow(true);
@@ -207,6 +210,7 @@ void Core::openImage(QString fullPath)
     if (!maf.mat.data) {
         //如果图片打开失败则回滚
         ChamgeImageType type = nextOrBack(m_backpath,fullPath);
+        //暂时解决外部删除，界面异常问题--后续继续定位
         if (type != ALBUM_IMAGE) {
             changeImageType();
         }
@@ -216,6 +220,7 @@ void Core::openImage(QString fullPath)
             showImage(QPixmap());
             return;
         }
+        //暂时解决外部删除，界面异常问题--后续继续定位
         if (type != ALBUM_IMAGE) {
             changeImage(type);
         } else {
@@ -530,6 +535,7 @@ void Core::close()
     if (!m_isApi) {
         m_apiReplaceFile = true;
     }
+    m_isclose = true;
     //如果正在播放动图，则停止
     if (m_playMovieTimer->isActive()) {
         m_playMovieTimer->stop();
@@ -542,8 +548,12 @@ void Core::close()
         //保存图片
         m_file->saveImage(m_nowMat,m_nowpath,m_apiReplaceFile);
         if (suffix == "apng" || suffix == "png" || suffix == "gif") {
-            m_shouldClose = true;
-            return;
+            if (m_matList != nullptr) {
+                if (m_matList->length() > 1) {
+                    m_shouldClose = true;
+                    return;
+                }
+            }
         }
         progremExit();
     }
@@ -566,7 +576,9 @@ void Core::changeImage(const int &type)
         m_backpath = m_nowpath;
         return;
     }
-
+    if (m_isclose == true) {
+        return;
+    }
     needSave();
 
     if (type == NEXT_IMAGE) {
