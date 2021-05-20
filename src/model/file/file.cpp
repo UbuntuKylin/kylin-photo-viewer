@@ -61,12 +61,14 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
         Mat tmpMat;
         if (3 == a) {
             tmpMat = Mat(h,w,CV_8UC3,const_cast<uchar*>(data)).clone();
+            cvtColor(tmpMat,mat,cv::COLOR_BGR2RGB);
         } else if (4 == a) {
             tmpMat = Mat(h,w,CV_8UC4,const_cast<uchar*>(data)).clone();
+            cvtColor(tmpMat,mat,cv::COLOR_BGRA2RGBA);
         }
 
         stbi_image_free(data);
-        cvtColor(tmpMat,mat,cv::COLOR_BGRA2RGBA);
+
     } else if (suffix == "ico") {
         QImage image(path);
         mat = Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone();
@@ -200,7 +202,11 @@ bool File::save(const Mat &mat, const QString &savepath, const QString &type)
     }
     if (type == "tga") {
         Mat tmpMat;
-        cvtColor(mat,tmpMat,cv::COLOR_RGBA2BGRA);
+        if (mat.type() == 4) {
+            cvtColor(mat,tmpMat,cv::COLOR_RGBA2BGRA);
+        } else if (mat.type() == 3) {
+            cvtColor(mat,tmpMat,cv::COLOR_RGB2BGR);
+        }
         return stbi_write_tga(savepath.toLocal8Bit().data(),tmpMat.cols,tmpMat.rows,4,tmpMat.data);
     }
     if (type == "ico") {
