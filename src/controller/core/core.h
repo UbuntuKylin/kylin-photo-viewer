@@ -75,6 +75,7 @@ private:
     void progremExit();//结束进程
     bool apiFunction();//处理api函数
     bool isSamePath(QString path);//判断打开的是不是相同路径
+    void needSave();//判断是否需要保存图片
 
 };
 

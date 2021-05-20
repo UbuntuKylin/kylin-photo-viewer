@@ -199,26 +199,29 @@ void Core::openImage(QString fullPath)
         showImage(QPixmap());
         return;
     }
+    needSave();
 
-
-    //如果正在播放动图，则停止
-    if (m_playMovieTimer->isActive()) {
-        m_playMovieTimer->stop();
-    }
 //    emit delayShow(true);
     MatAndFileinfo maf = File::loadImage(fullPath);
 //    emit delayShow(false);
     if (!maf.mat.data) {
         //如果图片打开失败则回滚
         ChamgeImageType type = nextOrBack(m_backpath,fullPath);
-        changeImageType();
+        if (type != ALBUM_IMAGE) {
+            changeImageType();
+        }
         deleteAlbumItem(fullPath);
         //全部图片都被删除了
         if (m_albumModel->rowCount() == 0) {
             showImage(QPixmap());
             return;
         }
-        changeImage(type);
+        if (type != ALBUM_IMAGE) {
+            changeImage(type);
+        } else {
+            changeImage(BACK_IMAGE);
+        }
+
         return;
     }
     setHighLight(fullPath);//设置相册选中
@@ -564,22 +567,8 @@ void Core::changeImage(const int &type)
         return;
     }
 
-    m_thisImageIsSaving = false;
+    needSave();
 
-    //如果正在播放动图，则停止
-    if (m_playMovieTimer->isActive()) {
-        m_playMovieTimer->stop();
-        //保存动图
-        if (m_processed) {
-            m_file->saveImage(m_matList,m_fps,m_nowpath);
-        }
-    } else {
-        //保存图片
-        if (m_processed) {
-            m_file->saveImage(m_nowMat,m_nowpath);
-        }
-    }
-    m_processed=false;//重置是否操作过的状态
     if (type == NEXT_IMAGE) {
         QString key = nextImagePath(m_nowpath);
         changeImageType(key);
@@ -590,6 +579,9 @@ void Core::changeImage(const int &type)
         QString key = backImagePath(m_nowpath);
         changeImageType(key);
         openImage(m_nowpath);
+        return;
+    }
+    if (type == ALBUM_IMAGE) {
         return;
     }
 }
@@ -754,6 +746,9 @@ void Core::deleteAlbumItem(const QString &path)
 
 Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &newPath)
 {
+    if (oldPath == "") {
+        return ALBUM_IMAGE;
+    }
     for (int i = 0;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == oldPath) {
@@ -871,20 +866,46 @@ bool Core::isSamePath(QString path)
 {
 
     QString pathDir = QFileInfo(path).absolutePath();
+    QStringList pathlist;
     int num = m_albumModel->rowCount();
     if (num > 0) {
+
         for (int i = 0 ; i < num;i++) {
             MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
-            if (item->getPath().mid(0,item->getPath().lastIndexOf("/")) == pathDir) {
-                    return true;
-                } else {
-                return false;
-            }
-      }
+            QFileInfo info(item->getPath());
+            pathlist.append(info.absolutePath());
+          }
+        if (pathlist.contains(pathDir)) {
+            return true;
+        } else {
+            return false;
+        }
+
     } else {
         return false;
     }
 
+}
+
+void Core::needSave()
+{
+    //解决侧栏切换和点击按钮打开图片时，上一张操作过的图片无法保存的问题
+    m_thisImageIsSaving = false;
+
+    //如果正在播放动图，则停止
+    if (m_playMovieTimer->isActive()) {
+        m_playMovieTimer->stop();
+        //保存动图
+        if (m_processed) {
+            m_file->saveImage(m_matList,m_fps,m_nowpath);
+        }
+    } else {
+        //保存图片
+        if (m_processed) {
+            m_file->saveImage(m_nowMat,m_nowpath);
+        }
+    }
+    m_processed=false;//重置是否操作过的状态
 }
 
 
