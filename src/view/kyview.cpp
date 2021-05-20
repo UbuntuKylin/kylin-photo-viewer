@@ -789,6 +789,8 @@ void KyView::dropEvent(QDropEvent *event)
     if (path == "") {
         return;
     }
+    QFileInfo info(path);
+    Variable::setSettings("imagePath",info.absolutePath());
     emit m_showImageWidget->openImage(path);
 
 }

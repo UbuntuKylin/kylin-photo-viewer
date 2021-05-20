@@ -201,6 +201,9 @@ void ShowImageWidget::startWithOpenImage(QString path)
     if (path == "") {
         return;
     }
+    //双击和右键打开图片，将路径写入
+    QFileInfo info(path);
+    Variable::setSettings("imagePath",info.absolutePath());
     openImage(path);
 }
 //打开图片
