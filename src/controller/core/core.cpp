@@ -204,29 +204,20 @@ void Core::openImage(QString fullPath)
     }
     needSave();
 
-//    emit delayShow(true);
     MatAndFileinfo maf = File::loadImage(fullPath);
-//    emit delayShow(false);
     if (!maf.mat.data) {
         //如果图片打开失败则回滚
         ChamgeImageType type = nextOrBack(m_backpath,fullPath);
-        //暂时解决外部删除，界面异常问题--后续继续定位
-        if (type != ALBUM_IMAGE) {
-            changeImageType();
-        }
+        //位置--m_nowpath---get index
+
+//        changeImageType();
         deleteAlbumItem(fullPath);
         //全部图片都被删除了
         if (m_albumModel->rowCount() == 0) {
             showImage(QPixmap());
             return;
         }
-        //暂时解决外部删除，界面异常问题--后续继续定位
-        if (type != ALBUM_IMAGE) {
-            changeImage(type);
-        } else {
-            changeImage(BACK_IMAGE);
-        }
-
+        changeImage(type);
         return;
     }
     setHighLight(fullPath);//设置相册选中
@@ -240,6 +231,10 @@ void Core::openImage(QString fullPath)
     m_matList = maf.matList;
     m_fps = maf.fps;
     m_nowpath = fullPath;
+    //首次打开，m_backpath为空，造成相册切换
+    if (m_backpath == nullptr) {
+        m_backpath = m_nowpath;
+    }
     //如果正在保存，则显示等待
     if (m_file->isSaving(fullPath)) {
         //如果此图正在保存
@@ -593,9 +588,11 @@ void Core::changeImage(const int &type)
         openImage(m_nowpath);
         return;
     }
-    if (type == ALBUM_IMAGE) {
-        return;
-    }
+
+    //点击相册切换图片
+    MyStandardItem *item = dynamic_cast<MyStandardItem *>(m_albumModel->item(type));
+    changeImageType(item->getPath());
+    openImage(m_nowpath);
 }
 
 void Core::changeImageFromClick(QModelIndex modelIndex)
@@ -604,7 +601,8 @@ void Core::changeImageFromClick(QModelIndex modelIndex)
     if (item->getPath() == m_nowpath) {
         return;
     }
-    openImage(item->getPath());
+    changeImage(modelIndex.row());
+//    openImage(item->getPath());
 }
 
 void Core::changeWidgetSize(const QSize &size)
@@ -758,9 +756,7 @@ void Core::deleteAlbumItem(const QString &path)
 
 Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &newPath)
 {
-    if (oldPath == "") {
-        return ALBUM_IMAGE;
-    }
+
     for (int i = 0;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == oldPath) {
