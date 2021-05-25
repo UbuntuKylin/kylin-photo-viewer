@@ -1,3 +1,12 @@
+kylin-photo-viewer (1.0.0-15) v101; urgency=medium
+  
+  * BUG号：55870
+  * 需求号：无
+  * 其他改动说明：无
+  * 影响域：仅bug修复，无影响
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Tue,25  May 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-14) v101; urgency=medium
   
   * BUG号：56040，55995，55870，55833，55814，54162，54129，55677
