@@ -656,9 +656,9 @@ void KyView::paintEvent(QPaintEvent *event)
 
     if (QColor(255,255,255) == opt.palette.color(QPalette::Base) || QColor(248,248,248) == opt.palette.color(QPalette::Base)) {
 //        mainColor = QColor(254, 254, 254,155);
-        mainColor = QColor(254, 254, 254,m_tran);
+        mainColor = QColor(242, 242, 242,m_tran);
     } else {
-        mainColor = QColor(26, 26, 26,m_tran);
+        mainColor = QColor(20, 20, 20,m_tran);
 //        mainColor = QColor(26, 26, 26,200);
     }
 
@@ -767,7 +767,20 @@ void KyView::dragEnterEvent(QDragEnterEvent *event)
     if (!event->mimeData()->hasUrls()) {
         return;
     }
-    QString str = event->mimeData()->urls()[0].fileName();
+    //极端情况下，拖拽文件时list有可能为空，不做异常处理时，会闪退。
+    QList<QUrl> list = event->mimeData()->urls();
+    if (list.isEmpty()) {
+        return;
+    }
+    QUrl url = list.first();
+    if (url.isEmpty()) {
+        return;
+    }
+    QString str = url.fileName();
+    if (str.isEmpty()) {
+        return;
+    }
+
     //判断图片是否支持被查看
     if (formatList.contains( QFileInfo(str).suffix())) {
         event->acceptProposedAction();
