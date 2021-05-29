@@ -44,6 +44,7 @@ public:
     bool m_thisImageIsSaving = false;//此图片正在储存
     QStandardItemModel *m_albumModel = nullptr;//相册model
     QPixmap m_defultPixmap = QPixmap(":/res/res/kyview_logo.png");
+    QPixmap m_item0icon = QPixmap(":/res/res/addalbum_white.png");
 };
 
 class NavigationStatus : public ImageShowStatus//导航器相关单独写，提高可读性

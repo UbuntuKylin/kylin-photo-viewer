@@ -24,7 +24,7 @@ private:
     QLabel *m_openText;//下方文字
     QSize m_iconsize;
 
-
+    void initInteraction();
     void initconnect();
     void initGsettings();
     void dealSystemGsettingChange();

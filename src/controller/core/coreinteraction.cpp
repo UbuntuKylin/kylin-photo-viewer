@@ -54,6 +54,7 @@ void CoreInteraction::initConnect()
     connect(this,&CoreInteraction::changeImageFromClick,m_core,&Core::changeImageFromClick);//点击相册事件
     connect(m_core,&Core::changeAlbumHighLight,this,&CoreInteraction::changeAlbumHighLight);//在相册中选中到所切换的图片
     connect(m_core,&Core::delayShow,this,&CoreInteraction::delayShow);//图片加载过慢，发信号给前端
+    connect(m_core,&Core::openFromAlbum,this,&CoreInteraction::openFromAlbum);//点击相册按钮打开图片
 }
 
 bool CoreInteraction::coreOperateTooOften()

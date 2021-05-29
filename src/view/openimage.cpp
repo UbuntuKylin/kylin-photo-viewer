@@ -3,6 +3,7 @@
 #include "sizedate.h"
 OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
 {
+    initInteraction();
     //最外层的大圆形
     m_openInCenter = new QPushButton(this);
     m_openInCenter->setFocusPolicy(Qt::NoFocus);
@@ -59,6 +60,11 @@ void OpenImage::openImagePath()
     QFileInfo info(file_path);
     Variable::setSettings("imagePath",info.absolutePath());
     emit openImageSignal(file_path);
+}
+
+void OpenImage::initInteraction()
+{
+    connect(Interaction::getInstance(),&Interaction::openFromAlbum,this,&OpenImage::openImagePath);//启动时打开图片
 }
 
 

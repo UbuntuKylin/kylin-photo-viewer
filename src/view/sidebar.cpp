@@ -50,6 +50,16 @@ void SideBar::initConnect()
 
 void SideBar::setCUrrIndex(QModelIndex modelIndex)
 {
-    this->setCurrentIndex(modelIndex);
+
+    //当为第一张图时，回到顶部
+    if (modelIndex.row() == 1) {
+        this->verticalScrollBar()->setValue(0);
+    }
+    if (modelIndex.row() == 0) {
+       this->setCurrentIndex(modelIndex.model()->index(1,0));
+    } else {
+        this->setCurrentIndex(modelIndex);
+    }
+
 }
 

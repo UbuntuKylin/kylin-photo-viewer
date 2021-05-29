@@ -183,7 +183,7 @@ QString Core::processingApi(const QStringList &cmd)
 
 void Core::setHighLight(const QString &path)
 {
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item =dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == path) {
             emit changeAlbumHighLight(item->index());
@@ -213,7 +213,7 @@ void Core::openImage(QString fullPath)
 //        changeImageType();
         deleteAlbumItem(fullPath);
         //全部图片都被删除了
-        if (m_albumModel->rowCount() == 0) {
+        if (m_albumModel->rowCount() == 1) {
             showImage(QPixmap());
             return;
         }
@@ -473,7 +473,7 @@ void Core::deleteImage()
     emit setHighLight(m_nowpath);
 
     //删除后队列中无图片，返回状态
-    if(m_albumModel->rowCount() == 0){
+    if(m_albumModel->rowCount() == 1){
         navigation();//关闭导航器
         showImage(QPixmap());//发送状态
         return;
@@ -568,7 +568,7 @@ void Core::changeImage(const int &type)
     }
 
     //如果图片队列小于1，不处理。小于2时，相册文件清空时，会一直显示当前图片
-    if (m_albumModel->rowCount()<1) {
+    if (m_albumModel->rowCount()<2) {
         m_backpath = m_nowpath;
         return;
     }
@@ -600,6 +600,11 @@ void Core::changeImageFromClick(QModelIndex modelIndex)
 {
     MyStandardItem *item = dynamic_cast<MyStandardItem *>(m_albumModel->itemFromIndex(modelIndex));
     if (item->getPath() == m_nowpath) {
+        return;
+    }
+    //判断是按钮点击，则打开图片
+    if (modelIndex.row() == 0) {
+        emit openFromAlbum();
         return;
     }
     changeImage(modelIndex.row());
@@ -682,7 +687,7 @@ void Core::changeImageType(QString path)
     m_matListIndex = 0;
     if (path == "") {//回滚
         deleteAlbumItem(m_nowpath);
-        if (m_albumModel->rowCount() == 0) {
+        if (m_albumModel->rowCount() == 1) {
             m_backpath = m_nowpath;
             m_nowpath = "";
             return;
@@ -746,7 +751,7 @@ void Core::deleteAlbumItem(const QString &path)
     if (path == "") {
         return;
     }
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == path) {
             m_albumModel->removeRow(i);
@@ -758,7 +763,7 @@ void Core::deleteAlbumItem(const QString &path)
 Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &newPath)
 {
 
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == oldPath) {
             return NEXT_IMAGE;
@@ -774,19 +779,19 @@ Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &n
 QString Core::nextImagePath(const QString &oldPath)
 {
     //相册中没有文件时，不进行处理
-    if (m_albumModel->rowCount()<1) {
+    if (m_albumModel->rowCount()<2) {
         return "";
     }
     MyStandardItem * item =nullptr;
     //最后一张切下一张时，回到队列开头
     item = dynamic_cast<MyStandardItem *>(m_albumModel->item(m_albumModel->rowCount()-1));
     if (item->getPath() == oldPath) {
-        item = dynamic_cast<MyStandardItem *>(m_albumModel->item(0));
+        item = dynamic_cast<MyStandardItem *>(m_albumModel->item(1));
         return item->getPath();
     }
 
     bool tmp = false;
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (tmp) {
             return item->getPath();
@@ -801,19 +806,19 @@ QString Core::nextImagePath(const QString &oldPath)
 QString Core::backImagePath(const QString &oldPath)
 {
     //相册中没有文件时，不进行处理
-    if (m_albumModel->rowCount()<1) {
+    if (m_albumModel->rowCount()<2) {
         return "";
     }
     MyStandardItem * item =nullptr;
     //第一张切上一张时，回到队列结尾
-    item = dynamic_cast<MyStandardItem *>(m_albumModel->item(0));
+    item = dynamic_cast<MyStandardItem *>(m_albumModel->item(1));
     if (item->getPath() == oldPath) {
         item = dynamic_cast<MyStandardItem *>(m_albumModel->item(m_albumModel->rowCount()-1));
         return item->getPath();
     }
 
     QString tmp = "";
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         QString tmp2 = item->getPath();
         if (tmp2 == oldPath) {
@@ -834,7 +839,7 @@ void Core::albumLoadFinish(QVariant var)
 {
     ImageAndInfo package = var.value<ImageAndInfo>();
     QString fileName = package.info.absoluteFilePath();
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == fileName) {
             if (package.image.isNull()) {
@@ -876,10 +881,10 @@ bool Core::isSamePath(QString path)
 
     QString pathDir = QFileInfo(path).absolutePath();
     QStringList pathlist;
-    int num = m_albumModel->rowCount();
+    int num = m_albumModel->rowCount() - 1;
     if (num > 0) {
 
-        for (int i = 0 ; i < num;i++) {
+        for (int i = 1 ; i < num;i++) {
             MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
             QFileInfo info(item->getPath());
             pathlist.append(info.absolutePath());
@@ -946,7 +951,17 @@ void Core::findAllImageFromDir(QString fullPath)
 void Core::loadAlbum(QString path, QStringList list)
 {
     //将所有图片存入队列
-    int i = 0;
+    int i = 1;
+    //将第一张图设置为打开按钮,只设置一次
+    if (m_item0 == nullptr) {
+        m_item0 = new MyStandardItem;
+        m_item0->setDragEnabled(false);
+        m_item0->setSizeHint(Variable::ALBUM_IMAGE_SIZE);
+        m_item0->setIcon(m_item0icon);
+        m_item0->setTextAlignment(Qt::AlignCenter);
+        m_albumModel->insertRow(0,m_item0);//插入model
+    }
+
     for (QString &filename : list) {
         QString tmpFullPath = path+"/"+filename;
         //构造item

@@ -26,6 +26,7 @@ signals:
     void coreProgremExit();//结束进程
     void changeAlbumHighLight(QModelIndex modelIndex);//在相册中选中到所切换的图片
     void delayShow(bool isLoading);//处理图片加载缓慢问题
+    void openFromAlbum();//从相册打开
 
 public:
     Core();
@@ -77,6 +78,8 @@ private:
     bool isSamePath(QString path);//判断打开的是不是相同路径
     void needSave();//判断是否需要保存图片
     bool m_isclose = false;
+    MyStandardItem *m_item0  = nullptr;
+
 
 };
 
