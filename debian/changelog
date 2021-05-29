@@ -1,6 +1,6 @@
 kylin-photo-viewer (1.0.0-15) v101; urgency=medium
   
-  * BUG号：55870
+  * BUG号：55870，56583
   * 需求号：无
   * 其他改动说明：无
   * 影响域：仅bug修复，无影响
