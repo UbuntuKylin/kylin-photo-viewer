@@ -83,8 +83,8 @@ void ShowImageWidget::sideState(int num)
     } else {
         emit changeSideSize(num - 1);
     }
-    //判断是否应该显示侧栏
-    if (num >= 2) {
+    //判断是否应该显示侧栏---添了一个加号，数字要加1
+    if (num >= 3) {
         if (m_isOpen != true) {
             return;
         }
@@ -209,7 +209,6 @@ void ShowImageWidget::startWithOpenImage(QString path)
 //打开图片
 void ShowImageWidget::openImage(QString path)
 {
-//    delayShow();
     Interaction::getInstance()->openImage(path);
 }
 //拿到图片信息，进行处理
@@ -226,18 +225,19 @@ void ShowImageWidget::openFinish(QVariant var)
     QString colorSpace = package.colorSpace;
     QString num;
     int number = package.imageNumber;//在队列中的标签
+    //侧栏上方新增加号，故number加1
     //判断有几张图片，分别进行处理：删除到0，显示打开界面；只有一张：不显示左右按钮。
-    if (number == 0) {
+    if (number == 1) {
         emit clearImage();
         //点击删除按钮删除全部文件时，此标志位应该重设为默认状态，防止之后继续打开图片造成相册大小有误差
         m_isDelete = false;
         return;
     }
-    if (number == 1) {
+    if (number == 2) {
         g_buttonState = false;
     } else {
         //删除时逻辑导致item总是比实际多一张，暂时先在前端进行判断来解决相关问题
-        if (number == 2 && m_isDelete == true) {
+        if (number == 3 && m_isDelete == true) {
             g_buttonState = false;
         } else {
             g_buttonState = true;

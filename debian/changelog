@@ -1,3 +1,9 @@
+kylin-photo-viewer (1.0.0-15kord3) v101; urgency=medium
+  
+  * 修复侧栏删除时未考虑增加加号按钮的数量变化
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Sat,29  May 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-15kord2) v101; urgency=medium
   
   * 相册按钮高亮，居中，深浅主题完成
