@@ -533,6 +533,30 @@ void Core::openInfile()
     process.close();
 }
 
+void Core::changeOpenIcon(QString theme)
+{
+
+    //将第一张图设置为打开按钮
+    if (m_item0 == nullptr) {
+        m_item0 = new MyStandardItem;
+        m_item0->setDragEnabled(false);
+        m_item0->setSizeHint(Variable::ALBUM_IMAGE_SIZE);
+        m_albumModel->insertRow(0,m_item0);//插入model
+    }
+    if ("ukui-dark" == theme || "ukui-black" == theme) {
+        if (m_item0 != nullptr) {
+            qDebug()<<"2";
+            m_item0->setIcon(m_item0Black);//用来保存地址路径
+        }
+    } else {
+        if (m_item0 != nullptr) {
+            qDebug()<<"1";
+            m_item0->setIcon(m_item0White);//用来保存地址路径
+        }
+    }
+
+}
+
 void Core::close()
 {
     //如果已经触发过关闭事件不响应
@@ -978,15 +1002,6 @@ void Core::loadAlbum(QString path, QStringList list)
 {
     //将所有图片存入队列
     int i = 1;
-    //将第一张图设置为打开按钮,只设置一次
-    if (m_item0 == nullptr) {
-        m_item0 = new MyStandardItem;
-        m_item0->setDragEnabled(false);
-        m_item0->setSizeHint(Variable::ALBUM_IMAGE_SIZE);
-        m_item0->setIcon(m_item0icon);
-        m_item0->setTextAlignment(Qt::AlignCenter);
-        m_albumModel->insertRow(0,m_item0);//插入model
-    }
 
     for (QString &filename : list) {
         QString tmpFullPath = path+"/"+filename;

@@ -185,6 +185,13 @@ public:
      */
     virtual void openImageInfile()=0;//在文件夹中打开
     /*
+     * 接口功能：主题切换。相册打开按钮图标更换
+     * 接口场景：主题切换
+     * 接口类型：函数，直接调用
+     * 参数类型：QString
+     */
+    virtual void changeOpenIcon(QString theme)=0;//更改主题，切换相册打开按钮图标
+    /*
      * 接口功能：结束当前进程
      * 接口场景：点击退出按钮时
      * 接口类型：函数，直接调用

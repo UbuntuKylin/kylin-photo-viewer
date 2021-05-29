@@ -111,7 +111,7 @@ void KyView::initconnect()
 
     //打开图片
     connect(m_openImage,&OpenImage::openImageSignal,m_showImageWidget,&ShowImageWidget::openImage);
-
+    connect(m_openImage,&OpenImage::openEmptyFile,m_sideBar,&SideBar::openEmptyFile);
     //改变顶栏显示的图片名字
     connect(m_showImageWidget,&ShowImageWidget::perRate,m_toolbar,&ToolBar::changePerRate);
     //打开图片--主界面的界面显示处理
@@ -422,9 +422,9 @@ void KyView::themeChange()
         m_showImageWidget->g_next->setIcon(QIcon(":/res/res/1right.png"));
         m_showImageWidget->g_back->setIcon(QIcon(":/res/res/1left.png"));
         m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(26, 26, 26, 0.7)}"
-                                   "QListView::item{margin:0 2px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
-                                   "QListView::item:selected{border:2px solid rgba(13, 135, 255, 0.86);background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
-                                   "QListView::item:hover{background:rgba(255, 255, 255, 0.9);border-radius:2px;}");
+                                   "QListView::item{margin:0 2px 0 0;background:rgba(0, 0, 0, 0.4);border-radius:2px;}"
+                                   "QListView::item:selected{border:2px solid rgba(13, 135, 255, 1);background:rgba(0, 0, 0, 0.4);border-radius:2px;}"
+                                   "QListView::item:hover{background:rgba(0, 0, 0, 0.4);border-radius:2px;}");
     } else {
         m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-top-left-radius:0px;border-top-right-radius：0px;border-bottom-left-radius:4px;border-bottom-right-radius:0px;");
         m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(227, 235, 239, 0.7)}"
@@ -435,7 +435,8 @@ void KyView::themeChange()
         m_showImageWidget->g_next->setIcon(QIcon(":/res/res/right.png"));
         m_showImageWidget->g_back->setIcon(QIcon(":/res/res/left.png"));
     }
-     m_toolbar->changeStyle();
+    Interaction::getInstance()->changeOpenIcon(themeStyle);
+    m_toolbar->changeStyle();
 
 }
 

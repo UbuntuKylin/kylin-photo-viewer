@@ -42,6 +42,13 @@ void SideBar::getSelect(int type)
     }
 }
 
+void SideBar::openEmptyFile(bool changeHigh)
+{
+    if (changeHigh == true) {
+        setCUrrIndex(m_modelIndexOld);
+    }
+}
+
 void SideBar::initConnect()
 {
     connect(this,&SideBar::clicked,Interaction::getInstance(),&Interaction::changeImageFromClick);
@@ -50,16 +57,16 @@ void SideBar::initConnect()
 
 void SideBar::setCUrrIndex(QModelIndex modelIndex)
 {
-
     //当为第一张图时，回到顶部
     if (modelIndex.row() == 1) {
         this->verticalScrollBar()->setValue(0);
     }
-    if (modelIndex.row() == 0) {
-       this->setCurrentIndex(modelIndex.model()->index(1,0));
-    } else {
-        this->setCurrentIndex(modelIndex);
+    //存上一个，为了点击加号，但不打开时，能切换到正确的显示
+    if (modelIndex.row() != 0) {
+        m_modelIndexOld = modelIndex;
     }
+    this->setCurrentIndex(modelIndex);
+
 
 }
 

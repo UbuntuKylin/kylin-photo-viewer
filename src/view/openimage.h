@@ -33,6 +33,7 @@ private slots:
 
 signals:
     void openImageSignal(QString path);
+    void openEmptyFile(bool changHigh);
 };
 
 #endif // OPENIMAGE_H

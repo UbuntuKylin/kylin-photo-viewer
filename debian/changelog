@@ -1,3 +1,9 @@
+kylin-photo-viewer (1.0.0-15kord2) v101; urgency=medium
+  
+  * 相册按钮高亮，居中，深浅主题完成
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Sat,29  May 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-15kord1) v101; urgency=medium
   
   * 目前已知问题：相册按钮图片不对，相册在打开又取消的时候高亮切换问题

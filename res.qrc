@@ -65,6 +65,6 @@
         <file>res/loadgif23.gif</file>
         <file>res/little_add.png</file>
         <file>res/addalbum_white.png</file>
-        <file>res/addalbum_black.png</file>
+        <file>res/1addalbum_black.png</file>
     </qresource>
 </RCC>

@@ -54,11 +54,13 @@ void OpenImage::openImagePath()
     file_path = QFileDialog::getOpenFileName(this,openFile,Variable::getSettings("imagePath").toString(),format);
     //空校验，点击“取消”
     if (file_path.isEmpty()) {
+        emit openEmptyFile(true);
         return;
     }
     //写入配置
     QFileInfo info(file_path);
     Variable::setSettings("imagePath",info.absolutePath());
+    emit openEmptyFile(false);
     emit openImageSignal(file_path);
 }
 

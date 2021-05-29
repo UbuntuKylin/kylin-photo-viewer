@@ -106,10 +106,15 @@ void Information::contentText(QFileInfo info, QString sizeImage, QString spaceCo
         QString Size = QString("%1").arg(QString::asprintf("%.1f", float(info.size())/1024));
         imageSize = Size + "Kib";
     }
-    m_nameC->setText(AutoFeed(info.completeBaseName()));
-    if (m_linenum) {
+    QString nameContant = AutoFeed(info.completeBaseName());
+    //判断窗口大小和是否显示tooltips
+    if (nameContant.contains("…")) {
+        m_linenum = true;
         m_nameC->setToolTip(info.completeBaseName());
+    } else {
+        m_linenum = false;
     }
+    m_nameC->setText(nameContant);
     m_formatC->setText(info.suffix());
     m_storageSizeC->setText(imageSize);
     m_pixelSizeC->setText(sizeImage);
@@ -175,16 +180,12 @@ QString Information::AutoFeed(QString text)
             //超过两行减三点，加上...
             if (fm.width(strText.left(i)) > 2 * (width-6))
             {
-                strText.insert(i - 2, "…\n");
-                break;
+                strText.insert(i - 2, "…");
+                strText = strText.mid(0,i-1);
+                return strText;
             }
         }
     }
-    //设置标志位来重设窗口大小和是否显示tooltips
-    if (strText.contains("…")) {
-        m_linenum = true;
-    } else {
-        m_linenum = false;
-    }
+
     return strText;
 }
