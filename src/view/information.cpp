@@ -64,6 +64,7 @@ Information::Information(QWidget *parent) : QWidget(parent)
     m_nameC = new QLabel(this);
     m_nameC->setAttribute(Qt::WA_TranslucentBackground);
     m_nameC->setFont(m_ftContent);
+    m_nameC->setWordWrap(true);
 
     m_formatC = new QLabel(this);
     m_formatC->setAttribute(Qt::WA_TranslucentBackground);
@@ -91,7 +92,7 @@ Information::Information(QWidget *parent) : QWidget(parent)
     //布局
     m_inforWid = new QWidget(this);
     m_gdLayout =new QGridLayout(this);
-    this->layout();
+
 
 }
 //为各控件设置text
@@ -105,48 +106,85 @@ void Information::contentText(QFileInfo info, QString sizeImage, QString spaceCo
         QString Size = QString("%1").arg(QString::asprintf("%.1f", float(info.size())/1024));
         imageSize = Size + "Kib";
     }
-    longText(m_nameC,info.completeBaseName());
+    m_nameC->setText(AutoFeed(info.completeBaseName()));
+    if (m_linenum) {
+        m_nameC->setToolTip(info.completeBaseName());
+    }
     m_formatC->setText(info.suffix());
     m_storageSizeC->setText(imageSize);
     m_pixelSizeC->setText(sizeImage);
     m_colorSpaceC->setText(spaceColor);
     m_creationTimeC->setText(info.birthTime().toString("yyyy.MM.dd hh:mm"));
     m_revisionTimeC->setText(info.lastModified().toString("yyyy.MM.dd hh:mm"));
+    this->layout();
 
 }
-//布局
+//布局--需要根据图片名字是否是两行来重设大小
 void Information::layout()
+{
+    if (!m_nameC->text().isEmpty()) {
+        if (m_linenum) {
+            this->layoutS(1);
+        } else {
+            this->layoutS(0);
+        }
+    }
+}
+
+void Information::layoutS(int line)
 {
     m_gdLayout->addWidget(m_widName,0,0,1,2);
     m_gdLayout->addWidget(m_name,1,0,1,1);
-    m_gdLayout->addWidget(m_nameC,1,3,1,4);
-    m_gdLayout->addWidget(m_format,2,0,1,1);
-    m_gdLayout->addWidget(m_formatC,2,3,1,4);
-    m_gdLayout->addWidget(m_storageSize,3,0,1,1);
-    m_gdLayout->addWidget(m_storageSizeC,3,3,1,4);
-    m_gdLayout->addWidget(m_pixelSize,4,0,1,1);
-    m_gdLayout->addWidget(m_pixelSizeC,4,3,1,4);
-    m_gdLayout->addWidget(m_colorSpace,5,0,1,2);
-    m_gdLayout->addWidget(m_colorSpaceC,5,3,1,4);
-    m_gdLayout->addWidget(m_creationTime,6,0,1,2);
-    m_gdLayout->addWidget(m_creationTimeC,6,3,1,4);
-    m_gdLayout->addWidget(m_revisionTime,7,0,1,2);
-    m_gdLayout->addWidget(m_revisionTimeC,7,3,1,4);
+    m_gdLayout->addWidget(m_nameC,1,3,1 +line,4,Qt::AlignLeft|Qt::AlignTop);
+    m_gdLayout->addWidget(m_format,2+line,0,1,1);
+    m_gdLayout->addWidget(m_formatC,2+line,3,1,4);
+    m_gdLayout->addWidget(m_storageSize,3+line,0,1,1);
+    m_gdLayout->addWidget(m_storageSizeC,3+line,3,1,4);
+    m_gdLayout->addWidget(m_pixelSize,4+line,0,1,1);
+    m_gdLayout->addWidget(m_pixelSizeC,4+line,3,1,4);
+    m_gdLayout->addWidget(m_colorSpace,5+line,0,1,2);
+    m_gdLayout->addWidget(m_colorSpaceC,5+line,3,1,4);
+    m_gdLayout->addWidget(m_creationTime,6+line,0,1,2);
+    m_gdLayout->addWidget(m_creationTimeC,6+line,3,1,4);
+    m_gdLayout->addWidget(m_revisionTime,7+line,0,1,2);
+    m_gdLayout->addWidget(m_revisionTimeC,7+line,3,1,4);
 
-    m_gdLayout->setContentsMargins(12,10,10,16);
+    m_gdLayout->setContentsMargins(12,10-line*3,10,16-line*3);
     m_inforWid->setLayout(m_gdLayout);
     m_inforWid->resize(this->width(),this->height());
-//    m_inforWid->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
+    //    m_inforWid->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 }
-//文字过长时，显示...，且可鼠标悬浮显示全部内容
-void Information::longText(QLabel *nameC, QString text)
+//文字过长时，最大换两行后显示...
+QString Information::AutoFeed(QString text)
 {
-    QFontMetrics fontWidth(nameC->font());//得到每个字符的宽度
-    int wid = fontWidth.width(m_revisionTimeC->text());
-    QString elideNote = fontWidth.elidedText(text, Qt::ElideRight, wid);//最大宽度wid像素
-    nameC->setText(elideNote);//显示省略好的字符串
-    if (elideNote.contains("…",Qt::CaseInsensitive)) {
-         nameC->setToolTip(text);//设置tooltips
+    QString strText = text;
+    int AntoIndex = 1;
+    QFontMetrics fm(m_nameC->font());
+    int width = fm.width(m_revisionTimeC->text());
+    //手动处理图片名字，来进行换行（支持中英文，数字，故替换掉原先的方法）
+    if (!strText.isEmpty())
+    {
+        for (int i = 1; i < strText.size() + 1; i++)
+        {
+            //超过width长度，加换行符换行
+            if (fm.width(strText.left(i)) > width * AntoIndex)
+            {
+                AntoIndex++;
+                strText.insert(i - 1, "\n");
+            }
+            //超过两行减三点，加上...
+            if (fm.width(strText.left(i)) > 2 * (width-6))
+            {
+                strText.insert(i - 2, "…\n");
+                break;
+            }
+        }
     }
+    //设置标志位来重设窗口大小和是否显示tooltips
+    if (strText.contains("…")) {
+        m_linenum = true;
+    } else {
+        m_linenum = false;
+    }
+    return strText;
 }

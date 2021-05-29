@@ -65,26 +65,21 @@ private:
     SideBar *m_sideBar = nullptr;//相册
     QGSettings *m_pGsettingThemeData = nullptr;//主题
     QGSettings *m_pGsettingControlTrans = nullptr;//控制面板透明度
-
-    QTimer *m_timer;
-    QTimer *m_timernavi;
+    //定时器
+    QTimer *m_timer;//移入移出两栏区域定时器
+    QTimer *m_timernavi;//离开界面或进入显隐事件的定时器
     QTimer *m_timeNomove;//鼠标两秒不动
 
-    // 用户手册功能
-    DaemonDbus *m_DaemonIpcDbus;
-
-    QLocale m_local;
-
+    DaemonDbus *m_DaemonIpcDbus;// 用户手册功能
+    QLocale m_local;//检测系统语言环境
     bool m_mousePress; //按下鼠标左键
     bool m_inforState = true;//信息栏状态
     bool m_albumState = true;//相册状态
     bool m_albumShow = true;//切换图片时，相册状态
     bool m_titleState = true; //鼠标离开进入时，有关菜单下拉列表show时的问题，先默认没有离开界面
-    double m_tran = 0.6;
-    QString m_icon;
+    double m_tran = 0.60;//透明度
+
     void initconnect();//初始化连接
-
-
     void titlebarChange();//改变顶栏位置和大小
     void openImageChange();//改变中间打开图片位置和大小
     void showImageChange();//改变图片展示的位置和大小
@@ -94,7 +89,6 @@ private:
     void albumChange();//改变相册位置
     void hoverChange(int y);//hover态，顶栏和工具栏的状态
     void initGsetting();//监听主题变化
-//    void initGSetting_tran();//监听控制面板变化
     void themeChange();//主题变化
     void transChange();//控制面板变化
     void avoidChange();//防止点击即切换的情况
@@ -112,7 +106,7 @@ private:
     void dragEnterEvent(QDragEnterEvent *event);//文件拖拽显示事件--判断是否响应dropevent
     void dropEvent(QDropEvent *event);//文件拖拽响应
 
-    void x11EventEnd();
+    void x11EventEnd();//窗口移动事件
     QPoint m_mousePointFromWindow;//记录拖动时鼠标位置
 
 
@@ -136,8 +130,8 @@ private slots:
 
     void changOrigSize();//主界面最大化和还原
     void toShowImage();//显示图片
-    void showSidebar();//显示相册
-    void defaultSidebar();
+    void showSidebar();//判断是否显示相册
+    void defaultSidebar();//相册显示
 
     void delayHide();//顶栏工具栏的延时隐藏
     void delayHide_navi();//导航栏在鼠标离开界面时隐藏

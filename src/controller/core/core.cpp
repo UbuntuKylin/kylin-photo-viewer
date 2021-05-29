@@ -242,7 +242,7 @@ void Core::openImage(QString fullPath)
         showImage(QPixmap());
         return;
     }
-    creatImage();
+    creatImage(-1,true);
     return;
 }
 
@@ -260,7 +260,7 @@ void Core::showImage(const QPixmap &pix)
     emit openFinish(var);
 }
 
-void Core::creatImage(const int &proportion)
+void Core::creatImage(const int &proportion,bool noAction)
 {
 
     if (m_nowImage.isNull()) {
@@ -271,6 +271,33 @@ void Core::creatImage(const int &proportion)
     if (m_nowImage.height() * defaultProportion / 100 > m_size.height()) {
         defaultProportion = 100 * m_size.height() / m_nowImage.height();
     }
+    if (noAction == false) {
+        operateImage(proportion,defaultProportion);
+    } else {
+        defaultImage(proportion,defaultProportion);
+    }
+
+}
+
+void Core::defaultImage(int proportion, int defaultProportion)
+{
+    //自适应窗口大小显示
+    if (proportion <= 0) {
+        if (defaultProportion >= 100) {
+             m_proportion = 100;
+        } else {
+            m_proportion  = defaultProportion;
+        }
+        m_tmpSize = m_nowImage.size() * m_proportion / 100;
+        navigation(); //关闭导航器
+        showImageOrMovie();
+        return;
+    }
+
+}
+
+void Core::operateImage(int proportion, int defaultProportion)
+{
 
     //自适应窗口大小显示
     if (proportion <= 0) {
@@ -284,7 +311,6 @@ void Core::creatImage(const int &proportion)
         showImageOrMovie();
         return;
     }
-
     m_proportion = proportion;
     m_tmpSize = m_nowImage.size() * m_proportion / 100;
     //如果显示比例大于默认比例
@@ -441,7 +467,7 @@ void Core::flipImage(const Processing::FlipWay &way)
         }
         //刷新导航栏
         m_nowImage = Processing::converFormat(m_matList->first());
-        creatImage();
+        creatImage(-1,true);
         return;
     }
     Mat mat = Processing::processingImage(Processing::flip,m_nowMat,QVariant(way));
@@ -450,7 +476,7 @@ void Core::flipImage(const Processing::FlipWay &way)
     }
     mat = changeMat(mat);
     m_nowImage = Processing::converFormat(mat);
-    creatImage();
+    creatImage(-1,true);
 }
 
 void Core::deleteImage()
@@ -614,7 +640,7 @@ void Core::changeImageFromClick(QModelIndex modelIndex)
 void Core::changeWidgetSize(const QSize &size)
 {
     m_size = size;
-    creatImage();
+    creatImage(-1,true);
 }
 
 void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
@@ -635,16 +661,16 @@ void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
         }
         if (m_proportion + resizeKey > Variable::RESIZE_KEY_MAX) {//将要超出临界值
             tmpProportion = Variable::RESIZE_KEY_MAX;
-            creatImage(tmpProportion);
+            creatImage(tmpProportion,false);
             return;
         }
         if (m_proportion % resizeKey != 0) { //不能整除
             tmpProportion = (m_proportion/resizeKey + 1)*resizeKey;
-            creatImage(tmpProportion);
+            creatImage(tmpProportion,false);
             return;
         }
         tmpProportion = m_proportion + resizeKey;
-        creatImage(tmpProportion);
+        creatImage(tmpProportion,false);
         return;
 
         ///----------------------------缩小图片----------------------------
@@ -654,26 +680,26 @@ void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
         }
         if (m_proportion - resizeKey < Variable::RESIZE_KEY_MIN) {//将要超出临界值
             tmpProportion = Variable::RESIZE_KEY_MIN;
-            creatImage(tmpProportion);
+            creatImage(tmpProportion,false);
             return;
         }
         if (m_proportion % resizeKey != 0) { //不能整除
             tmpProportion = (m_proportion/resizeKey)*resizeKey;
-            creatImage(tmpProportion);
+            creatImage(tmpProportion,false);
             return;
         }
         tmpProportion = m_proportion - resizeKey;
-        creatImage(tmpProportion);
+        creatImage(tmpProportion,false);
         return;
 
         ///----------------------------查看原图----------------------------
     case ImageShowStatus::ORIGIN:
-        creatImage(100);
+        creatImage(100,false);
         return;
 
         ///----------------------------查看自适应图----------------------------
     case ImageShowStatus::AUTO:
-        creatImage();
+        creatImage(-1,false);
         return;
 
     default:

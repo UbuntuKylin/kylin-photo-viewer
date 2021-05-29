@@ -251,11 +251,12 @@ void KyView::delayHide()
     if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden())
     {
         m_titlebar->show();
+        m_toolbar->show();
     }else{
         m_titlebar->hide();
+        m_toolbar->hide();
     }
 
-    m_toolbar->hide();
     inforChange();
 //    }
 }
@@ -283,6 +284,10 @@ void KyView::delayHide_move()
     //如果下拉菜单show，则标题栏必须show
     if (!m_titlebar->g_menu->m_menu->isHidden()) {
         return;
+    }
+    //解决刚一打开图片，不到两秒就隐藏的问题
+    if (m_timeNomove->isActive()) {
+        m_timeNomove->stop();
     }
     m_titlebar->hide();
     m_toolbar->hide();
@@ -357,9 +362,16 @@ void KyView::hoverChange(int y)
         //信息栏位置的变化
         inforChange();
     } else {
-        if (!m_timer->isActive()) {
-            m_timer->start(2000);
+
+        //判断定时器是否正在计时。如是，则停止---不停止的话，目前发现，不到两秒就隐藏了，双重保险
+        if (m_timer->isActive()) {
+            m_timer->stop();
         }
+        if (m_timernavi->isActive()) {
+            m_timernavi->stop();
+        }
+
+        m_timer->start(2000);
         //判断列表中是否只有一张图，一张图片左右按钮不显示
         if (m_showImageWidget->g_buttonState == false) {
             this->m_showImageWidget->g_next->hide();
@@ -498,6 +510,7 @@ void KyView::toShowImage()
     }
     inforChange();
     if (m_timeNomove->isActive()) {
+        m_timeNomove->stop();
         return;
     }
     m_timeNomove->start(2000);
@@ -655,11 +668,9 @@ void KyView::paintEvent(QPaintEvent *event)
     QColor mainColor;
 
     if (QColor(255,255,255) == opt.palette.color(QPalette::Base) || QColor(248,248,248) == opt.palette.color(QPalette::Base)) {
-//        mainColor = QColor(254, 254, 254,155);
         mainColor = QColor(242, 242, 242,m_tran);
     } else {
         mainColor = QColor(20, 20, 20,m_tran);
-//        mainColor = QColor(26, 26, 26,200);
     }
 
     p.fillPath(rectPath,QBrush(mainColor));
