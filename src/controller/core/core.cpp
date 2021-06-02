@@ -500,7 +500,8 @@ void Core::setAsBackground()
 void Core::openInfile()
 {
     QProcess process;
-    process.start("peony --show-items " + m_nowpath);
+    QString str = "\"" + m_nowpath + "\"";
+    process.start("peony --show-items " + str);
     process.waitForFinished();
     process.waitForReadyRead();
     process.close();
