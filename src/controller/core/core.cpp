@@ -183,7 +183,7 @@ QString Core::processingApi(const QStringList &cmd)
 
 void Core::setHighLight(const QString &path)
 {
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item =dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == path) {
             emit changeAlbumHighLight(item->index());
@@ -213,7 +213,7 @@ void Core::openImage(QString fullPath)
 //        changeImageType();
         deleteAlbumItem(fullPath);
         //全部图片都被删除了
-        if (m_albumModel->rowCount() == 0) {
+        if (m_albumModel->rowCount() == 1) {
             showImage(QPixmap());
             return;
         }
@@ -242,7 +242,7 @@ void Core::openImage(QString fullPath)
         showImage(QPixmap());
         return;
     }
-    creatImage();
+    creatImage(-1,true);
     return;
 }
 
@@ -260,7 +260,7 @@ void Core::showImage(const QPixmap &pix)
     emit openFinish(var);
 }
 
-void Core::creatImage(const int &proportion)
+void Core::creatImage(const int &proportion,bool noAction)
 {
 
     if (m_nowImage.isNull()) {
@@ -271,6 +271,33 @@ void Core::creatImage(const int &proportion)
     if (m_nowImage.height() * defaultProportion / 100 > m_size.height()) {
         defaultProportion = 100 * m_size.height() / m_nowImage.height();
     }
+    if (noAction == false) {
+        operateImage(proportion,defaultProportion);
+    } else {
+        defaultImage(proportion,defaultProportion);
+    }
+
+}
+
+void Core::defaultImage(int proportion, int defaultProportion)
+{
+    //自适应窗口大小显示
+    if (proportion <= 0) {
+        if (defaultProportion >= 100) {
+             m_proportion = 100;
+        } else {
+            m_proportion  = defaultProportion;
+        }
+        m_tmpSize = m_nowImage.size() * m_proportion / 100;
+        navigation(); //关闭导航器
+        showImageOrMovie();
+        return;
+    }
+
+}
+
+void Core::operateImage(int proportion, int defaultProportion)
+{
 
     //自适应窗口大小显示
     if (proportion <= 0) {
@@ -284,7 +311,6 @@ void Core::creatImage(const int &proportion)
         showImageOrMovie();
         return;
     }
-
     m_proportion = proportion;
     m_tmpSize = m_nowImage.size() * m_proportion / 100;
     //如果显示比例大于默认比例
@@ -441,7 +467,7 @@ void Core::flipImage(const Processing::FlipWay &way)
         }
         //刷新导航栏
         m_nowImage = Processing::converFormat(m_matList->first());
-        creatImage();
+        creatImage(-1,true);
         return;
     }
     Mat mat = Processing::processingImage(Processing::flip,m_nowMat,QVariant(way));
@@ -450,7 +476,7 @@ void Core::flipImage(const Processing::FlipWay &way)
     }
     mat = changeMat(mat);
     m_nowImage = Processing::converFormat(mat);
-    creatImage();
+    creatImage(-1,true);
 }
 
 void Core::deleteImage()
@@ -473,7 +499,7 @@ void Core::deleteImage()
     emit setHighLight(m_nowpath);
 
     //删除后队列中无图片，返回状态
-    if(m_albumModel->rowCount() == 0){
+    if(m_albumModel->rowCount() == 1){
         navigation();//关闭导航器
         showImage(QPixmap());//发送状态
         return;
@@ -505,6 +531,28 @@ void Core::openInfile()
     process.waitForFinished();
     process.waitForReadyRead();
     process.close();
+}
+
+void Core::changeOpenIcon(QString theme)
+{
+
+    //将第一张图设置为打开按钮
+    if (m_item0 == nullptr) {
+        m_item0 = new MyStandardItem;
+        m_item0->setDragEnabled(false);
+        m_item0->setSizeHint(Variable::ALBUM_IMAGE_SIZE);
+        m_albumModel->insertRow(0,m_item0);//插入model
+    }
+    if ("ukui-dark" == theme || "ukui-black" == theme) {
+        if (m_item0 != nullptr) {
+            m_item0->setIcon(m_item0Black);//用来保存地址路径
+        }
+    } else {
+        if (m_item0 != nullptr) {
+            m_item0->setIcon(m_item0White);//用来保存地址路径
+        }
+    }
+
 }
 
 void Core::close()
@@ -540,9 +588,9 @@ void Core::close()
         m_file->saveImage(m_matList,m_fps,m_nowpath,m_apiReplaceFile);
         m_shouldClose = true;
     } else {
-        QString suffix = QFileInfo(m_nowpath).suffix().toLower();
         //保存图片
         m_file->saveImage(m_nowMat,m_nowpath,m_apiReplaceFile);
+        QString suffix = QFileInfo(m_nowpath).suffix().toLower();
         if (suffix == "apng" || suffix == "png" || suffix == "gif") {
             if (m_matList != nullptr) {
                 if (m_matList->length() > 1) {
@@ -568,7 +616,7 @@ void Core::changeImage(const int &type)
     }
 
     //如果图片队列小于1，不处理。小于2时，相册文件清空时，会一直显示当前图片
-    if (m_albumModel->rowCount()<1) {
+    if (m_albumModel->rowCount()<2) {
         m_backpath = m_nowpath;
         return;
     }
@@ -602,6 +650,11 @@ void Core::changeImageFromClick(QModelIndex modelIndex)
     if (item->getPath() == m_nowpath) {
         return;
     }
+    //判断是按钮点击，则打开图片
+    if (modelIndex.row() == 0) {
+        emit openFromAlbum();
+        return;
+    }
     changeImage(modelIndex.row());
 //    openImage(item->getPath());
 }
@@ -609,7 +662,7 @@ void Core::changeImageFromClick(QModelIndex modelIndex)
 void Core::changeWidgetSize(const QSize &size)
 {
     m_size = size;
-    creatImage();
+    creatImage(-1,true);
 }
 
 void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
@@ -630,16 +683,16 @@ void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
         }
         if (m_proportion + resizeKey > Variable::RESIZE_KEY_MAX) {//将要超出临界值
             tmpProportion = Variable::RESIZE_KEY_MAX;
-            creatImage(tmpProportion);
+            creatImage(tmpProportion,false);
             return;
         }
         if (m_proportion % resizeKey != 0) { //不能整除
             tmpProportion = (m_proportion/resizeKey + 1)*resizeKey;
-            creatImage(tmpProportion);
+            creatImage(tmpProportion,false);
             return;
         }
         tmpProportion = m_proportion + resizeKey;
-        creatImage(tmpProportion);
+        creatImage(tmpProportion,false);
         return;
 
         ///----------------------------缩小图片----------------------------
@@ -649,26 +702,26 @@ void Core::changeImageShowSize(ImageShowStatus::ChangeShowSizeType type)
         }
         if (m_proportion - resizeKey < Variable::RESIZE_KEY_MIN) {//将要超出临界值
             tmpProportion = Variable::RESIZE_KEY_MIN;
-            creatImage(tmpProportion);
+            creatImage(tmpProportion,false);
             return;
         }
         if (m_proportion % resizeKey != 0) { //不能整除
             tmpProportion = (m_proportion/resizeKey)*resizeKey;
-            creatImage(tmpProportion);
+            creatImage(tmpProportion,false);
             return;
         }
         tmpProportion = m_proportion - resizeKey;
-        creatImage(tmpProportion);
+        creatImage(tmpProportion,false);
         return;
 
         ///----------------------------查看原图----------------------------
     case ImageShowStatus::ORIGIN:
-        creatImage(100);
+        creatImage(100,false);
         return;
 
         ///----------------------------查看自适应图----------------------------
     case ImageShowStatus::AUTO:
-        creatImage();
+        creatImage(-1,false);
         return;
 
     default:
@@ -682,7 +735,7 @@ void Core::changeImageType(QString path)
     m_matListIndex = 0;
     if (path == "") {//回滚
         deleteAlbumItem(m_nowpath);
-        if (m_albumModel->rowCount() == 0) {
+        if (m_albumModel->rowCount() == 1) {
             m_backpath = m_nowpath;
             m_nowpath = "";
             return;
@@ -746,7 +799,7 @@ void Core::deleteAlbumItem(const QString &path)
     if (path == "") {
         return;
     }
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == path) {
             m_albumModel->removeRow(i);
@@ -758,7 +811,7 @@ void Core::deleteAlbumItem(const QString &path)
 Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &newPath)
 {
 
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == oldPath) {
             return NEXT_IMAGE;
@@ -774,19 +827,19 @@ Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &n
 QString Core::nextImagePath(const QString &oldPath)
 {
     //相册中没有文件时，不进行处理
-    if (m_albumModel->rowCount()<1) {
+    if (m_albumModel->rowCount()<2) {
         return "";
     }
     MyStandardItem * item =nullptr;
     //最后一张切下一张时，回到队列开头
     item = dynamic_cast<MyStandardItem *>(m_albumModel->item(m_albumModel->rowCount()-1));
     if (item->getPath() == oldPath) {
-        item = dynamic_cast<MyStandardItem *>(m_albumModel->item(0));
+        item = dynamic_cast<MyStandardItem *>(m_albumModel->item(1));
         return item->getPath();
     }
 
     bool tmp = false;
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (tmp) {
             return item->getPath();
@@ -801,19 +854,19 @@ QString Core::nextImagePath(const QString &oldPath)
 QString Core::backImagePath(const QString &oldPath)
 {
     //相册中没有文件时，不进行处理
-    if (m_albumModel->rowCount()<1) {
+    if (m_albumModel->rowCount()<2) {
         return "";
     }
     MyStandardItem * item =nullptr;
     //第一张切上一张时，回到队列结尾
-    item = dynamic_cast<MyStandardItem *>(m_albumModel->item(0));
+    item = dynamic_cast<MyStandardItem *>(m_albumModel->item(1));
     if (item->getPath() == oldPath) {
         item = dynamic_cast<MyStandardItem *>(m_albumModel->item(m_albumModel->rowCount()-1));
         return item->getPath();
     }
 
     QString tmp = "";
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         QString tmp2 = item->getPath();
         if (tmp2 == oldPath) {
@@ -834,7 +887,7 @@ void Core::albumLoadFinish(QVariant var)
 {
     ImageAndInfo package = var.value<ImageAndInfo>();
     QString fileName = package.info.absoluteFilePath();
-    for (int i = 0;i<m_albumModel->rowCount();i++) {
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
         MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
         if (item->getPath() == fileName) {
             if (package.image.isNull()) {
@@ -876,10 +929,10 @@ bool Core::isSamePath(QString path)
 
     QString pathDir = QFileInfo(path).absolutePath();
     QStringList pathlist;
-    int num = m_albumModel->rowCount();
+    int num = m_albumModel->rowCount() - 1;
     if (num > 0) {
 
-        for (int i = 0 ; i < num;i++) {
+        for (int i = 1 ; i < num;i++) {
             MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
             QFileInfo info(item->getPath());
             pathlist.append(info.absolutePath());
@@ -946,7 +999,8 @@ void Core::findAllImageFromDir(QString fullPath)
 void Core::loadAlbum(QString path, QStringList list)
 {
     //将所有图片存入队列
-    int i = 0;
+    int i = 1;
+
     for (QString &filename : list) {
         QString tmpFullPath = path+"/"+filename;
         //构造item

@@ -75,9 +75,9 @@ KyView::KyView(const QStringList &args)
 
     //定时器
     m_timer = new QTimer(this);
-    m_timer->setSingleShot(true);
+//    m_timer->setSingleShot(true);
     m_timernavi = new QTimer(this);
-    m_timernavi->setSingleShot(true);
+//    m_timernavi->setSingleShot(true);
     m_timeNomove = new QTimer(this);
 //    m_timeNomove->setSingleShot(true);
 
@@ -111,7 +111,7 @@ void KyView::initconnect()
 
     //打开图片
     connect(m_openImage,&OpenImage::openImageSignal,m_showImageWidget,&ShowImageWidget::openImage);
-
+    connect(m_openImage,&OpenImage::openEmptyFile,m_sideBar,&SideBar::openEmptyFile);
     //改变顶栏显示的图片名字
     connect(m_showImageWidget,&ShowImageWidget::perRate,m_toolbar,&ToolBar::changePerRate);
     //打开图片--主界面的界面显示处理
@@ -137,7 +137,7 @@ void KyView::initconnect()
     connect(m_timer ,&QTimer::timeout, this, &KyView::delayHide);
     connect(m_timernavi ,&QTimer::timeout, this, &KyView::delayHide_navi);
     connect(m_timeNomove ,&QTimer::timeout, this, &KyView::delayHide_move);
-    m_timeNomove->start(2000);
+    m_timeNomove->start(2500);
     //设置相册尺寸
     connect(m_showImageWidget,&ShowImageWidget::changeSideSize,m_sideBar,&SideBar::getSelect);
     connect(this,&KyView::albumState,m_showImageWidget,&ShowImageWidget::albumSlot);
@@ -246,16 +246,15 @@ void KyView::delayHide()
     if (this->mapFromGlobal(QCursor::pos()).y() < BAR_HEIGHT  || this->mapFromGlobal(QCursor::pos()).y() >= this->height()- BAR_HEIGHT) {
         return;
     }
-//    if (this->mapFromGlobal(QCursor::pos()).y() > BAR_HEIGHT  && this->mapFromGlobal(QCursor::pos()).y() <this->height()- BAR_HEIGHT)
-//    {
     if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden())
     {
         m_titlebar->show();
+        m_toolbar->show();
     }else{
         m_titlebar->hide();
+        m_toolbar->hide();
     }
 
-    m_toolbar->hide();
     inforChange();
 //    }
 }
@@ -283,6 +282,10 @@ void KyView::delayHide_move()
     //如果下拉菜单show，则标题栏必须show
     if (!m_titlebar->g_menu->m_menu->isHidden()) {
         return;
+    }
+    //解决刚一打开图片，不到两秒就隐藏的问题
+    if (m_timeNomove->isActive()) {
+        m_timeNomove->stop();
     }
     m_titlebar->hide();
     m_toolbar->hide();
@@ -328,15 +331,19 @@ void KyView::clearImage()
 //处理鼠标悬浮两栏的界面展示
 void KyView::hoverChange(int y)
 {
-    if (y <= BAR_HEIGHT  || y >= this->height() - BAR_HEIGHT) {
-        //判断定时器是否正在计时。如是，则停止
-        if (m_timer->isActive()) {
-            m_timer->stop();
-        }
-        if (m_timernavi->isActive()) {
-            m_timernavi->stop();
-        }
+    static int i = 0;
 
+    if (i == 0) {
+        m_timer->start(2500);
+    }
+    if (y <= BAR_HEIGHT  || y >= this->height() - BAR_HEIGHT) {
+        //需要获取从两栏到中间的变化，且为防止频繁操作
+        if (m_timestart == false) {
+            if (m_timer->remainingTime() < 1000 && m_timer->isActive()) {
+                m_timer->stop();
+            }
+            m_timestart = true;
+        }
         m_toolbar->show();
         m_titlebar->show();
 
@@ -356,19 +363,32 @@ void KyView::hoverChange(int y)
         }
         //信息栏位置的变化
         inforChange();
-    } else {
-        if (!m_timer->isActive()) {
-            m_timer->start(2000);
-        }
-        //判断列表中是否只有一张图，一张图片左右按钮不显示
-        if (m_showImageWidget->g_buttonState == false) {
-            this->m_showImageWidget->g_next->hide();
-            this->m_showImageWidget->g_back->hide();
-        } else {
-            this->m_showImageWidget->g_next->show();
-            this->m_showImageWidget->g_back->show();
-        }
+        return;
     }
+
+    if (m_timestart == true) {
+
+        if (m_timer->remainingTime() < 2000 && m_timer->isActive() ||
+            !(m_timer->isActive())) {
+            m_timer->stop();
+            m_timer->start(2500);
+        }
+        m_timestart = false;
+    }
+    //判断定时器是否正在计时。如是，则停止
+    if (m_timernavi->isActive()) {
+        m_timernavi->stop();
+    }
+
+    //判断列表中是否只有一张图，一张图片左右按钮不显示
+    if (m_showImageWidget->g_buttonState == false) {
+        this->m_showImageWidget->g_next->hide();
+        this->m_showImageWidget->g_back->hide();
+    } else {
+        this->m_showImageWidget->g_next->show();
+        this->m_showImageWidget->g_back->show();
+    }
+
 }
 //读取主题配置文件
 void KyView::initGsetting()
@@ -410,9 +430,9 @@ void KyView::themeChange()
         m_showImageWidget->g_next->setIcon(QIcon(":/res/res/1right.png"));
         m_showImageWidget->g_back->setIcon(QIcon(":/res/res/1left.png"));
         m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(26, 26, 26, 0.7)}"
-                                   "QListView::item{margin:0 2px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
-                                   "QListView::item:selected{border:2px solid rgba(13, 135, 255, 0.86);background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
-                                   "QListView::item:hover{background:rgba(255, 255, 255, 0.9);border-radius:2px;}");
+                                   "QListView::item{margin:0 2px 0 0;background:rgba(0, 0, 0, 0.4);border-radius:2px;}"
+                                   "QListView::item:selected{border:2px solid rgba(13, 135, 255, 1);background:rgba(0, 0, 0, 0.4);border-radius:2px;}"
+                                   "QListView::item:hover{background:rgba(0, 0, 0, 0.4);border-radius:2px;}");
     } else {
         m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-top-left-radius:0px;border-top-right-radius：0px;border-bottom-left-radius:4px;border-bottom-right-radius:0px;");
         m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(227, 235, 239, 0.7)}"
@@ -423,7 +443,8 @@ void KyView::themeChange()
         m_showImageWidget->g_next->setIcon(QIcon(":/res/res/right.png"));
         m_showImageWidget->g_back->setIcon(QIcon(":/res/res/left.png"));
     }
-     m_toolbar->changeStyle();
+    Interaction::getInstance()->changeOpenIcon(themeStyle);
+    m_toolbar->changeStyle();
 
 }
 
@@ -498,9 +519,10 @@ void KyView::toShowImage()
     }
     inforChange();
     if (m_timeNomove->isActive()) {
+        m_timeNomove->stop();
         return;
     }
-    m_timeNomove->start(2000);
+    m_timeNomove->start(2500);
 }
 //显示相册
 void KyView::showSidebar()
@@ -604,6 +626,7 @@ void KyView::resizeEvent(QResizeEvent *event)
 //鼠标离开事件
 void KyView::leaveEvent(QEvent *event)
 {
+
     m_titleState = false;
     //点出顶栏的下拉菜单时，不隐藏
     if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden()) {
@@ -611,7 +634,7 @@ void KyView::leaveEvent(QEvent *event)
     }
     if (m_openImage->isHidden()) {
         if (!m_timernavi->isActive()) {
-            m_timernavi->start(2000);
+            m_timernavi->start(2500);
         }
         m_showImageWidget->g_next->hide();
         m_showImageWidget->g_back->hide();
@@ -638,7 +661,11 @@ void KyView::enterEvent(QEvent *event)
         m_showImageWidget->g_back->show();
         m_showImageWidget->g_next->show();
     }
-
+    if ((m_timer->remainingTime() < 2000 && m_timer->isActive()) ||
+         !(m_timer->isActive())) {
+        m_timer->stop();
+        m_timer->start(2500);
+    }
 }
 
 void KyView::paintEvent(QPaintEvent *event)
@@ -655,11 +682,9 @@ void KyView::paintEvent(QPaintEvent *event)
     QColor mainColor;
 
     if (QColor(255,255,255) == opt.palette.color(QPalette::Base) || QColor(248,248,248) == opt.palette.color(QPalette::Base)) {
-//        mainColor = QColor(254, 254, 254,155);
         mainColor = QColor(242, 242, 242,m_tran);
     } else {
         mainColor = QColor(20, 20, 20,m_tran);
-//        mainColor = QColor(26, 26, 26,200);
     }
 
     p.fillPath(rectPath,QBrush(mainColor));
@@ -727,8 +752,10 @@ bool KyView::eventFilter(QObject *obj, QEvent *event)
                 if (m_timernavi->isActive()) {
                     m_timernavi->stop();
                 }
-                if (m_timer->isActive()) {
+                if ((m_timer->remainingTime() < 2000 && m_timer->isActive()) ||
+                     !(m_timer->isActive())) {
                     m_timer->stop();
+                    m_timer->start(2500);
                 }
                 m_titlebar->show();
                 m_toolbar->show();
@@ -832,7 +859,7 @@ bool KyView::event(QEvent *event)
     if (m_titleState == false) {
         if (m_titlebar->g_menu->m_menu->isHidden() && !m_titlebar->isHidden()) {
             if (!m_timeNomove->isActive()) {
-                m_timeNomove->start(2000);
+                m_timeNomove->start(2500);
             }
         }
     }

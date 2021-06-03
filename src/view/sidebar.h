@@ -25,11 +25,14 @@ public:
 
 public slots:
     void getSelect(int type);
+    void openEmptyFile(bool changeHigh);//判断是不是打开了图片，之后设置相册高亮
 
 private:
 
     QMovie *m_loadingMovie = nullptr;//没有处理完，则显示此动图
     SideBarDelegate * m_delegate = nullptr;
+    QModelIndex m_modelIndexOld;//记录上一次的index
+
     void initConnect();
 
 signals:

@@ -40,8 +40,13 @@ private:
     QFont m_ftContent;//内容字号固定
     QLocale m_local;
 
+    int m_wid;//图片名字长度
+    bool m_linenum = false;
+
     void layout();
-    void longText(QLabel *nameC, QString text);
+    void layoutS(int line);
+    QString AutoFeed(QString text);
+
 
 signals:
 
