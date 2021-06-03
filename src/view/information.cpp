@@ -107,14 +107,9 @@ void Information::contentText(QFileInfo info, QString sizeImage, QString spaceCo
         imageSize = Size + "Kib";
     }
     QString nameContant = AutoFeed(info.completeBaseName());
-    //判断窗口大小和是否显示tooltips
-    if (nameContant.contains("…")) {
-        m_linenum = true;
-        m_nameC->setToolTip(info.completeBaseName());
-    } else {
-        m_linenum = false;
-    }
+
     m_nameC->setText(nameContant);
+
     m_formatC->setText(info.suffix());
     m_storageSizeC->setText(imageSize);
     m_pixelSizeC->setText(sizeImage);
@@ -177,15 +172,21 @@ QString Information::AutoFeed(QString text)
                 AntoIndex++;
                 strText.insert(i - 1, "\n");
             }
-            //超过两行减三点，加上...
+            //超过两行减6x2，加上...
             if (fm.width(strText.left(i)) > 2 * (width-6))
             {
                 strText.insert(i - 2, "…");
                 strText = strText.mid(0,i-1);
-                return strText;
+                continue;
             }
         }
     }
-
+    //判断窗口大小和是否显示tooltips
+    if (strText.contains("…")) {
+        m_linenum = true;
+        m_nameC->setToolTip(text);
+    } else {
+        m_linenum = false;
+    }
     return strText;
 }

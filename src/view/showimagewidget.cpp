@@ -26,7 +26,7 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     m_showInFile = new QAction(tr("Show in File"),this);
     //右键菜单
     m_imageMenu = new QMenu(this);
-//    imageMenu->addAction(copy);
+//    m_imageMenu->addAction(m_copy);
     m_imageMenu->addAction(m_setDeskPaper);
 //    imageMenu->addAction(setLockPaper);
 //    imageMenu->addAction(print);
@@ -66,7 +66,7 @@ void ShowImageWidget::initConnect()
        m_imageMenu->exec(QCursor::pos());
     });
     //点击菜单选项
-//    connect(copy, &QAction::triggered, this,&ShowImageWidget::copy);
+//    connect(m_copy, &QAction::triggered, this,&ShowImageWidget::copy);
     connect(m_setDeskPaper, &QAction::triggered, this,&ShowImageWidget::setDeskPaper);
 //    connect(m_setLockPaper, &QAction::triggered, this,&ShowImageWidget::setLockPaper);
 //    connect(m_print, &QAction::triggered, this,&ShowImageWidget::print);
@@ -134,6 +134,24 @@ void ShowImageWidget::isDelete(bool isDel)
 void ShowImageWidget::copy()
 {
     qDebug()<<"复制";
+    //复制到剪切板
+    QClipboard *clipBoard=QApplication::clipboard();
+    clipBoard->setPixmap(m_pic);
+//    clip->setImage(*image);
+    //复制为文件
+    QList<QUrl> copyfile;
+    QUrl url=QUrl::fromLocalFile(m_imagePath);    //待复制的文件
+    if(url.isValid()){
+        copyfile.push_back(url);
+    }else{
+        return;
+    }
+    QMimeData *data=new QMimeData;
+    data->setUrls(copyfile);
+
+    QClipboard *clip=QApplication::clipboard();
+    clip->setMimeData(data);
+
 }
 //设置为桌面壁纸
 void ShowImageWidget::setDeskPaper()
@@ -217,7 +235,7 @@ void ShowImageWidget::openFinish(QVariant var)
 
     ImageAndInfo package =var.value<ImageAndInfo>();
     QPixmap pixmap = package.image;//图片
-
+    m_pic = pixmap;
     //拿到返回信息
     QFileInfo info = package.info;//详情信息
     int proportion = package.proportion;//比例
@@ -247,6 +265,7 @@ void ShowImageWidget::openFinish(QVariant var)
 
     num = QString("%1").arg(proportion) + "%";
     m_path = info.absolutePath();//图片的路径
+    m_imagePath = info.absoluteFilePath();
     m_paperFormat = info.suffix();
     m_typeNum = number;
     //使用返回的信息进行设置界面

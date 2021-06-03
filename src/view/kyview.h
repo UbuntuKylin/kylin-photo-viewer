@@ -78,6 +78,7 @@ private:
     bool m_albumShow = true;//切换图片时，相册状态
     bool m_titleState = true; //鼠标离开进入时，有关菜单下拉列表show时的问题，先默认没有离开界面
     double m_tran = 0.60;//透明度
+    bool m_timestart = false;//记录从标题栏到中间窗体的变化
 
     void initconnect();//初始化连接
     void titlebarChange();//改变顶栏位置和大小

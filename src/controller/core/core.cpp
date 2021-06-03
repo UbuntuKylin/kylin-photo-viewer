@@ -545,12 +545,10 @@ void Core::changeOpenIcon(QString theme)
     }
     if ("ukui-dark" == theme || "ukui-black" == theme) {
         if (m_item0 != nullptr) {
-            qDebug()<<"2";
             m_item0->setIcon(m_item0Black);//用来保存地址路径
         }
     } else {
         if (m_item0 != nullptr) {
-            qDebug()<<"1";
             m_item0->setIcon(m_item0White);//用来保存地址路径
         }
     }
@@ -590,9 +588,9 @@ void Core::close()
         m_file->saveImage(m_matList,m_fps,m_nowpath,m_apiReplaceFile);
         m_shouldClose = true;
     } else {
-        QString suffix = QFileInfo(m_nowpath).suffix().toLower();
         //保存图片
         m_file->saveImage(m_nowMat,m_nowpath,m_apiReplaceFile);
+        QString suffix = QFileInfo(m_nowpath).suffix().toLower();
         if (suffix == "apng" || suffix == "png" || suffix == "gif") {
             if (m_matList != nullptr) {
                 if (m_matList->length() > 1) {

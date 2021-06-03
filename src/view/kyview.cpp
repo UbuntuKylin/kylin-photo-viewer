@@ -75,9 +75,9 @@ KyView::KyView(const QStringList &args)
 
     //定时器
     m_timer = new QTimer(this);
-    m_timer->setSingleShot(true);
+//    m_timer->setSingleShot(true);
     m_timernavi = new QTimer(this);
-    m_timernavi->setSingleShot(true);
+//    m_timernavi->setSingleShot(true);
     m_timeNomove = new QTimer(this);
 //    m_timeNomove->setSingleShot(true);
 
@@ -137,7 +137,7 @@ void KyView::initconnect()
     connect(m_timer ,&QTimer::timeout, this, &KyView::delayHide);
     connect(m_timernavi ,&QTimer::timeout, this, &KyView::delayHide_navi);
     connect(m_timeNomove ,&QTimer::timeout, this, &KyView::delayHide_move);
-    m_timeNomove->start(2000);
+    m_timeNomove->start(2500);
     //设置相册尺寸
     connect(m_showImageWidget,&ShowImageWidget::changeSideSize,m_sideBar,&SideBar::getSelect);
     connect(this,&KyView::albumState,m_showImageWidget,&ShowImageWidget::albumSlot);
@@ -246,8 +246,6 @@ void KyView::delayHide()
     if (this->mapFromGlobal(QCursor::pos()).y() < BAR_HEIGHT  || this->mapFromGlobal(QCursor::pos()).y() >= this->height()- BAR_HEIGHT) {
         return;
     }
-//    if (this->mapFromGlobal(QCursor::pos()).y() > BAR_HEIGHT  && this->mapFromGlobal(QCursor::pos()).y() <this->height()- BAR_HEIGHT)
-//    {
     if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden())
     {
         m_titlebar->show();
@@ -333,15 +331,19 @@ void KyView::clearImage()
 //处理鼠标悬浮两栏的界面展示
 void KyView::hoverChange(int y)
 {
-    if (y <= BAR_HEIGHT  || y >= this->height() - BAR_HEIGHT) {
-        //判断定时器是否正在计时。如是，则停止
-        if (m_timer->isActive()) {
-            m_timer->stop();
-        }
-        if (m_timernavi->isActive()) {
-            m_timernavi->stop();
-        }
+    static int i = 0;
 
+    if (i == 0) {
+        m_timer->start(2500);
+    }
+    if (y <= BAR_HEIGHT  || y >= this->height() - BAR_HEIGHT) {
+        //需要获取从两栏到中间的变化，且为防止频繁操作
+        if (m_timestart == false) {
+            if (m_timer->remainingTime() < 1000 && m_timer->isActive()) {
+                m_timer->stop();
+            }
+            m_timestart = true;
+        }
         m_toolbar->show();
         m_titlebar->show();
 
@@ -361,26 +363,32 @@ void KyView::hoverChange(int y)
         }
         //信息栏位置的变化
         inforChange();
-    } else {
-
-        //判断定时器是否正在计时。如是，则停止---不停止的话，目前发现，不到两秒就隐藏了，双重保险
-        if (m_timer->isActive()) {
-            m_timer->stop();
-        }
-        if (m_timernavi->isActive()) {
-            m_timernavi->stop();
-        }
-
-        m_timer->start(2000);
-        //判断列表中是否只有一张图，一张图片左右按钮不显示
-        if (m_showImageWidget->g_buttonState == false) {
-            this->m_showImageWidget->g_next->hide();
-            this->m_showImageWidget->g_back->hide();
-        } else {
-            this->m_showImageWidget->g_next->show();
-            this->m_showImageWidget->g_back->show();
-        }
+        return;
     }
+
+    if (m_timestart == true) {
+
+        if (m_timer->remainingTime() < 2000 && m_timer->isActive() ||
+            !(m_timer->isActive())) {
+            m_timer->stop();
+            m_timer->start(2500);
+        }
+        m_timestart = false;
+    }
+    //判断定时器是否正在计时。如是，则停止
+    if (m_timernavi->isActive()) {
+        m_timernavi->stop();
+    }
+
+    //判断列表中是否只有一张图，一张图片左右按钮不显示
+    if (m_showImageWidget->g_buttonState == false) {
+        this->m_showImageWidget->g_next->hide();
+        this->m_showImageWidget->g_back->hide();
+    } else {
+        this->m_showImageWidget->g_next->show();
+        this->m_showImageWidget->g_back->show();
+    }
+
 }
 //读取主题配置文件
 void KyView::initGsetting()
@@ -514,7 +522,7 @@ void KyView::toShowImage()
         m_timeNomove->stop();
         return;
     }
-    m_timeNomove->start(2000);
+    m_timeNomove->start(2500);
 }
 //显示相册
 void KyView::showSidebar()
@@ -618,6 +626,7 @@ void KyView::resizeEvent(QResizeEvent *event)
 //鼠标离开事件
 void KyView::leaveEvent(QEvent *event)
 {
+
     m_titleState = false;
     //点出顶栏的下拉菜单时，不隐藏
     if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden()) {
@@ -625,7 +634,7 @@ void KyView::leaveEvent(QEvent *event)
     }
     if (m_openImage->isHidden()) {
         if (!m_timernavi->isActive()) {
-            m_timernavi->start(2000);
+            m_timernavi->start(2500);
         }
         m_showImageWidget->g_next->hide();
         m_showImageWidget->g_back->hide();
@@ -652,7 +661,11 @@ void KyView::enterEvent(QEvent *event)
         m_showImageWidget->g_back->show();
         m_showImageWidget->g_next->show();
     }
-
+    if ((m_timer->remainingTime() < 2000 && m_timer->isActive()) ||
+         !(m_timer->isActive())) {
+        m_timer->stop();
+        m_timer->start(2500);
+    }
 }
 
 void KyView::paintEvent(QPaintEvent *event)
@@ -739,8 +752,10 @@ bool KyView::eventFilter(QObject *obj, QEvent *event)
                 if (m_timernavi->isActive()) {
                     m_timernavi->stop();
                 }
-                if (m_timer->isActive()) {
+                if ((m_timer->remainingTime() < 2000 && m_timer->isActive()) ||
+                     !(m_timer->isActive())) {
                     m_timer->stop();
+                    m_timer->start(2500);
                 }
                 m_titlebar->show();
                 m_toolbar->show();
@@ -844,7 +859,7 @@ bool KyView::event(QEvent *event)
     if (m_titleState == false) {
         if (m_titlebar->g_menu->m_menu->isHidden() && !m_titlebar->isHidden()) {
             if (!m_timeNomove->isActive()) {
-                m_timeNomove->start(2000);
+                m_timeNomove->start(2500);
             }
         }
     }

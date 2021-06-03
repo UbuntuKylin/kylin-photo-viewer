@@ -22,6 +22,7 @@ void SaveMovie::run()
     QString tmpName = info.completeBaseName()+"_tmp";
     QString suffix = info.suffix().toLower();
     QString tmpDir = Variable::TEMP_PATH + name +"/";
+    QString ster = "\"";
     //新建目录
     QDir dir;
     dir.mkdir(tmpDir);
@@ -37,8 +38,8 @@ void SaveMovie::run()
     //构造命令
     QString tmpFilePath = tmpDir + tmpName + "." + "apng";
     QString cmd = "apngasm ";
-    cmd += tmpFilePath;
-    cmd +=  " " + tmpDir+"*.png ";
+    cmd += ster + tmpFilePath +ster;
+    cmd +=  " " + ster + tmpDir+"*.png\" ";
     cmd +=  QString::number(m_fps);
     cmd += " 1000 -z0";
     //执行命令
@@ -48,7 +49,7 @@ void SaveMovie::run()
     //转码
     if (suffix == "gif") {
         QString cmd2 = "apng2gif ";
-        cmd2 += " "+tmpFilePath;
+        cmd2 += " "+ ster + tmpFilePath + ster;
         m_process->start(cmd2);
         m_process->waitForStarted();
         m_process->waitForFinished();
@@ -57,13 +58,13 @@ void SaveMovie::run()
     }
     //移动回原目录
     QString cmd3 = "mv ";
-    cmd3 += tmpFilePath;
-    cmd3 += " "+m_savepath;
+    cmd3 += ster + tmpFilePath + ster;
+    cmd3 += " "+ ster + m_savepath + ster;
     m_process->start(cmd3);
     m_process->waitForStarted();
     m_process->waitForFinished();
     //删除临时文件
-    QString deleteTmpImages = "rm -rf "+tmpDir;
+    QString deleteTmpImages = "rm -rf "+ster + tmpDir + ster;
     m_process->start(deleteTmpImages);
     m_process->waitForStarted();
     m_process->waitForFinished();

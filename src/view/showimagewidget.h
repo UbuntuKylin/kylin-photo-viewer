@@ -45,11 +45,12 @@ private:
     QMenu * m_imageMenu;//图片右键菜单
 
     QString m_path = "";//打开文件夹的路径
+    QString m_imagePath = "";//打开的图片文件的路径
     QPixmap m_copyImage;//留着复制可能用
     QString m_paperFormat;//用来判断可设置为壁纸的样式
 
     QMovie *m_loadingMovie = nullptr;
-
+    QPixmap m_pic;
     int m_typeNum;
     bool m_isOpen = true;//是否自动打开相册
     bool m_isDelete = false;//判断是删除
