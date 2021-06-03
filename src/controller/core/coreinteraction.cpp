@@ -49,11 +49,13 @@ void CoreInteraction::initConnect()
     connect(this,&CoreInteraction::coreDeleteImage,m_core,&Core::deleteImage);//删除图片
     connect(this,&CoreInteraction::coreSetAsBackground,m_core,&Core::setAsBackground);//设置为背景图
     connect(this,&CoreInteraction::coreOpenInfile,m_core,&Core::openInfile);//文件夹中打开
+    connect(this,&CoreInteraction::coreChangeOpenIcon,m_core,&Core::changeOpenIcon);//更改主题，切换相册打开按钮图标
     connect(this,&CoreInteraction::coreClose,m_core,&Core::close);//关闭事件
     connect(m_core,&Core::coreProgremExit,this,&CoreInteraction::progremExit);//发送信号让主界面结束进程
     connect(this,&CoreInteraction::changeImageFromClick,m_core,&Core::changeImageFromClick);//点击相册事件
     connect(m_core,&Core::changeAlbumHighLight,this,&CoreInteraction::changeAlbumHighLight);//在相册中选中到所切换的图片
     connect(m_core,&Core::delayShow,this,&CoreInteraction::delayShow);//图片加载过慢，发信号给前端
+    connect(m_core,&Core::openFromAlbum,this,&CoreInteraction::openFromAlbum);//点击相册按钮打开图片
 }
 
 bool CoreInteraction::coreOperateTooOften()
@@ -197,6 +199,14 @@ void CoreInteraction::openImageInfile()
         return;
     }
     emit coreOpenInfile();
+}
+
+void CoreInteraction::changeOpenIcon(QString theme)
+{
+    if (coreOperateTooOften()) {
+        return;
+    }
+    emit coreChangeOpenIcon(theme);
 }
 
 void CoreInteraction::close()

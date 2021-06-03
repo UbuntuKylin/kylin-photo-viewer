@@ -22,6 +22,7 @@ signals:
     void coreDeleteImage();//删除图片
     void coreSetAsBackground();//设置为背景图
     void coreOpenInfile();//文件夹中打开
+    void coreChangeOpenIcon(QString theme);//更改主题，切换相册打开按钮图标
     void coreClose();//结束进程
 
 public:
@@ -46,6 +47,7 @@ protected:
     virtual void deleteImage();//删除图片
     virtual void setAsBackground();//设置为背景图
     virtual void openImageInfile();//在文件夹中打开
+    virtual void changeOpenIcon(QString theme);//更改主题，切换相册打开按钮图标
     virtual void close();//关闭进程
     virtual QStandardItemModel * getAlbumModel();//获取相册model指针
 

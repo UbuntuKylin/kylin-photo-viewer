@@ -26,6 +26,7 @@ signals:
     void coreProgremExit();//结束进程
     void changeAlbumHighLight(QModelIndex modelIndex);//在相册中选中到所切换的图片
     void delayShow(bool isLoading);//处理图片加载缓慢问题
+    void openFromAlbum();//从相册打开
 
 public:
     Core();
@@ -41,6 +42,7 @@ public:
     void deleteImage();//删除图片
     void setAsBackground();//设置为背景图
     void openInfile();//文件夹中打开
+    void changeOpenIcon(QString theme);//主题改变时切换相册打开按钮
     void saveMovieFinish(const QString &path);//异步处理完成
     void close();//关闭进程
     QStandardItemModel * getAlbumModel();//获取相册model指针
@@ -52,7 +54,9 @@ private:
     File *m_file = nullptr;//File模块对象
     void showImage(const QPixmap &pix);//显示图片
     void showImageOrMovie();//显示图片或动图
-    void creatImage(const int &proportion = -1);//生成图像
+    void creatImage(const int &proportion = -1, bool noAction = true);//生成图像
+    void defaultImage(int proportion,int defaultProportion);//默认显示图片原则
+    void operateImage(int proportion,int defaultProportion);//进行操作显示图片原则
     void processingCommand(const QStringList &cmd);//处理终端命令
     QString processingApi(const QStringList &cmd);//处理外部命令
     void loadAlbum(QString path, QStringList list);//加载相册
@@ -77,6 +81,8 @@ private:
     bool isSamePath(QString path);//判断打开的是不是相同路径
     void needSave();//判断是否需要保存图片
     bool m_isclose = false;
+    MyStandardItem *m_item0  = nullptr;
+
 
 };
 

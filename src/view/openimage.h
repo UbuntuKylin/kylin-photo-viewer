@@ -24,7 +24,7 @@ private:
     QLabel *m_openText;//下方文字
     QSize m_iconsize;
 
-
+    void initInteraction();
     void initconnect();
     void initGsettings();
     void dealSystemGsettingChange();
@@ -33,6 +33,7 @@ private slots:
 
 signals:
     void openImageSignal(QString path);
+    void openEmptyFile(bool changHigh);//改变高亮，高亮于上一张
 };
 
 #endif // OPENIMAGE_H
