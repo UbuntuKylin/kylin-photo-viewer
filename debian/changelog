@@ -1,3 +1,12 @@
+kylin-photo-viewer (1.0.0-16) v101; urgency=medium
+  
+  * BUG号：55870，56583，57370
+  * 需求号：6322，6329，6331，6333，6335
+  * 其他改动说明：无
+  * 影响域：相册顶部，添加打开图片按钮；默认显示图片机制改为：打开时，原图大于窗口，自适应显示；反之，1：1显示；rebuild
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Thu,03  Jun 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-15) v101; urgency=medium
   
   * BUG号：55870，56583，57370
