@@ -31,6 +31,7 @@ public:
 public slots:
     void albumSlot(bool isOpen);//判断是否发送相册展示的事件
     void isDelete(bool isDel);//判断是删除
+    void albumChangeImage(bool isChange);//相册切换图片
 private:
     QGSettings *m_pGsettingThemeData = nullptr;
 //    QWidget *imageWid;
@@ -58,8 +59,9 @@ private:
     void openFinish(QVariant var);//打开结束
     void initConnect();
     void sideState(int num);//需要根据条件判断侧栏的显示和大小相关信息
-
-
+    void imageNum(int number);//根据num决定界面显示
+    void imageNUll(QPixmap pixmap);//根据图片是否为空，显示转圈圈
+    void imageMenu();//根据图片类型刷新右键菜单内容
 
     //右键菜单的各功能
     void copy();//复制

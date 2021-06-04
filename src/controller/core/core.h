@@ -54,7 +54,7 @@ private:
     File *m_file = nullptr;//File模块对象
     void showImage(const QPixmap &pix);//显示图片
     void showImageOrMovie();//显示图片或动图
-    void creatImage(const int &proportion = -1, bool noAction = true);//生成图像
+    void creatImage(const int &proportion = -1, bool defaultOpen = true);//生成图像，defaultOpen区分是否是打开图片，无其他操作
     void defaultImage(int proportion,int defaultProportion);//默认显示图片原则
     void operateImage(int proportion,int defaultProportion);//进行操作显示图片原则
     void processingCommand(const QStringList &cmd);//处理终端命令
