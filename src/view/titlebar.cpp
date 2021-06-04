@@ -82,8 +82,11 @@ void TitleBar::longText(QLabel *nameC, QString text)
     QFontMetrics fontWidth(nameC->font());//得到每个字符的宽度
     QString elideNote = fontWidth.elidedText(text, Qt::ElideRight, this->width()/2);//最大宽度wid像素
     nameC->setText(elideNote);//显示省略好的字符串
+    //解决tooltips设置一次后一直显示的问题
     if (elideNote.contains("…",Qt::CaseInsensitive)) {
          nameC->setToolTip(text);//设置tooltips
+    } else {
+         nameC->setToolTip("");//设置tooltips
     }
 }
 //初始化顶栏布局

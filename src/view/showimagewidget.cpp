@@ -91,6 +91,63 @@ void ShowImageWidget::sideState(int num)
         emit toShowSide();
     }
 }
+//根据number决定界面显示:相册，左右按钮，删除时相册显示
+void ShowImageWidget::imageNum(int number)
+{
+    //侧栏上方新增加号，故number加1
+    //判断有几张图片，分别进行处理：删除到0，显示打开界面；只有一张：不显示左右按钮。
+    if (number == 1) {
+        emit clearImage();
+        //点击删除按钮删除全部文件时，此标志位应该重设为默认状态，防止之后继续打开图片造成相册大小有误差
+        m_isDelete = false;
+        return;
+    }
+    if (number == 2) {
+        g_buttonState = false;
+    } else {
+        //删除时逻辑导致item总是比实际多一张，暂时先在前端进行判断来解决相关问题
+        if (number == 3 && m_isDelete == true) {
+            g_buttonState = false;
+        } else {
+            g_buttonState = true;
+        }
+
+    }
+}
+//根据图片是否为空决定是否显示转圈圈
+void ShowImageWidget::imageNUll(QPixmap pixmap)
+{
+    if (pixmap.isNull()) {
+        this->m_showImage->setMovie(m_loadingMovie);
+        m_loadingMovie->start();
+        return;
+    } else {
+        if (m_loadingMovie->state() != QMovie::NotRunning) {
+            m_loadingMovie->stop();
+        }
+    }
+    this->m_showImage->setPixmap(pixmap);
+}
+//根据图片类型刷新右键菜单内容
+void ShowImageWidget::imageMenu()
+{
+    //区分动图和静态图
+    if (m_paperFormat == "gif" || m_paperFormat == "apng") {
+        //设置壁纸--动图在传来时是一帧一帧，只判断并添加一次右键菜单选项
+        if (m_canSet)  {
+            m_canSet = false;
+            //设置右键菜单
+            setMenuAction();
+        }
+    } else {
+        setMenuAction();
+    }
+}
+
+void ShowImageWidget::albumChangeImage(bool isChange)
+{
+    m_canSet = isChange;
+}
 //下一张
 void ShowImageWidget::nextImage()
 {
@@ -201,7 +258,6 @@ void ShowImageWidget::setMenuAction()
     } else {
         m_imageMenu->removeAction(m_setDeskPaper);
     }
-
 }
 
 void ShowImageWidget::initInteraction()
@@ -243,58 +299,27 @@ void ShowImageWidget::openFinish(QVariant var)
     QString colorSpace = package.colorSpace;
     QString num;
     int number = package.imageNumber;//在队列中的标签
-    //侧栏上方新增加号，故number加1
-    //判断有几张图片，分别进行处理：删除到0，显示打开界面；只有一张：不显示左右按钮。
-    if (number == 1) {
-        emit clearImage();
-        //点击删除按钮删除全部文件时，此标志位应该重设为默认状态，防止之后继续打开图片造成相册大小有误差
-        m_isDelete = false;
-        return;
-    }
-    if (number == 2) {
-        g_buttonState = false;
-    } else {
-        //删除时逻辑导致item总是比实际多一张，暂时先在前端进行判断来解决相关问题
-        if (number == 3 && m_isDelete == true) {
-            g_buttonState = false;
-        } else {
-            g_buttonState = true;
-        }
 
-    }
+    //根据number决定界面显示
+    imageNum(number);
 
     num = QString("%1").arg(proportion) + "%";
     m_path = info.absolutePath();//图片的路径
     m_imagePath = info.absoluteFilePath();
     m_paperFormat = info.suffix();
     m_typeNum = number;
+
     //使用返回的信息进行设置界面
     emit toShowImage();//给主界面--展示图片
     emit perRate(num);//发送给toolbar来更改缩放数字
     emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
     emit titleName(info.fileName());//给顶栏图片的名字
 
-    if (pixmap.isNull()) {
-        this->m_showImage->setMovie(m_loadingMovie);
-        m_loadingMovie->start();
-        return;
-    } else {
-        if (m_loadingMovie->state() != QMovie::NotRunning) {
-            m_loadingMovie->stop();
-        }
-    }
-    this->m_showImage->setPixmap(pixmap);
-    //区分动图和静态图
-    if (m_paperFormat == "gif" || m_paperFormat == "apng") {
-        //设置壁纸--动图在传来时是一帧一帧，只判断并添加一次右键菜单选项
-        if (m_canSet)  {
-            m_canSet = false;
-            //设置右键菜单
-            setMenuAction();
-        }
-    } else {
-        setMenuAction();
-    }
+    //根据图片是否为空决定是否显示转圈圈
+    imageNUll(pixmap);
+    //根据图片类型刷新右键菜单内容
+    imageMenu();
+
     sideState(m_typeNum);
     m_isDelete = false;
 //    emit toSelectHigh(false);

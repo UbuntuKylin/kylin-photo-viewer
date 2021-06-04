@@ -260,7 +260,7 @@ void Core::showImage(const QPixmap &pix)
     emit openFinish(var);
 }
 
-void Core::creatImage(const int &proportion,bool noAction)
+void Core::creatImage(const int &proportion, bool defaultOpen)
 {
 
     if (m_nowImage.isNull()) {
@@ -271,14 +271,14 @@ void Core::creatImage(const int &proportion,bool noAction)
     if (m_nowImage.height() * defaultProportion / 100 > m_size.height()) {
         defaultProportion = 100 * m_size.height() / m_nowImage.height();
     }
-    if (noAction == false) {
+    if (defaultOpen == false) {
         operateImage(proportion,defaultProportion);
     } else {
         defaultImage(proportion,defaultProportion);
     }
 
 }
-
+//默认打开，旋转等，不进行放缩操作的方式查看图片
 void Core::defaultImage(int proportion, int defaultProportion)
 {
     //自适应窗口大小显示
@@ -295,7 +295,7 @@ void Core::defaultImage(int proportion, int defaultProportion)
     }
 
 }
-
+//对图片尺寸进行了操作的方式查看图片
 void Core::operateImage(int proportion, int defaultProportion)
 {
 
@@ -597,6 +597,11 @@ void Core::close()
                     m_shouldClose = true;
                     return;
                 }
+            }
+            //解决git静态图无法保存的问题，已测试，界面可正常关掉，png和apng可正常保存
+            if (suffix == "gif") {
+                m_shouldClose = true;
+                return;
             }
         }
         progremExit();

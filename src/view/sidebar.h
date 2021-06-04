@@ -36,7 +36,7 @@ private:
     void initConnect();
 
 signals:
-
+    void changeImage(bool isChange);//解决从相册切换时动图没有刷新右键菜单内容
 private slots:
     void setCUrrIndex(QModelIndex modelIndex);
 };

@@ -181,11 +181,12 @@ QString Information::AutoFeed(QString text)
             }
         }
     }
-    //判断窗口大小和是否显示tooltips
+    //判断窗口大小和是否显示tooltips，解决tooltips设置一次后一直显示的问题
     if (strText.contains("…")) {
         m_linenum = true;
         m_nameC->setToolTip(text);
     } else {
+        m_nameC->setToolTip("");
         m_linenum = false;
     }
     return strText;

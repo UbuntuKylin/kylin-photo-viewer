@@ -108,7 +108,8 @@ void KyView::initconnect()
     connect(m_titlebar,&TitleBar::openSignal,m_openImage,&OpenImage::openImagePath);
     //打开关于，两栏隐藏
     connect(m_titlebar,&TitleBar::aboutShow,this,&KyView::aboutShow);
-
+    //判断为相册处切换图片，刷新动图右键内容
+    connect(m_sideBar,&SideBar::changeImage,m_showImageWidget,&ShowImageWidget::albumChangeImage);
     //打开图片
     connect(m_openImage,&OpenImage::openImageSignal,m_showImageWidget,&ShowImageWidget::openImage);
     connect(m_openImage,&OpenImage::openEmptyFile,m_sideBar,&SideBar::openEmptyFile);

@@ -63,7 +63,10 @@ void SideBar::setCUrrIndex(QModelIndex modelIndex)
     }
     //存上一个，为了点击加号，但不打开时，能切换到正确的显示
     if (modelIndex.row() != 0) {
+        emit changeImage(true);
         m_modelIndexOld = modelIndex;
+    } else {
+        emit changeImage(false);
     }
     this->setCurrentIndex(modelIndex);
 
