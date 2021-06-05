@@ -934,10 +934,10 @@ bool Core::isSamePath(QString path)
 
     QString pathDir = QFileInfo(path).absolutePath();
     QStringList pathlist;
-    int num = m_albumModel->rowCount() - 1;
+    //此处不能-1，会造成只有两张图片时，无法寻找第一张图片的路径，重复加载此路径下的图片
+    int num = m_albumModel->rowCount();
     if (num > 0) {
-
-        for (int i = 1 ; i < num;i++) {
+        for (int i = 0 ; i < num;i++) {
             MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
             QFileInfo info(item->getPath());
             pathlist.append(info.absolutePath());

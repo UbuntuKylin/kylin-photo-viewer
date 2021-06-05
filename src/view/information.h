@@ -42,6 +42,7 @@ private:
 
     int m_wid;//图片名字长度
     bool m_linenum = false;
+    bool m_lineInTwo = false;//判断大于1行小于2行
 
     void layout();
     void layoutS(int line);

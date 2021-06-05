@@ -1,9 +1,18 @@
+kylin-photo-viewer (1.0.0-18) v101; urgency=medium
+  
+  * BUG号：59722，59719
+  * 需求号：无
+  * 其他改动说明：无
+  * 影响域：仅bug修复，无影响
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Sat,05  Jun 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-17) v101; urgency=medium
   
   * BUG号：59520，59519，58661
   * 需求号：无
-  * 其他改动说明：无
-  * 影响域：仅bug修复，无影响
+  * 其他改动说明：修改图片缩放百分比，每次增减由10%变为5%
+  * 影响域：修改图片缩放百分比，每次增减由10%变为5%
 
  -- zoujunnan <zoujunnan@kylinos.cn>  Fri,04  Jun 2021 09:46:00 +0800
 
