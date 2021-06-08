@@ -92,7 +92,7 @@ void ShowImageWidget::sideState(int num)
     }
 }
 //根据number决定界面显示:相册，左右按钮，删除时相册显示
-void ShowImageWidget::imageNum(int number)
+bool ShowImageWidget::imageNum(int number)
 {
     //侧栏上方新增加号，故number加1
     //判断有几张图片，分别进行处理：删除到0，显示打开界面；只有一张：不显示左右按钮。
@@ -100,7 +100,7 @@ void ShowImageWidget::imageNum(int number)
         emit clearImage();
         //点击删除按钮删除全部文件时，此标志位应该重设为默认状态，防止之后继续打开图片造成相册大小有误差
         m_isDelete = false;
-        return;
+        return true;
     }
     if (number == 2) {
         g_buttonState = false;
@@ -113,20 +113,22 @@ void ShowImageWidget::imageNum(int number)
         }
 
     }
+    return false;
 }
 //根据图片是否为空决定是否显示转圈圈
-void ShowImageWidget::imageNUll(QPixmap pixmap)
+bool ShowImageWidget::imageNUll(QPixmap pixmap)
 {
     if (pixmap.isNull()) {
         this->m_showImage->setMovie(m_loadingMovie);
         m_loadingMovie->start();
-        return;
+        return true;
     } else {
         if (m_loadingMovie->state() != QMovie::NotRunning) {
             m_loadingMovie->stop();
         }
     }
     this->m_showImage->setPixmap(pixmap);
+    return false;
 }
 //根据图片类型刷新右键菜单内容
 void ShowImageWidget::imageMenu()
@@ -301,8 +303,9 @@ void ShowImageWidget::openFinish(QVariant var)
     int number = package.imageNumber;//在队列中的标签
 
     //根据number决定界面显示
-    imageNum(number);
-
+    if(imageNum(number)) {
+        return;
+    }
     num = QString("%1").arg(proportion) + "%";
     m_path = info.absolutePath();//图片的路径
     m_imagePath = info.absoluteFilePath();
@@ -316,7 +319,9 @@ void ShowImageWidget::openFinish(QVariant var)
     emit titleName(info.fileName());//给顶栏图片的名字
 
     //根据图片是否为空决定是否显示转圈圈
-    imageNUll(pixmap);
+    if(imageNUll(pixmap)) {
+        return;
+    }
     //根据图片类型刷新右键菜单内容
     imageMenu();
 

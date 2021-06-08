@@ -166,17 +166,25 @@ QString Information::AutoFeed(QString text)
     {
         for (int i = 1; i < strText.size() + 1; i++)
         {
+            if (fm.width(strText.left(i)) <= width)
+            {
+                m_lineInTwo = false;
+            }
             //超过width长度，加换行符换行
             if (fm.width(strText.left(i)) > width * AntoIndex)
             {
                 AntoIndex++;
                 strText.insert(i - 1, "\n");
             }
+            if (fm.width(strText.left(i)) > width && fm.width(strText.left(i)) <= 2 * (width-6)) {
+                m_lineInTwo = true;
+            }
             //超过两行减6x2，加上...
             if (fm.width(strText.left(i)) > 2 * (width-6))
             {
                 strText.insert(i - 2, "…");
                 strText = strText.mid(0,i-1);
+                m_lineInTwo = false;
                 continue;
             }
         }
@@ -187,7 +195,13 @@ QString Information::AutoFeed(QString text)
         m_nameC->setToolTip(text);
     } else {
         m_nameC->setToolTip("");
-        m_linenum = false;
+        if (m_lineInTwo) {
+           m_linenum = true;
+        } else {
+            m_linenum = false;
+        }
+
     }
+
     return strText;
 }
