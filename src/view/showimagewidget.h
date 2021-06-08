@@ -59,8 +59,8 @@ private:
     void openFinish(QVariant var);//打开结束
     void initConnect();
     void sideState(int num);//需要根据条件判断侧栏的显示和大小相关信息
-    void imageNum(int number);//根据num决定界面显示
-    void imageNUll(QPixmap pixmap);//根据图片是否为空，显示转圈圈
+    bool imageNum(int number);//根据num决定界面显示
+    bool imageNUll(QPixmap pixmap);//根据图片是否为空，显示转圈圈
     void imageMenu();//根据图片类型刷新右键菜单内容
 
     //右键菜单的各功能
