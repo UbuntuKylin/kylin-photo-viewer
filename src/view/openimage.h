@@ -9,6 +9,7 @@
 #include <QSize>
 #include <QFileDialog>
 #include <QGSettings>
+#include <QFont>
 #include "global/variable.h"
 #include "controller/interaction.h"
 class OpenImage : public QWidget
