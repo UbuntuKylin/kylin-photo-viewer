@@ -108,6 +108,8 @@ void KyView::initconnect()
     connect(m_titlebar,&TitleBar::openSignal,m_openImage,&OpenImage::openImagePath);
     //打开关于，两栏隐藏
     connect(m_titlebar,&TitleBar::aboutShow,this,&KyView::aboutShow);
+    //更新信息栏
+    connect(m_titlebar,&TitleBar::updateInformation,m_information,&Information::updateName);
     //判断为相册处切换图片，刷新动图右键内容
     connect(m_sideBar,&SideBar::changeImage,m_showImageWidget,&ShowImageWidget::albumChangeImage);
     //打开图片
@@ -128,6 +130,10 @@ void KyView::initconnect()
     connect(m_showImageWidget,&ShowImageWidget::enlargeChange,m_toolbar,&ToolBar::enlargeImage);
     //当图片大于2张及以上，默认展示相册
     connect(m_showImageWidget,&ShowImageWidget::toShowSide,this,&KyView::defaultSidebar);
+    //重命名
+    connect(m_showImageWidget,&ShowImageWidget::toRename,m_titlebar,&TitleBar::needRename);
+    //重命名，显示两栏
+    connect(m_showImageWidget,&ShowImageWidget::isRename,this,&KyView::startRename);
     //展示或隐藏图片信息窗口
     connect(m_toolbar,&ToolBar::showInfor,this,&KyView::showInforWid);
     //导航器出现时，位置变化
@@ -167,6 +173,12 @@ void KyView::aboutShow()
        }
     }
 }
+
+void KyView::startRename()
+{
+    m_titlebar->show();
+    m_toolbar->show();
+}
 //顶栏大小随主界面大小改变的响应函数
 void KyView::titlebarChange()
 {
@@ -176,8 +188,6 @@ void KyView::titlebarChange()
     m_titlebar->move(0,0);
     m_titlebar->resize(this->width(),BAR_HEIGHT);
     m_titlebar->g_titleWid->resize(this->width(),BAR_HEIGHT);
-
-
 }
 //中间打开图片按钮大小随主界面大小改变的响应函数
 void KyView::openImageChange()
@@ -247,6 +257,11 @@ void KyView::delayHide()
     if (this->mapFromGlobal(QCursor::pos()).y() < BAR_HEIGHT  || this->mapFromGlobal(QCursor::pos()).y() >= this->height()- BAR_HEIGHT) {
         return;
     }
+    if (!m_titlebar->g_myEdit->isHidden()) {
+        m_titlebar->show();
+        m_toolbar->show();
+        return;
+    }
     if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden())
     {
         m_titlebar->show();
@@ -263,6 +278,11 @@ void KyView::delayHide()
 //鼠标离开界面时需要触发，届时会加上对导航器的处理
 void KyView::delayHide_navi()
 {
+    if (!m_titlebar->g_myEdit->isHidden()) {
+        m_titlebar->show();
+        m_toolbar->show();
+        return;
+    }
     m_titlebar->hide();
     m_toolbar->hide();
     inforChange();
@@ -278,6 +298,11 @@ void KyView::delayHide_move()
         return;
     }
     if (!m_toolbar->isHidden() && m_toolbar->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+        return;
+    }
+    if (!m_titlebar->g_myEdit->isHidden()) {
+        m_titlebar->show();
+        m_toolbar->show();
         return;
     }
     //如果下拉菜单show，则标题栏必须show
@@ -727,6 +752,9 @@ void KyView::mouseDoubleClickEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton) {
         return;
     }
+    if (m_titlebar->g_imageName->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+        return;
+    }
 //    if (event->button() == Qt::LeftButton) {
     if (this->isMaximized()) {
         this->showNormal();
@@ -1060,5 +1088,3 @@ void KyView::tapAndHoldGesture(QTapAndHoldGesture *gesture)
     m_panTriggered = true;
 
 }
-
-

@@ -11,6 +11,9 @@
 #include <QProcess>
 #include <QMovie>
 #include <QGSettings>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QPrintPreviewDialog>
 #include "controller/interaction.h"
 
 class ShowImageWidget : public QWidget
@@ -43,6 +46,7 @@ private:
     QAction *m_print;//打印
     QAction *m_deleteImage;//删除
     QAction *m_showInFile;//在文件夹中显示
+    QAction *m_reName;//重命名
     QMenu * m_imageMenu;//图片右键菜单
 
     QString m_path = "";//打开文件夹的路径
@@ -61,7 +65,7 @@ private:
     void sideState(int num);//需要根据条件判断侧栏的显示和大小相关信息
     bool imageNum(int number);//根据num决定界面显示
     bool imageNUll(QPixmap pixmap);//根据图片是否为空，显示转圈圈
-    void imageMenu();//根据图片类型刷新右键菜单内容
+    void imageMenu(QFileInfo info, QString imageSize, QString colorSpace);//根据图片类型刷新右键菜单内容
 
     //右键菜单的各功能
     void copy();//复制
@@ -70,6 +74,7 @@ private:
     void print();//打印
     void deleteImage();//删除图片
     void showInFile();//在文件夹中显示
+    void reName();//重命名
 
     void setMenuAction();//检查当前图片是否可设置为壁纸
     void startWithOpenImage(QString path);//由图片打开
@@ -82,12 +87,14 @@ signals:
     void toShowImage();//告诉主界面需要show和hide的控件
     void showNavi(QPixmap img);//展示导航栏
     void changeInfor(QFileInfo info, QString imageSize,QString colorSpace);//获得信息栏的信息
-    void titleName(QString imageName);//需要将图片名字发送给标题栏显示
+    void titleName(QString imageName,QString imagePath);//需要将图片名字和图片文件路径发送给标题栏显示
     void clearImage();//删除完列表里的图片时需要清空界面，恢复默认状态
     void reduceChange();//滚轮对图片缩小，需要将此动作信号发送出去进行处理
     void enlargeChange();//滚轮对图片放大，需要将此动作信号发送出去进行处理
     void changeSideSize(int type);//确定相册的尺寸
     void toShowSide();//当图片大于2张及以上，默认打开侧栏
+    void toRename(int mode);//重命名
+    void isRename();//正在重命名，需要告诉显示两栏
 //    void toSelectHigh(bool isHigh);//判断删除时高亮的选择
 };
 

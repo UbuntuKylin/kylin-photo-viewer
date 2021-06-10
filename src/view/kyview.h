@@ -139,6 +139,7 @@ private slots:
     void delayHide_move();//鼠标两秒不动，隐藏两栏
     void openState();//  判断打开应用应该是什么状态
     void aboutShow();//关于界面打开，两栏隐藏
+    void startRename();//处理重命名，显示两栏
     void showInforWid();//展示或隐藏图片信息窗口
     void clearImage();//无图片，需要返回默认界面
 

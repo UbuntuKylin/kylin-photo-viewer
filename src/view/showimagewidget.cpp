@@ -19,6 +19,7 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
 
     //菜单栏给功能选项：复制，设置为桌面壁纸，设置为锁屏壁纸，打印，删除，在文件夹中显示
     m_copy = new QAction(tr("Copy"),this);
+    m_reName = new QAction(tr("Rename"),this);
     m_setDeskPaper = new QAction(tr("Set Desktop Wallpaper"),this);
     m_setLockPaper = new QAction(tr("Set Lock Wallpaper"),this);
     m_print = new QAction(tr("Print"),this);
@@ -26,10 +27,11 @@ ShowImageWidget::ShowImageWidget(QWidget *parent, int w, int h) : QWidget(parent
     m_showInFile = new QAction(tr("Show in File"),this);
     //右键菜单
     m_imageMenu = new QMenu(this);
-//    m_imageMenu->addAction(m_copy);
-    m_imageMenu->addAction(m_setDeskPaper);
+    m_imageMenu->addAction(m_copy);
+//    m_imageMenu->addAction(m_reName);
+//    m_imageMenu->addAction(m_setDeskPaper);
 //    imageMenu->addAction(setLockPaper);
-//    imageMenu->addAction(print);
+    m_imageMenu->addAction(m_print);
     m_imageMenu->addAction(m_deleteImage);
     m_imageMenu->addAction(m_showInFile);
     //上一张，下一张按钮
@@ -66,10 +68,11 @@ void ShowImageWidget::initConnect()
        m_imageMenu->exec(QCursor::pos());
     });
     //点击菜单选项
-//    connect(m_copy, &QAction::triggered, this,&ShowImageWidget::copy);
+    connect(m_copy, &QAction::triggered, this,&ShowImageWidget::copy);
+    connect(m_reName,&QAction::triggered,this,&ShowImageWidget::reName);
     connect(m_setDeskPaper, &QAction::triggered, this,&ShowImageWidget::setDeskPaper);
 //    connect(m_setLockPaper, &QAction::triggered, this,&ShowImageWidget::setLockPaper);
-//    connect(m_print, &QAction::triggered, this,&ShowImageWidget::print);
+    connect(m_print, &QAction::triggered, this,&ShowImageWidget::print);
     connect(m_deleteImage, &QAction::triggered, this,&ShowImageWidget::deleteImage);
     connect(m_showInFile, &QAction::triggered, this,&ShowImageWidget::showInFile);
 
@@ -131,17 +134,22 @@ bool ShowImageWidget::imageNUll(QPixmap pixmap)
     return false;
 }
 //根据图片类型刷新右键菜单内容
-void ShowImageWidget::imageMenu()
+void ShowImageWidget::imageMenu(QFileInfo info,QString imageSize,QString colorSpace)
 {
+    QString filename = info.fileName();
     //区分动图和静态图
     if (m_paperFormat == "gif" || m_paperFormat == "apng") {
         //设置壁纸--动图在传来时是一帧一帧，只判断并添加一次右键菜单选项
         if (m_canSet)  {
             m_canSet = false;
+            emit titleName(filename,m_imagePath);//给顶栏图片的名字
+            emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
             //设置右键菜单
             setMenuAction();
         }
     } else {
+        emit titleName(filename,m_imagePath);//给顶栏图片的名字
+        emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
         setMenuAction();
     }
 }
@@ -198,18 +206,19 @@ void ShowImageWidget::copy()
     clipBoard->setPixmap(m_pic);
 //    clip->setImage(*image);
     //复制为文件
-    QList<QUrl> copyfile;
-    QUrl url=QUrl::fromLocalFile(m_imagePath);    //待复制的文件
-    if(url.isValid()){
-        copyfile.push_back(url);
-    }else{
-        return;
-    }
-    QMimeData *data=new QMimeData;
-    data->setUrls(copyfile);
+//    QList<QUrl> copyfile;
 
-    QClipboard *clip=QApplication::clipboard();
-    clip->setMimeData(data);
+//    QUrl url=QUrl::fromLocalFile(m_imagePath);    //待复制的文件
+//    if(url.isValid()){
+//        copyfile.push_back(url);
+//    }else{
+//        return;
+//    }
+//    QMimeData *data=new QMimeData;
+//    data->setUrls(copyfile);
+
+//    QClipboard *clip=QApplication::clipboard();
+//    clip->setMimeData(data);
 
 }
 //设置为桌面壁纸
@@ -226,6 +235,20 @@ void ShowImageWidget::setLockPaper()
 void ShowImageWidget::print()
 {
     qDebug()<<"打印";
+    QImage img = m_pic.toImage();
+    QPrinter printer;
+    QPrintDialog printDialog(&printer,this);
+    if(printDialog.exec())
+    {
+        QPainter painter(&printer);
+        QRect rect=painter.viewport();
+        QSize size=img.size();
+        size.scale(rect.size(),Qt::KeepAspectRatio);
+        painter.setViewport(rect.x(),rect.y(),size.width(),size.height());
+        painter.setWindow(img.rect());
+        painter.drawImage(0,0,img);
+    }
+
 }
 //删除
 void ShowImageWidget::deleteImage()
@@ -242,6 +265,12 @@ void ShowImageWidget::showInFile()
 //    }
 //    QDesktopServices::openUrl(QUrl::fromLocalFile(m_path));
 
+}
+
+void ShowImageWidget::reName()
+{
+    emit toRename(1);
+    emit isRename();
 }
 //显示右键菜单栏
 void ShowImageWidget::setMenuAction()
@@ -260,6 +289,7 @@ void ShowImageWidget::setMenuAction()
     } else {
         m_imageMenu->removeAction(m_setDeskPaper);
     }
+    m_imageMenu->insertAction(m_copy,m_reName);
 }
 
 void ShowImageWidget::initInteraction()
@@ -315,15 +345,13 @@ void ShowImageWidget::openFinish(QVariant var)
     //使用返回的信息进行设置界面
     emit toShowImage();//给主界面--展示图片
     emit perRate(num);//发送给toolbar来更改缩放数字
-    emit changeInfor(info,imageSize,colorSpace);//给信息栏需要的信息
-    emit titleName(info.fileName());//给顶栏图片的名字
 
     //根据图片是否为空决定是否显示转圈圈
     if(imageNUll(pixmap)) {
         return;
     }
     //根据图片类型刷新右键菜单内容
-    imageMenu();
+    imageMenu(info,imageSize,colorSpace);
 
     sideState(m_typeNum);
     m_isDelete = false;

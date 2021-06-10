@@ -1,7 +1,7 @@
 QT       += core gui
 QT       += svg
 QT       += dbus
-QT       += x11extras KWindowSystem
+QT       += x11extras KWindowSystem printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
@@ -44,6 +44,7 @@ SOURCES += main.cpp \
     model/processing/flip.cpp \
     model/processing/processing.cpp \
     view/daemondbus.cpp \
+    view/edit.cpp \
     view/information.cpp \
     view/kyview.cpp \
     global/variable.cpp \
@@ -72,6 +73,7 @@ HEADERS += \
     model/processing/flip.h \
     model/processing/processing.h \
     view/daemondbus.h \
+    view/edit.h \
     view/information.h \
     view/kyview.h \
     global/variable.h \

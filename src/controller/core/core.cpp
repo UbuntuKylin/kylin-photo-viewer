@@ -904,6 +904,18 @@ void Core::albumLoadFinish(QVariant var)
         }
     }
 }
+//重命名
+void Core::toCoreChangeName(QString oldName, QFileInfo newFile)
+{
+    QString fileNewName = newFile.absoluteFilePath();
+
+    for (int i = 1;i<m_albumModel->rowCount();i++) {
+        MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
+        if (item->getPath() == oldName) {
+            item->setPath(fileNewName);
+        }
+    }
+}
 
 bool Core::apiFunction()
 {

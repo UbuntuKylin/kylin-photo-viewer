@@ -47,6 +47,7 @@ public:
     void close();//关闭进程
     QStandardItemModel * getAlbumModel();//获取相册model指针
     void albumLoadFinish(QVariant var);//预览加载完成
+    void toCoreChangeName(QString oldName,QFileInfo newFile);//接收重命名的处理
 
 private:
     void initCore();//初始化核心

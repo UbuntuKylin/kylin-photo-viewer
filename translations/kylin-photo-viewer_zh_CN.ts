@@ -8,42 +8,42 @@
         <translation type="vanished">信息</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="16"/>
+        <location filename="../src/view/information.cpp" line="18"/>
         <source>Info</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="20"/>
+        <location filename="../src/view/information.cpp" line="23"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="25"/>
+        <location filename="../src/view/information.cpp" line="30"/>
         <source>Type</source>
         <translation>格式</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="29"/>
+        <location filename="../src/view/information.cpp" line="36"/>
         <source>Capacity</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="33"/>
+        <location filename="../src/view/information.cpp" line="42"/>
         <source>Size</source>
         <translation>尺寸</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="37"/>
+        <location filename="../src/view/information.cpp" line="48"/>
         <source>Color</source>
         <translation>颜色空间</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="41"/>
+        <location filename="../src/view/information.cpp" line="54"/>
         <source>Created</source>
         <translation>创建时间</translation>
     </message>
     <message>
-        <location filename="../src/view/information.cpp" line="45"/>
+        <location filename="../src/view/information.cpp" line="60"/>
         <source>Modified</source>
         <translation>修改时间</translation>
     </message>
@@ -84,16 +84,16 @@
         <translation>看图</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="478"/>
-        <location filename="../src/view/kyview.cpp" line="703"/>
-        <location filename="../src/view/kyview.cpp" line="743"/>
+        <location filename="../src/view/kyview.cpp" line="530"/>
+        <location filename="../src/view/kyview.cpp" line="762"/>
+        <location filename="../src/view/kyview.cpp" line="804"/>
         <source>full srceen</source>
         <translation>最大化</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="482"/>
-        <location filename="../src/view/kyview.cpp" line="707"/>
-        <location filename="../src/view/kyview.cpp" line="740"/>
+        <location filename="../src/view/kyview.cpp" line="534"/>
+        <location filename="../src/view/kyview.cpp" line="766"/>
+        <location filename="../src/view/kyview.cpp" line="801"/>
         <source>recovery</source>
         <translation>还原</translation>
     </message>
@@ -101,17 +101,17 @@
 <context>
     <name>OpenImage</name>
     <message>
-        <location filename="../src/view/openimage.cpp" line="18"/>
+        <location filename="../src/view/openimage.cpp" line="19"/>
         <source>Load picture</source>
         <translation>载入图片</translation>
     </message>
     <message>
-        <location filename="../src/view/openimage.cpp" line="41"/>
+        <location filename="../src/view/openimage.cpp" line="42"/>
         <source>Open Image</source>
         <translation>打开图片</translation>
     </message>
     <message>
-        <location filename="../src/view/openimage.cpp" line="42"/>
+        <location filename="../src/view/openimage.cpp" line="43"/>
         <source>Image Files(</source>
         <translation>文件类型(</translation>
     </message>
@@ -133,26 +133,31 @@
     </message>
     <message>
         <location filename="../src/view/showimagewidget.cpp" line="22"/>
+        <source>Rename</source>
+        <translation>重命名</translation>
+    </message>
+    <message>
+        <location filename="../src/view/showimagewidget.cpp" line="23"/>
         <source>Set Desktop Wallpaper</source>
         <translation>设置为桌面壁纸</translation>
     </message>
     <message>
-        <location filename="../src/view/showimagewidget.cpp" line="23"/>
+        <location filename="../src/view/showimagewidget.cpp" line="24"/>
         <source>Set Lock Wallpaper</source>
         <translation>设置为锁屏壁纸</translation>
     </message>
     <message>
-        <location filename="../src/view/showimagewidget.cpp" line="24"/>
+        <location filename="../src/view/showimagewidget.cpp" line="25"/>
         <source>Print</source>
         <translation>打印</translation>
     </message>
     <message>
-        <location filename="../src/view/showimagewidget.cpp" line="25"/>
+        <location filename="../src/view/showimagewidget.cpp" line="26"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../src/view/showimagewidget.cpp" line="26"/>
+        <location filename="../src/view/showimagewidget.cpp" line="27"/>
         <source>Show in File</source>
         <translation>在文件夹中显示</translation>
     </message>
@@ -164,22 +169,22 @@
         <translation type="vanished">麒麟看图</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="19"/>
+        <location filename="../src/view/titlebar.cpp" line="26"/>
         <source>Pictures</source>
         <translation>看图</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="30"/>
+        <location filename="../src/view/titlebar.cpp" line="40"/>
         <source>minimize</source>
         <translation>最小化</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="40"/>
+        <location filename="../src/view/titlebar.cpp" line="50"/>
         <source>full screen</source>
         <translation>最大化</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="47"/>
+        <location filename="../src/view/titlebar.cpp" line="57"/>
         <source>close</source>
         <translation>关闭</translation>
     </message>
@@ -239,14 +244,14 @@
     <name>menuModule</name>
     <message>
         <location filename="../src/view/menumodule.cpp" line="23"/>
-        <location filename="../src/view/menumodule.cpp" line="259"/>
-        <location filename="../src/view/menumodule.cpp" line="273"/>
+        <location filename="../src/view/menumodule.cpp" line="270"/>
+        <location filename="../src/view/menumodule.cpp" line="284"/>
         <source>Service &amp; Support Team: </source>
         <translation>服务与支持团队： </translation>
     </message>
     <message>
         <location filename="../src/view/menumodule.cpp" line="27"/>
-        <location filename="../src/view/menumodule.cpp" line="205"/>
+        <location filename="../src/view/menumodule.cpp" line="216"/>
         <source>Version: </source>
         <translation>版本： </translation>
     </message>
@@ -293,8 +298,8 @@
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="167"/>
-        <location filename="../src/view/menumodule.cpp" line="183"/>
+        <location filename="../src/view/menumodule.cpp" line="172"/>
+        <location filename="../src/view/menumodule.cpp" line="188"/>
         <source>Pictures</source>
         <translation>看图</translation>
     </message>
@@ -303,7 +308,7 @@
         <translation type="vanished">麒麟看图</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="174"/>
+        <location filename="../src/view/menumodule.cpp" line="179"/>
         <source>close</source>
         <translation>关闭</translation>
     </message>

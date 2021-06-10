@@ -154,6 +154,13 @@ void Information::layoutS(int line)
     m_inforWid->resize(this->width(),this->height());
     //    m_inforWid->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 }
+//由重命名触发的更新信息栏名字函数
+void Information::updateName(QFileInfo newFile)
+{
+    QString nameContant = AutoFeed(newFile.completeBaseName());
+    m_nameC->setText(nameContant);
+    this->layout();
+}
 //文字过长时，最大换两行后显示...
 QString Information::AutoFeed(QString text)
 {
