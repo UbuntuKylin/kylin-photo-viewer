@@ -15,7 +15,7 @@ void menuModule::init(){
 void menuModule::initAction(){
 
     m_bodyAppName = new QLabel();
-
+    m_ft.setPixelSize(14);//先不用，之后要用
     m_bodyAppVersion = new QLabel();
     m_bodySupport = new QLabel();
     m_titleText = new QLabel();
@@ -41,14 +41,19 @@ void menuModule::initAction(){
     QList<QAction *> actions ;
     QAction *actionOpen = new QAction(m_menu);
     actionOpen->setText(tr("Open"));
+//    actionOpen->setFont(m_ft);
     QAction *actionTheme = new QAction(m_menu);
     actionTheme->setText(tr("Theme"));
+//    actionTheme->setFont(m_ft);
     QAction *actionHelp = new QAction(m_menu);
     actionHelp->setText(tr("Help"));
+//    actionHelp->setFont(m_ft);
     QAction *actionAbout = new QAction(m_menu);
     actionAbout->setText(tr("About"));
+//    actionAbout->setFont(m_ft);
     QAction *actionQuit = new QAction(m_menu);
     actionQuit->setText(tr("Quit"));
+//    actionQuit->setFont(m_ft);
     actions<<actionOpen/*<<actionTheme*/<<actionHelp<<actionAbout<<actionQuit;//暂时禁掉主题切换按钮
     m_menu->addActions(actions);
 //    互斥按钮组

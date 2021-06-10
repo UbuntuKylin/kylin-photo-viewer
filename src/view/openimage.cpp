@@ -9,6 +9,7 @@ OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
     m_openInCenter->setFocusPolicy(Qt::NoFocus);
     m_openInCenter->setFixedSize(OPENINCENTER_SIZE);
     m_openInCenter->move(0,0);
+    m_ft.setPixelSize(14);
     //中间“+”号按钮
     m_addFile = new QPushButton(m_openInCenter);
     m_addFile->setFocusPolicy(Qt::NoFocus);
@@ -20,6 +21,7 @@ OpenImage::OpenImage(QWidget *parent) : QWidget(parent)
     m_openText->setFixedWidth(OPEN_IMAGEFIX);
     m_openText->setAlignment(Qt::AlignCenter);
     m_openText->move(0,OPEN_IMAGEFIX+30);
+    m_openText->setFont(m_ft);
 
     this->setFixedSize(OPEN_IMAGESIZE);
     this->initconnect();
