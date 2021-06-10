@@ -8,6 +8,8 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     //布局
     g_titleWid = new QWidget(this);
     m_titleLayout = new QHBoxLayout(this);
+
+    m_ft.setPixelSize(14);
     //左上角图标
 //    m_logoBtn = new QLabel(this);
 //    m_logoBtn->setFixedSize(LOGO_BTN);
@@ -24,9 +26,10 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     m_logolb = new QLabel(this);
 
     m_logolb->setText(tr("Pictures"));
-
+    m_logolb->setFont(m_ft);
     //中间图片名字
     g_imageName = new QLabel(this);
+    g_imageName->setFont(m_ft);
     g_imageName->hide();
     //窗口四联--菜单
     g_menu = new menuModule(this);

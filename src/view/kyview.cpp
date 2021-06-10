@@ -810,7 +810,7 @@ void KyView::dragEnterEvent(QDragEnterEvent *event)
     }
 
     //判断图片是否支持被查看
-    if (formatList.contains( QFileInfo(str).suffix())) {
+    if (formatList.contains( QFileInfo(str).suffix().toLower())) {
         event->acceptProposedAction();
     } else {
         event->ignore();//否则不接受鼠标事件

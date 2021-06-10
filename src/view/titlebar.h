@@ -5,7 +5,7 @@
 #include <QToolButton>
 #include <QLabel>
 #include <QHBoxLayout>
-
+#include <QFont>
 #include "menumodule.h"
 #include "controller/interaction.h"
 class TitleBar : public QWidget
@@ -29,7 +29,7 @@ private:
     QPushButton *m_minibtn;//最小化按钮
 
     QPushButton *m_closebtn;//关闭
-
+    QFont m_ft;//固定字号
     void initControlQss();//初始化顶栏布局
     void initConnect();//建立信号与槽的连接
     void longText(QLabel *nameC, QString text);

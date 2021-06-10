@@ -12,6 +12,7 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     //布局
     g_tooleWid = new QFrame(this);
     m_toolLayout = new QHBoxLayout(this);
+    m_ft.setPixelSize(14);
     //缩放widget
     m_zoomWid = new QWidget(this);
     m_zoomWid->setFixedSize(TOOLZOOM_SIZE);
@@ -31,6 +32,7 @@ ToolBar::ToolBar(QWidget *parent) : QWidget(parent)
     m_percentage->setAlignment(Qt::AlignCenter);
 //    m_percentage->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     m_percentage->move(m_reduce->x()+m_reduce->width()+10,2);
+    m_percentage->setFont(m_ft);
 //    m_percentage->setText("98%");
     //放大
     m_enlarge = new QPushButton(m_zoomWid);
