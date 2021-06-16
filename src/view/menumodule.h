@@ -20,7 +20,7 @@
 #include <QGSettings>
 #include <QMetaEnum>
 #include <QApplication>
-
+#include <QFont>
 //#include "titlebar.h"
 //#include "kyview.h"
 #include "daemondbus.h"
@@ -59,7 +59,7 @@ private:
         themeBlackOnly = 1,
         themeLightOnly = 2
     } themeStatus;
-
+    QFont m_ft;//固定字号
 public slots:
     void dealSystemGsettingChange(const QString);
 private:
