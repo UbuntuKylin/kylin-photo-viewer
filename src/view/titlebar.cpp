@@ -1,20 +1,14 @@
 #include "titlebar.h"
 #include "kyview.h"
-#include "xatom-helper.h"
 #include "sizedate.h"
 TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
 {
-
     //布局
     g_titleWid = new QWidget(this);
     m_titleLayout = new QHBoxLayout(this);
-    //左上角图标
-//    m_logoBtn = new QLabel(this);
-//    m_logoBtn->setFixedSize(LOGO_BTN);
-//    m_logoBtn->setFixedSize(LOGO_BTN);//重置图标大小
-//    m_logoBtn->setPixmap(QPixmap::fromImage(QImage(":/res/res/kyview_logo.png")));
-//    m_logoBtn->setScaledContents(true);
 
+    m_ft.setPixelSize(14);
+    //左上角图标
     m_logoBtn = new QPushButton(this);
     m_logoBtn->setFixedSize(LOGO_BTN);//重置图标大小
     m_logoBtn->setIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
@@ -24,16 +18,20 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     m_logolb = new QLabel(this);
 
     m_logolb->setText(tr("Pictures"));
-
+    m_logolb->setAttribute(Qt::WA_TranslucentBackground);
+    m_logolb->setFont(m_ft);
     //中间图片名字
     g_imageName = new QLabel(this);
+    g_imageName->setFont(m_ft);
+    g_imageName->setAttribute(Qt::WA_TranslucentBackground);
     g_imageName->hide();
     g_myEdit = new Edit;
-    g_myEdit->setMaxLength(50);
+    g_myEdit->setMaxLength(83);
     g_myEdit->hide();
     //窗口四联--菜单
     g_menu = new menuModule(this);
     g_menu->setFocusPolicy(Qt::NoFocus);
+    g_menu->setAttribute(Qt::WA_TranslucentBackground);
     //窗口四联--最小化按钮
     m_minibtn = new QPushButton(this);
     m_minibtn->setFixedSize(TITLE_BTN);
@@ -110,6 +108,25 @@ void TitleBar::longText(QLabel *nameC, QString text)
          nameC->setToolTip("");//设置tooltips
     }
 }
+
+void TitleBar::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+    QPainter p(this);
+    p.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
+    QPainterPath rectPath;
+    rectPath.addRoundedRect(this->rect(), 0, 0); // 左上右下
+    QStyleOption opt;
+    opt.init(this);
+    QColor mainColor;
+    if (QColor(255,255,255) == opt.palette.color(QPalette::Base) || QColor(248,248,248) == opt.palette.color(QPalette::Base)) {
+        mainColor = QColor(255, 255, 255,178);
+    } else {
+        mainColor = QColor(15, 15, 15,178);
+    }
+    p.fillPath(rectPath,QBrush(mainColor));
+
+}
 //初始化顶栏布局
 void TitleBar::initControlQss()
 {
@@ -180,6 +197,7 @@ void TitleBar::reName()
         m_imagePath = newPath;
     } else {
         qDebug()<<"失败";
+
         g_imageName->show();
     }
 }

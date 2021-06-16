@@ -13,6 +13,7 @@
 #include <QtMath>
 #include <QPainter>
 #include <QGSettings>
+#include <QFont>
 #include <QGraphicsDropShadowEffect>
 #include "controller/interaction.h"
 
@@ -52,7 +53,7 @@ private:
     QColor m_color = QColor(190 ,190, 190);
     QBrush m_brush = QBrush(Qt::white);
     QWidget *m_zoomWid;//缩放按钮和比例窗口
-
+    QFont m_ft;//
 
     void originalSize();//原始尺寸
     void adaptiveWidget();//适应窗口

@@ -2,6 +2,7 @@
 #define EDIT_H
 #include <QLineEdit>
 #include <QKeyEvent>
+#include <QDebug>
 class Edit : public QLineEdit
 {
     Q_OBJECT

@@ -5,7 +5,7 @@
 #include <QToolButton>
 #include <QLabel>
 #include <QHBoxLayout>
-#include <QMouseEvent>
+#include <QFont>
 #include "menumodule.h"
 #include "controller/interaction.h"
 #include "edit.h"
@@ -31,11 +31,13 @@ private:
     QLabel *m_logolb;//左上角logoname
     QPushButton *m_minibtn;//最小化按钮
     QPushButton *m_closebtn;//关闭
+    QFont m_ft;//固定字号
     QString m_imagePath;//文件路径
     QString m_oldName;//存重命名之前的名字
     void initControlQss();//初始化顶栏布局
     void initConnect();//建立信号与槽的连接
     void longText(QLabel *nameC, QString text);
+    void paintEvent(QPaintEvent *event);
     void reName();
     void showOrigName();
     void editSelected();//lineedit选中

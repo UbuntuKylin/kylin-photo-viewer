@@ -26,9 +26,6 @@ KyView::KyView(const QStringList &args)
 
     //标题栏
     m_titlebar = new TitleBar(this);
-    m_titlebar->setAutoFillBackground(true);
-    m_titlebar->setBackgroundRole(QPalette::Base);
-    m_titlebar->setWindowOpacity(0.7);
     m_titlebar->move(0,0);
     m_titlebar->show();
 
@@ -182,9 +179,6 @@ void KyView::startRename()
 //顶栏大小随主界面大小改变的响应函数
 void KyView::titlebarChange()
 {
-    if (m_titlebar->isHidden()) {
-        return;
-    }
     m_titlebar->move(0,0);
     m_titlebar->resize(this->width(),BAR_HEIGHT);
     m_titlebar->g_titleWid->resize(this->width(),BAR_HEIGHT);
@@ -425,10 +419,6 @@ void KyView::initGsetting()
             if (key == "styleName") {
                 themeChange();
             }
-//            if (key == "iconThemeName") {
-//                this->setWindowIcon(QIcon::fromTheme("kylin-photo-viewer", QIcon(":/res/res/kyview_logo.png")));
-//            }
-
         });
     }
 
@@ -450,18 +440,17 @@ void KyView::themeChange()
 {
     QString themeStyle = m_pGsettingThemeData->get("styleName").toString();
     if ("ukui-dark" == themeStyle || "ukui-black" == themeStyle) {
-        m_information->setStyleSheet("background-color:rgba(0,0,0,0.66);border-top-left-radius:0px;border-top-right-radius：0px;border-bottom-left-radius:4px;border-bottom-right-radius:0px;");
-//        m_sideBar->setStyleSheet("background-color:rgba(26,26,26,0.7);border-radius:6px;");
+        m_information->setStyleSheet("QWidget{background-color:rgba(0,0,0,0.72);border-top-left-radius:0px;border-top-right-radius：0px;border-bottom-left-radius:4px;border-bottom-right-radius:0px;}");
         m_titlebar->g_menu->setThemeDark();
         m_showImageWidget->g_next->setIcon(QIcon(":/res/res/1right.png"));
         m_showImageWidget->g_back->setIcon(QIcon(":/res/res/1left.png"));
-        m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(26, 26, 26, 0.7)}"
+        m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(63, 69, 77, 1)}"
                                    "QListView::item{margin:0 2px 0 0;background:rgba(0, 0, 0, 0.4);border-radius:2px;}"
                                    "QListView::item:selected{border:2px solid rgba(13, 135, 255, 1);background:rgba(0, 0, 0, 0.4);border-radius:2px;}"
                                    "QListView::item:hover{background:rgba(0, 0, 0, 0.4);border-radius:2px;}");
     } else {
-        m_information->setStyleSheet("background-color:rgba(255,255,255,0.66);border-top-left-radius:0px;border-top-right-radius：0px;border-bottom-left-radius:4px;border-bottom-right-radius:0px;");
-        m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(227, 235, 239, 0.7)}"
+        m_information->setStyleSheet("QWidget{background-color:rgba(225, 240, 250, 0.72);border-top-left-radius:0px;border-top-right-radius：0px;border-bottom-left-radius:4px;border-bottom-right-radius:0px;}");
+        m_sideBar->setStyleSheet("QListView{border:1px ;border-top-left-radius:0px;border-top-right-radius:4px;border-bottom-left-radius:0px;border-bottom-right-radius:4px;outline:none;background:rgba(227, 235, 239, 1)}"
                                    "QListView::item{margin:0 2px 0 0;background:rgba(255, 255, 255, 0.5);border-radius:2px;}"
                                    "QListView::item:selected{border:2px solid rgba(13, 135, 255, 0.86);background:rgba(255, 255, 255, 0.9);border-radius:2px;}"
                                    "QListView::item:hover{background:rgba(255, 255, 255, 0.9);border-radius:2px;}");
@@ -838,7 +827,7 @@ void KyView::dragEnterEvent(QDragEnterEvent *event)
     }
 
     //判断图片是否支持被查看
-    if (formatList.contains( QFileInfo(str).suffix())) {
+    if (formatList.contains( QFileInfo(str).suffix().toLower())) {
         event->acceptProposedAction();
     } else {
         event->ignore();//否则不接受鼠标事件

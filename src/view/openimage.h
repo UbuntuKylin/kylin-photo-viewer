@@ -9,6 +9,7 @@
 #include <QSize>
 #include <QFileDialog>
 #include <QGSettings>
+#include <QFont>
 #include "global/variable.h"
 #include "controller/interaction.h"
 class OpenImage : public QWidget
@@ -23,7 +24,7 @@ private:
     QPushButton *m_addFile;//“+”图标
     QLabel *m_openText;//下方文字
     QSize m_iconsize;
-
+    QFont m_ft;//固定字号
     void initInteraction();
     void initconnect();
     void initGsettings();

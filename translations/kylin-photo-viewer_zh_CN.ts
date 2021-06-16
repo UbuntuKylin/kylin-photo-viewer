@@ -84,16 +84,16 @@
         <translation>看图</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="530"/>
-        <location filename="../src/view/kyview.cpp" line="762"/>
-        <location filename="../src/view/kyview.cpp" line="804"/>
+        <location filename="../src/view/kyview.cpp" line="519"/>
+        <location filename="../src/view/kyview.cpp" line="751"/>
+        <location filename="../src/view/kyview.cpp" line="793"/>
         <source>full srceen</source>
         <translation>最大化</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="534"/>
-        <location filename="../src/view/kyview.cpp" line="766"/>
-        <location filename="../src/view/kyview.cpp" line="801"/>
+        <location filename="../src/view/kyview.cpp" line="523"/>
+        <location filename="../src/view/kyview.cpp" line="755"/>
+        <location filename="../src/view/kyview.cpp" line="790"/>
         <source>recovery</source>
         <translation>还原</translation>
     </message>
@@ -101,17 +101,17 @@
 <context>
     <name>OpenImage</name>
     <message>
-        <location filename="../src/view/openimage.cpp" line="19"/>
+        <location filename="../src/view/openimage.cpp" line="20"/>
         <source>Load picture</source>
         <translation>载入图片</translation>
     </message>
     <message>
-        <location filename="../src/view/openimage.cpp" line="42"/>
+        <location filename="../src/view/openimage.cpp" line="44"/>
         <source>Open Image</source>
         <translation>打开图片</translation>
     </message>
     <message>
-        <location filename="../src/view/openimage.cpp" line="43"/>
+        <location filename="../src/view/openimage.cpp" line="45"/>
         <source>Image Files(</source>
         <translation>文件类型(</translation>
     </message>
@@ -169,22 +169,22 @@
         <translation type="vanished">麒麟看图</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="26"/>
+        <location filename="../src/view/titlebar.cpp" line="20"/>
         <source>Pictures</source>
         <translation>看图</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="40"/>
+        <location filename="../src/view/titlebar.cpp" line="38"/>
         <source>minimize</source>
         <translation>最小化</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="50"/>
+        <location filename="../src/view/titlebar.cpp" line="48"/>
         <source>full screen</source>
         <translation>最大化</translation>
     </message>
     <message>
-        <location filename="../src/view/titlebar.cpp" line="57"/>
+        <location filename="../src/view/titlebar.cpp" line="55"/>
         <source>close</source>
         <translation>关闭</translation>
     </message>

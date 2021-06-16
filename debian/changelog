@@ -1,9 +1,27 @@
+kylin-photo-viewer (1.0.0-22) v101; urgency=medium
+  
+  * BUG号：无
+  * 需求号：6839，6838，6834，6325，6321
+  * 其他改动说明：无
+  * 影响域：增加：复制，打印，重命名功能
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Wed,16  Jun 2021 09:46:00 +0800
+
+kylin-photo-viewer (1.0.0-21) v101; urgency=medium
+  
+  * BUG号：61342
+  * 需求号：无
+  * 其他改动说明：无
+  * 影响域：无
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Fri,11  Jun 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-20) v101; urgency=medium
   
   * BUG号：无
   * 需求号：无
-  * 其他改动说明：添加打印，重命名，复制功能
-  * 影响域：添加打印（qt打印机模块，其翻译等不由看图解决），重命名，复制（复制到剪切板）功能
+  * 其他改动说明：修改拖拽后缀为大写的图片打开失败问题；固定字号
+  * 影响域：控制面板字号变化，界面字号不跟随变化
 
  -- zoujunnan <zoujunnan@kylinos.cn>  Thu,10  Jun 2021 09:46:00 +0800
 

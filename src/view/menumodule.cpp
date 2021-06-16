@@ -26,7 +26,7 @@ void menuModule::initAction(){
                          "support@kylinos.cn</a>");
     m_bodyAppVersion->setText(tr("Version: ") + m_appVersion);
 
-    menuButton = new QToolButton;
+    menuButton = new QToolButton(this);
     menuButton->setToolTip(tr("menu"));
     menuButton->setIcon(QIcon::fromTheme("open-menu-symbolic"));
     menuButton->setProperty("isWindowButton", 0x1);

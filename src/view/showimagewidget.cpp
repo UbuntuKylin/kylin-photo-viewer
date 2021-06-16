@@ -260,11 +260,6 @@ void ShowImageWidget::deleteImage()
 void ShowImageWidget::showInFile()
 {
     Interaction::getInstance()->openImageInfile();
-//    if (m_path == "") {
-//        return;
-//    }
-//    QDesktopServices::openUrl(QUrl::fromLocalFile(m_path));
-
 }
 
 void ShowImageWidget::reName()
@@ -285,11 +280,13 @@ void ShowImageWidget::setMenuAction()
     }
     //判断是否为可设置为壁纸的类型
     if (formatList.contains(m_paperFormat)) {
-        m_imageMenu->insertAction(m_deleteImage,m_setDeskPaper);
+        m_imageMenu->insertAction(m_showInFile,m_setDeskPaper);
+        m_imageMenu->insertAction(m_setDeskPaper,m_reName);
     } else {
         m_imageMenu->removeAction(m_setDeskPaper);
+        m_imageMenu->insertAction(m_showInFile,m_reName);
     }
-    m_imageMenu->insertAction(m_copy,m_reName);
+
 }
 
 void ShowImageWidget::initInteraction()

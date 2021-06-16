@@ -93,7 +93,6 @@ Information::Information(QWidget *parent) : QWidget(parent)
     m_inforWid = new QWidget(this);
     m_gdLayout =new QGridLayout(this);
 
-
 }
 //为各控件设置text
 void Information::contentText(QFileInfo info, QString sizeImage, QString spaceColor)
@@ -106,16 +105,15 @@ void Information::contentText(QFileInfo info, QString sizeImage, QString spaceCo
         QString Size = QString("%1").arg(QString::asprintf("%.1f", float(info.size())/1024));
         imageSize = Size + "Kib";
     }
+    m_creationTimeC->setText(info.birthTime().toString("yyyy.MM.dd hh:mm"));
+    m_revisionTimeC->setText(info.lastModified().toString("yyyy.MM.dd hh:mm"));
     QString nameContant = AutoFeed(info.completeBaseName());
-
     m_nameC->setText(nameContant);
-
     m_formatC->setText(info.suffix());
     m_storageSizeC->setText(imageSize);
     m_pixelSizeC->setText(sizeImage);
     m_colorSpaceC->setText(spaceColor);
-    m_creationTimeC->setText(info.birthTime().toString("yyyy.MM.dd hh:mm"));
-    m_revisionTimeC->setText(info.lastModified().toString("yyyy.MM.dd hh:mm"));
+
     this->layout();
 
 }
@@ -128,6 +126,8 @@ void Information::layout()
         } else {
             this->layoutS(0);
         }
+    } else if (m_nameC->text() == ""){
+        this->layoutS(0);
     }
 }
 
@@ -148,7 +148,6 @@ void Information::layoutS(int line)
     m_gdLayout->addWidget(m_creationTimeC,6+line,3,1,4);
     m_gdLayout->addWidget(m_revisionTime,7+line,0,1,2);
     m_gdLayout->addWidget(m_revisionTimeC,7+line,3,1,4);
-
     m_gdLayout->setContentsMargins(12,10-line*3,10,16-line*3);
     m_inforWid->setLayout(m_gdLayout);
     m_inforWid->resize(this->width(),this->height());
@@ -175,6 +174,7 @@ QString Information::AutoFeed(QString text)
         {
             if (fm.width(strText.left(i)) <= width)
             {
+                strText = text;
                 m_lineInTwo = false;
             }
             //超过width长度，加换行符换行

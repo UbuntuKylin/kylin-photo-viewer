@@ -66,7 +66,7 @@ QString Core::initDbus(const QStringList &arguments)
         //不是支持的文件格式忽略
         QString format =path;
         format=format.split(".").last();
-        if (!Variable::SUPPORT_FORMATS.contains(format)) {
+        if (!Variable::SUPPORT_FORMATS.contains(format.toLower())) {
             return "";
         }
         return path;
