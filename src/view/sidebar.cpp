@@ -2,9 +2,6 @@
 
 SideBar::SideBar(QWidget *parent) : QListView(parent)
 {
-//    this->resize(SIDEBAR_SIZE);
-//    this->setResizeMode(QListView::Adjust);
-//    this->setUpdatesEnabled(true);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);//设置无水平滑动条
     this->verticalScrollBar()->setProperty("drawScrollBarGroove",false);//设置滑动条无滑槽
     this->setDragEnabled(false);//设置不可拖动
@@ -13,10 +10,15 @@ SideBar::SideBar(QWidget *parent) : QListView(parent)
     this->setIconSize(SIDEITEM_SIZE);//
     this->setViewMode(QListView::IconMode);
 
-//    m_itemModel = new QStandardItemModel(this);
     m_delegate = new SideBarDelegate();
     this->setItemDelegate(m_delegate);
     this->showItem();
+    //绘制阴影
+    QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
+    effect->setOffset(0, 0);          //设置向哪个方向产生阴影效果(dx,dy)，特别地，(0,0)代表向四周发散
+    effect->setColor(ALBUM_COLOR); //设置阴影颜色，也可以setColor(QColor(220,220,220))
+    effect->setBlurRadius(ALBUM_RADIUS);        //设定阴影的模糊半径，数值越大越模糊
+    this->setGraphicsEffect(effect);
     //响应拖拽事件
     this->setAcceptDrops(false);
     this->setFocusPolicy(Qt::NoFocus);

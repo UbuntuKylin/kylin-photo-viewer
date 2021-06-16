@@ -78,6 +78,12 @@ signals:
      * 参数类型：无
      */
     void openFromAlbum();
+    /*
+     * 接口功能：更新图片名称
+     * 接口场景：图片右键重命名
+     * 接口类型：信号，需要绑定信号
+     */
+    void toCoreChangeName(QString oldName, QFileInfo newFile);//切换到所选图片
 
 public:
 

@@ -15,6 +15,7 @@ class Information : public QWidget
 public:
     explicit Information(QWidget *parent = nullptr);
     void contentText(QFileInfo info,QString sizeImage,QString spaceColor);
+    void updateName(QFileInfo newFile);//重命名后更新名字和修改时间
 private:
     QLabel *m_widName;//窗口名--信息
     QLabel *m_name;//名称
@@ -46,6 +47,7 @@ private:
 
     void layout();
     void layoutS(int line);
+
     QString AutoFeed(QString text);
 
 
