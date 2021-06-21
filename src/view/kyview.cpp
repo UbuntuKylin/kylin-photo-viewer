@@ -5,8 +5,7 @@ KyView *KyView::mutual = nullptr;
 KyView::KyView(const QStringList &args)
 
 {
-    Interaction *m_interaction =Interaction::getInstance();
-    m_interaction->creatCore(args);
+    Interaction::getInstance()->creatCore(args);
 
     this->resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
@@ -195,13 +194,9 @@ void KyView::openImageChange()
 //主界面展示的图片大小随主界面大小改变的响应函数
 void KyView::showImageChange()
 {
-//    if (m_showImageWidget->isHidden()){
-//        return;
-//    }else{
-        m_showImageWidget->move(0,0);
-        m_showImageWidget->resize(this->width(),this->height());
-        m_showImageWidget->reMove(this->width(),this->height());
-//    }
+    m_showImageWidget->move(0,0);
+    m_showImageWidget->resize(this->width(),this->height());
+    m_showImageWidget->reMove(this->width(),this->height());
 }
 //工具栏大小随主界面大小改变的响应函数
 void KyView::toolbarChange()
@@ -266,7 +261,6 @@ void KyView::delayHide()
     }
 
     inforChange();
-//    }
 }
 
 //鼠标离开界面时需要触发，届时会加上对导航器的处理
@@ -741,6 +735,7 @@ void KyView::mouseDoubleClickEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton) {
         return;
     }
+    //在标题栏的图片名字处双击不响应全屏或恢复
     if (m_titlebar->g_imageName->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
         return;
     }

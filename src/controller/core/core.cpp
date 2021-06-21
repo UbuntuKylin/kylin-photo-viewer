@@ -829,6 +829,37 @@ Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &n
     return ERROR_IMAGE;
 }
 
+Enums::RenameState Core::successOrFail(const QString &oldPath, const QString &newPath)
+{
+    QFile file(oldPath);
+    bool ok = file.rename(oldPath,newPath);
+    //改名
+    if (ok) {
+        QFileInfo fileToCore(newPath);
+        QString fileNewName = fileToCore.absoluteFilePath();
+        //更新相册，m_nowpath，m_info信息为重命名后的图片
+        m_nowpath = fileNewName;
+        m_info = fileToCore;
+        for (int i = 1;i<m_albumModel->rowCount();i++) {
+            MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
+            if (item->getPath() == oldPath) {
+                item->setPath(fileNewName);
+            }
+        }
+        return SUCCESS;
+    } else {
+        if (!file.exists()) {
+            qDebug()<<"文件不存在";
+            return NOT_EXITS;
+        }
+        if (QFile::exists(newPath)) {
+            qDebug()<<"文件同名";
+            return SAME_NAME;
+        }
+        return UNKNOWN_ERROR;
+    }
+}
+
 QString Core::nextImagePath(const QString &oldPath)
 {
     //相册中没有文件时，不进行处理
@@ -905,15 +936,31 @@ void Core::albumLoadFinish(QVariant var)
     }
 }
 //重命名
-void Core::toCoreChangeName(QString oldName, QFileInfo newFile)
+void Core::toCoreChangeName(QString oldName, QString newName)
 {
-    QString fileNewName = newFile.absoluteFilePath();
 
-    for (int i = 1;i<m_albumModel->rowCount();i++) {
-        MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
-        if (item->getPath() == oldName) {
-            item->setPath(fileNewName);
-        }
+    //存原图后缀
+    QFileInfo file(oldName);
+    QString oldSuffix = file.suffix();
+    oldSuffix = "." + oldSuffix;
+    //形成完整路径
+    QString path = file.absolutePath();
+    QString newPath = path + "/" + newName;
+    newPath = newPath + oldSuffix;
+    //判断是否重命名成功，并返回重命名结果
+    RenameState type = successOrFail(oldName,newPath);
+    //重命名返回结果---给前端发信号改名或错误提示
+    if (type == SUCCESS) {//重命名成功
+        QFileInfo fileToCore(newPath);
+        emit renameResult(0,fileToCore);
+    } else if (type == NOT_EXITS){//文件不存在
+        emit renameResult(-1,file);
+    } else if (type == SAME_NAME) {//文件同名
+        emit renameResult(-2,file);
+    } else if (type == NO_PEIMISSION) {//没有权限----暂时算为其他未知错误中，待以后解决
+        emit renameResult(-3,file);
+    } else {//其他未知错误
+        emit renameResult(-4,file);
     }
 }
 
@@ -1006,8 +1053,8 @@ void Core::findAllImageFromDir(QString fullPath)
     for (const QString &format : Variable::SUPPORT_FORMATS) {
         nameFilters<<"*."+format;//构造格式过滤列表
     }
-    QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);//获取所有支持的图片
-
+    QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Writable, QDir::Name);//获取所有支持的图片
+//    QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Writable|QDir::Hidden, QDir::Name);//获取所有支持的图片
     loadAlbum(path,images);
 
     openImage(filepath);

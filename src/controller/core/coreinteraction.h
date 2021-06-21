@@ -24,6 +24,7 @@ signals:
     void coreOpenInfile();//文件夹中打开
     void coreChangeOpenIcon(QString theme);//更改主题，切换相册打开按钮图标
     void coreClose();//结束进程
+    void coreRename(QString oldPath,QString newPath);//重命名
 
 public:
     CoreInteraction();
@@ -50,6 +51,7 @@ protected:
     virtual void changeOpenIcon(QString theme);//更改主题，切换相册打开按钮图标
     virtual void close();//关闭进程
     virtual QStandardItemModel * getAlbumModel();//获取相册model指针
+    virtual void reName(QString oldPath,QString newPath);//重命名
 
 private:
     void initConnect();//初始化绑定

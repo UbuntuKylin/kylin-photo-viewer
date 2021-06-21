@@ -27,6 +27,7 @@ signals:
     void changeAlbumHighLight(QModelIndex modelIndex);//在相册中选中到所切换的图片
     void delayShow(bool isLoading);//处理图片加载缓慢问题
     void openFromAlbum();//从相册打开
+    void renameResult(int code, QFileInfo newPath);//返回报错信息和新路径
 
 public:
     Core();
@@ -47,7 +48,7 @@ public:
     void close();//关闭进程
     QStandardItemModel * getAlbumModel();//获取相册model指针
     void albumLoadFinish(QVariant var);//预览加载完成
-    void toCoreChangeName(QString oldName,QFileInfo newFile);//接收重命名的处理
+    void toCoreChangeName(QString oldName, QString newName);//接收重命名的处理
 
 private:
     void initCore();//初始化核心
@@ -68,6 +69,7 @@ private:
     void creatNavigation();//创建导航器图片等数据，用于节省算力
     void deleteAlbumItem(const QString &path);//删除相册中的项
     ChamgeImageType nextOrBack(const QString &oldPath,const QString &newPath);
+    RenameState successOrFail(const QString &oldPath,const QString &newPath);//返回重命名结果
     QString nextImagePath(const QString & oldPath);
     QString backImagePath(const QString & oldPath);
     void setHighLight(const QString &path);
