@@ -15,6 +15,7 @@ void Core::initCore()
     m_albumModel = new QStandardItemModel;
 
     qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
+    qRegisterMetaType<QFileInfo>("QFileInfo");
     qRegisterMetaType<Processing::FlipWay>("Processing::FlipWay");
 
     m_clickBeforeStartPosition = QPoint(-1,-1);
