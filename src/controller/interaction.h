@@ -79,11 +79,12 @@ signals:
      */
     void openFromAlbum();
     /*
-     * 接口功能：更新图片名称
-     * 接口场景：图片右键重命名
-     * 接口类型：信号，需要绑定信号
+     * 接口功能：重命名
+     * 接口场景：给前端信息
+     * 接口类型：信号，需要绑定
+     * 参数类型：无
      */
-    void toCoreChangeName(QString oldName, QFileInfo newFile);//切换到所选图片
+    void sendRenameResult(int code, QFileInfo newFile);//返回重命名信息
 
 public:
 
@@ -211,6 +212,13 @@ public:
      * 备注：对应QlistView
      */
     virtual QStandardItemModel * getAlbumModel()=0;//获取相册model指针
+    /*
+     * 接口功能：重命名
+     * 接口场景：右键菜单、双击标题栏重命名
+     * 接口类型：函数，直接调用
+     * 参数类型：旧名字，新名字
+     */
+    virtual void reName(QString oldPath, QString newPath)=0;//更改主题，切换相册打开按钮图标
 
 private:
     static Interaction *m_interaction;//单例指针

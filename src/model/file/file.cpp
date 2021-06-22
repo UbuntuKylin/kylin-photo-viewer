@@ -41,7 +41,8 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             LoadMovie *loadMovie = new LoadMovie(maf.matList,tmpMovie);
             loadMovie->start();
         }
-        if (tmpMovie->frameCount()<3) {
+        //临界值为2时，在线程中回收
+        if (tmpMovie->frameCount()<2) {
             tmpMovie->deleteLater();
         }
     } else if (suffix == "svg") {

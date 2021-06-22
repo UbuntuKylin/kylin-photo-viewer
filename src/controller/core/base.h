@@ -18,6 +18,8 @@ class Enums{
 public:
     enum ChamgeImageType{NEXT_IMAGE=-1,BACK_IMAGE=-2,ERROR_IMAGE=-9};
     enum ChangeShowSizeType{BIG = 0,SMALL,ORIGIN,AUTO};//放大、缩小、原图、自适应
+    //成功，同名，文件不存在，没有权限，其他错误，以.开头，名字为空
+    enum RenameState{SUCCESS = 0, SAME_NAME = -1, NOT_EXITS = -2,NO_PEIMISSION = -3, UNKNOWN_ERROR = -4, START_WITH_POINT = -5,EMPTY_NONE = -6};
 };
 
 class ImageShowStatus : public Enums //显示图片细节相关，记录显示图片状态

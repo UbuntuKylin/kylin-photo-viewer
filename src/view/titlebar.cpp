@@ -75,7 +75,7 @@ void TitleBar::showImageName(QString name, QString imagePath)
     QFileInfo imageName(imagePath);
     m_oldName = name;
     m_imagePath = imagePath;
-    g_myEdit->setText(imageName.baseName());
+    g_myEdit->setText(imageName.completeBaseName());
     longText(g_imageName,name);
 //    g_imageName->setText(name);
     g_imageName->show();
@@ -154,11 +154,11 @@ void TitleBar::initConnect()
     connect(g_fullscreen, &QPushButton::clicked, this, &TitleBar::recovery);
     connect(m_closebtn, &QPushButton::clicked, Interaction::getInstance(), &Interaction::close);
     connect(Interaction::getInstance(),&Interaction::progremExit, KyView::mutual, &KyView::close);
-    connect(this,&TitleBar::toCoreChangeName,Interaction::getInstance(),&Interaction::toCoreChangeName);
     connect(g_menu,&menuModule::openSignal,this,&TitleBar::openSignal);
     connect(g_menu,&menuModule::aboutShow,this,&TitleBar::aboutShow);
     connect(g_myEdit,&Edit::renamefinished,this,&TitleBar::reName);
     connect(g_myEdit,&Edit::showOrigName,this,&TitleBar::showOrigName);
+    connect(Interaction::getInstance(),&Interaction::sendRenameResult,this,&TitleBar::dealRenameResult);
 
 
 }
@@ -170,36 +170,47 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent *event)
     QWidget::mouseDoubleClickEvent(event);
 
 }
-
+//告诉后端重命名
 void TitleBar::reName()
-{   //存原图后缀
-    QFileInfo file(m_imagePath);
-    QString oldSuffix = file.suffix();
-    oldSuffix = "." + oldSuffix;
-    //形成完整路径
-    QString path = file.absolutePath();
-    QString newPath = path + "/" + g_myEdit->Text;
-
-    QFileInfo newFile(newPath);
-    if (newFile.suffix().isEmpty()) {
-        newPath = newPath + oldSuffix;
-    }
-    //重命名
-    bool ok = QFile::rename(m_imagePath,newPath);
-    //发给后端改名
-    if (ok) {
-        QFileInfo fileToCore(newPath);
-        //显示形式
-        longText(g_imageName,fileToCore.fileName());
+{
+    //判断新老名字是否一样，无需进行重命名。（且一样的情况下，qfile会返回失败）
+    QFileInfo filename(m_imagePath);
+    if (filename.completeBaseName() == g_myEdit->Text) {
         g_imageName->show();
-        emit updateInformation(fileToCore);
-        emit toCoreChangeName(m_imagePath,fileToCore);
-        m_imagePath = newPath;
-    } else {
-        qDebug()<<"失败";
-
-        g_imageName->show();
+        return;
     }
+    if (g_myEdit->Text.indexOf(".") == 0){
+        //此文件将被隐藏（文件名以“.”开头的将会成为隐藏属性文件）
+        m_msg->warning(this,tr("Warning"),tr("This file will be hidden(the file whose name begins with \".\" will be the hidden property file.)"));
+    }
+    Interaction::getInstance()->reName(m_imagePath,g_myEdit->Text);
+}
+//
+void TitleBar::dealRenameResult(int code, QFileInfo newfile)
+{
+    if (code == 0) {
+        //刷新g_imageName显示的形式
+        longText(g_imageName,newfile.fileName());
+        g_imageName->show();
+        g_myEdit->setText(newfile.completeBaseName());
+        emit updateInformation(newfile);
+        m_imagePath = newfile.filePath();
+        return;
+    } else if (code == -1) {
+        //文件不存在(已被删除)！
+        m_msg->warning(this,tr("Warning"),tr("File does not exist (or has been deleted)!"));
+    } else if (code == -2) {
+        //此名称已被占用，请选取其他名称！
+        m_msg->warning(this,tr("Warning"),tr("This name has been occupied, please choose another！"));
+    } else if (code == -3) {
+        //此为只读文件，请修改权限后操作！
+        m_msg->warning(this,tr("Warning"),tr("This is a read-only file, please modify the permissions before operation！"));
+    } else if (code == -4) {
+        //其他错误，重命名失败！
+        m_msg->warning(this,tr("Warning"),tr("Other error, rename failed！"));
+    }
+    g_imageName->show();
+    g_myEdit->setText(newfile.completeBaseName());
 }
 
 void TitleBar::showOrigName()

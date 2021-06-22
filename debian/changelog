@@ -1,11 +1,20 @@
-kylin-photo-viewer (1.0.0-22) v101; urgency=medium
+kylin-photo-viewer (1.0.0-23) v101; urgency=medium
   
   * BUG号：无
-  * 需求号：6839，6838，6834，6325，6321
+  * 需求号：6839，6838，6834，6325
   * 其他改动说明：无
   * 影响域：增加：复制，打印，重命名功能
 
  -- zoujunnan <zoujunnan@kylinos.cn>  Wed,16  Jun 2021 09:46:00 +0800
+
+kylin-photo-viewer (1.0.0-22) v101; urgency=medium
+  
+  * BUG号：62462
+  * 需求号：无
+  * 其他改动说明：无
+  * 影响域：无
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Sat,19  Jun 2021 09:46:00 +0800
 
 kylin-photo-viewer (1.0.0-21) v101; urgency=medium
   

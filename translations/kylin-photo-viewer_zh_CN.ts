@@ -79,21 +79,21 @@
         <translation type="vanished">麒麟看图</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="13"/>
+        <location filename="../src/view/kyview.cpp" line="11"/>
         <source>Pictures</source>
         <translation>看图</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="519"/>
-        <location filename="../src/view/kyview.cpp" line="751"/>
-        <location filename="../src/view/kyview.cpp" line="793"/>
+        <location filename="../src/view/kyview.cpp" line="517"/>
+        <location filename="../src/view/kyview.cpp" line="749"/>
+        <location filename="../src/view/kyview.cpp" line="791"/>
         <source>full srceen</source>
         <translation>最大化</translation>
     </message>
     <message>
-        <location filename="../src/view/kyview.cpp" line="523"/>
-        <location filename="../src/view/kyview.cpp" line="755"/>
-        <location filename="../src/view/kyview.cpp" line="790"/>
+        <location filename="../src/view/kyview.cpp" line="521"/>
+        <location filename="../src/view/kyview.cpp" line="753"/>
+        <location filename="../src/view/kyview.cpp" line="788"/>
         <source>recovery</source>
         <translation>还原</translation>
     </message>
@@ -189,6 +189,40 @@
         <translation>关闭</translation>
     </message>
     <message>
+        <location filename="../src/view/titlebar.cpp" line="184"/>
+        <location filename="../src/view/titlebar.cpp" line="200"/>
+        <location filename="../src/view/titlebar.cpp" line="203"/>
+        <location filename="../src/view/titlebar.cpp" line="206"/>
+        <location filename="../src/view/titlebar.cpp" line="209"/>
+        <source>Warning</source>
+        <translation>警告</translation>
+    </message>
+    <message>
+        <location filename="../src/view/titlebar.cpp" line="184"/>
+        <source>This file will be hidden(the file whose name begins with &quot;.&quot; will be the hidden property file.)</source>
+        <translation>此文件将被隐藏（文件名以“.”开头的将会成为隐藏属性文件）!</translation>
+    </message>
+    <message>
+        <location filename="../src/view/titlebar.cpp" line="200"/>
+        <source>File does not exist (or has been deleted)!</source>
+        <translation>文件不存在(已被删除)！</translation>
+    </message>
+    <message>
+        <location filename="../src/view/titlebar.cpp" line="203"/>
+        <source>This name has been occupied, please choose another！</source>
+        <translation>此名称已被占用，请选取其他名称！</translation>
+    </message>
+    <message>
+        <location filename="../src/view/titlebar.cpp" line="206"/>
+        <source>This is a read-only file, please modify the permissions before operation！</source>
+        <translation>此为只读文件，请修改权限后操作！</translation>
+    </message>
+    <message>
+        <location filename="../src/view/titlebar.cpp" line="209"/>
+        <source>Other error, rename failed！</source>
+        <translation>其他错误，重命名失败！</translation>
+    </message>
+    <message>
         <source>full srceen</source>
         <translation type="vanished">最大化</translation>
     </message>
@@ -244,14 +278,14 @@
     <name>menuModule</name>
     <message>
         <location filename="../src/view/menumodule.cpp" line="23"/>
-        <location filename="../src/view/menumodule.cpp" line="270"/>
-        <location filename="../src/view/menumodule.cpp" line="284"/>
+        <location filename="../src/view/menumodule.cpp" line="276"/>
+        <location filename="../src/view/menumodule.cpp" line="290"/>
         <source>Service &amp; Support Team: </source>
         <translation>服务与支持团队： </translation>
     </message>
     <message>
         <location filename="../src/view/menumodule.cpp" line="27"/>
-        <location filename="../src/view/menumodule.cpp" line="216"/>
+        <location filename="../src/view/menumodule.cpp" line="221"/>
         <source>Version: </source>
         <translation>版本： </translation>
     </message>
@@ -265,7 +299,7 @@
         <translation type="vanished">打开..</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="45"/>
+        <location filename="../src/view/menumodule.cpp" line="46"/>
         <source>Theme</source>
         <translation>主题</translation>
     </message>
@@ -275,31 +309,31 @@
     </message>
     <message>
         <location filename="../src/view/menumodule.cpp" line="43"/>
-        <location filename="../src/view/menumodule.cpp" line="105"/>
+        <location filename="../src/view/menumodule.cpp" line="110"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="47"/>
-        <location filename="../src/view/menumodule.cpp" line="103"/>
+        <location filename="../src/view/menumodule.cpp" line="49"/>
+        <location filename="../src/view/menumodule.cpp" line="108"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="49"/>
-        <location filename="../src/view/menumodule.cpp" line="101"/>
+        <location filename="../src/view/menumodule.cpp" line="52"/>
+        <location filename="../src/view/menumodule.cpp" line="106"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="51"/>
-        <location filename="../src/view/menumodule.cpp" line="99"/>
+        <location filename="../src/view/menumodule.cpp" line="55"/>
+        <location filename="../src/view/menumodule.cpp" line="104"/>
         <source>Quit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="172"/>
-        <location filename="../src/view/menumodule.cpp" line="188"/>
+        <location filename="../src/view/menumodule.cpp" line="177"/>
+        <location filename="../src/view/menumodule.cpp" line="193"/>
         <source>Pictures</source>
         <translation>看图</translation>
     </message>
@@ -308,7 +342,7 @@
         <translation type="vanished">麒麟看图</translation>
     </message>
     <message>
-        <location filename="../src/view/menumodule.cpp" line="179"/>
+        <location filename="../src/view/menumodule.cpp" line="184"/>
         <source>close</source>
         <translation>关闭</translation>
     </message>

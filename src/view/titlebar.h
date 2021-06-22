@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QFont>
+#include <QMessageBox>
 #include "menumodule.h"
 #include "controller/interaction.h"
 #include "edit.h"
@@ -24,7 +25,7 @@ public:
     void showImageName(QString name, QString imagePath);
     void needRename(int mode);//需要重命名
 private:
-
+    QMessageBox *m_msg;
     QHBoxLayout *m_titleLayout;
     QPushButton *m_logoBtn;//左上角logo
 //    QLabel *m_logoBtn;//左上角logo
@@ -39,6 +40,7 @@ private:
     void longText(QLabel *nameC, QString text);
     void paintEvent(QPaintEvent *event);
     void reName();
+    void dealRenameResult(int code,QFileInfo newfile);//处理后端返回重命名结果，进行界面显示
     void showOrigName();
     void editSelected();//lineedit选中
     void mouseDoubleClickEvent(QMouseEvent *event);
@@ -48,7 +50,7 @@ signals:
     void recovery();//处理主界面最大化和还原
     void openSignal();//标题栏夏卡菜单打开图片
     void aboutShow();//关于界面打开，两栏的展示情况
-    void toInforChangeName();//更改成功，告诉信息栏改名字---需要更新更改时间。。。。
+    void toInforChangeName();//更改成功，告诉信息栏改名字
     void toCoreChangeName(QString oldName, QFileInfo newName);//后端改名字
     void updateInformation(QFileInfo newName);//更新信息栏
 
