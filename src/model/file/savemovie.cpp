@@ -46,6 +46,11 @@ void SaveMovie::run()
     m_process->start(cmd);
     m_process->waitForStarted();
     m_process->waitForFinished();
+    if (!QFileInfo::exists(tmpFilePath)) {
+        qDebug()<<"动图保存失败";
+        emit saveMovieFinish(m_savepath);
+        return;
+    }
     //转码
     if (suffix == "gif") {
         QString cmd2 = "apng2gif ";
@@ -55,6 +60,11 @@ void SaveMovie::run()
         m_process->waitForFinished();
         tmpFilePath.chop(4);
         tmpFilePath += suffix;
+        if (!QFileInfo::exists(tmpFilePath)) {
+            qDebug()<<"动图保存失败";
+            emit saveMovieFinish(m_savepath);
+            return;
+        }
     }
     //移动回原目录
     QString cmd3 = "mv ";
@@ -68,7 +78,6 @@ void SaveMovie::run()
     m_process->start(deleteTmpImages);
     m_process->waitForStarted();
     m_process->waitForFinished();
-    qDebug()<<"动图保存完成";
     m_process->deleteLater();
     emit saveMovieFinish(m_savepath);
 }

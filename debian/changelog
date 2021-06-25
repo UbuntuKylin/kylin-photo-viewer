@@ -1,3 +1,12 @@
+kylin-photo-viewer (1.1.0) v101; urgency=medium
+  
+  * BUG号：无
+  * 需求号：无
+  * 其他改动说明：升级版本号，更新用户手册相关内容，优化动图保存逻辑
+  * 影响域：关于界面版本号更新，用户手册看图内容更新
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Fri,25  Jun 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.0.0-23) v101; urgency=medium
   
   * BUG号：无

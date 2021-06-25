@@ -21,6 +21,7 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             return maf;
         }
         auto *tmpMovie = new QMovie(path, "apng");
+        maf.maxFrame = tmpMovie->frameCount();
         tmpMovie->jumpToFrame(0);
         QImage image = tmpMovie->currentImage();
         mat = Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone();

@@ -32,6 +32,9 @@ public:
     Mat m_nowMat;//记录当前打开
     Mat m_backMat;//记录上次打开
     QPixmap m_nowImage;
+    int m_maxFrame = 0;//图片最大帧数
+    QList<ProcessingBase::FlipWay> m_willProcess;//存操作方式
+    int m_willProcessNum = 0;//存当前加载出来的帧数
     int m_proportion = 0;//图片显示比例
     QSize m_tmpSize;//按比例缩放后的图片大小
     QString m_imageSize;//原图大小
