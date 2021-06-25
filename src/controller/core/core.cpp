@@ -203,6 +203,7 @@ void Core::openImage(QString fullPath)
     if (m_isclose == true) {
         return;
     }
+    m_willProcess.clear();
     needSave();
 
     MatAndFileinfo maf = File::loadImage(fullPath);
@@ -226,6 +227,7 @@ void Core::openImage(QString fullPath)
     //记录状态
     changeMat(maf.mat);
     m_info = maf.info;
+    m_maxFrame = maf.maxFrame;
     if (m_matList!=nullptr) {
         m_matList->clear();
     }
@@ -450,6 +452,22 @@ void Core::saveMovieFinish(const QString &path)
     m_thisImageIsSaving = false;
     openImage(path);
 }
+//处理上一次图片没处理完，进行下一次操作的时候，更新对齐动图每一帧的操作状态
+void Core::processNewLoadImage ()
+{
+    //m_willProcess为空，说明上一次处理完毕，不需要进行对齐更新
+    if (m_willProcess.isEmpty()) {
+        return;
+    }
+    //从未处理处开始进行对齐，m_willProcessNum为上一次处理到第几帧
+    for (int i = m_willProcessNum;i<m_matList->length();i++) {
+        //遍历队列，对剩下帧进行同样的操作，保持所有帧一致
+        for (Processing::FlipWay &tmpWay :m_willProcess) {
+            Mat mat = Processing::processingImage(Processing::flip,m_matList->at(i),QVariant(tmpWay));
+            m_matList->replace(i,mat);
+        }
+    }
+}
 
 void Core::flipImage(const Processing::FlipWay &way)
 {
@@ -460,11 +478,20 @@ void Core::flipImage(const Processing::FlipWay &way)
 
     m_processed = true;
 
+    processNewLoadImage();
+
     //如果是动图，则批量处理
     if (m_playMovieTimer->isActive()) {
         for (int i=0;i<m_matList->length();i++) {
             Mat mat = Processing::processingImage(Processing::flip,m_matList->at(i),QVariant(way));
             m_matList->replace(i,mat);
+        }
+        //判断此次操作是否未加载完全，如是，记录此时的加载帧数和操作方式
+        if (m_maxFrame > m_matList->length()) {
+            m_willProcessNum = m_matList->length();
+            m_willProcess.append(way);
+        } else {
+            m_willProcess.clear();
         }
         //刷新导航栏
         m_nowImage = Processing::converFormat(m_matList->first());
@@ -585,6 +612,11 @@ void Core::close()
     if (m_playMovieTimer->isActive()) {
         m_playMovieTimer->stop();
         showImage(QPixmap());
+        //判断没有加载完全部时，进行阻塞
+        while (m_maxFrame > m_matList->length()) {
+            QThread::usleep(10);
+        }
+        processNewLoadImage();
         //保存动图
         m_file->saveImage(m_matList,m_fps,m_nowpath,m_apiReplaceFile);
         m_shouldClose = true;
@@ -1024,6 +1056,11 @@ void Core::needSave()
         m_playMovieTimer->stop();
         //保存动图
         if (m_processed) {
+            //判断没有加载完全部时，进行阻塞
+            while (m_maxFrame > m_matList->length()) {
+                QThread::usleep(10);
+            }
+            processNewLoadImage();
             m_file->saveImage(m_matList,m_fps,m_nowpath);
         }
     } else {

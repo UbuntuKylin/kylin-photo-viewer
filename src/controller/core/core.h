@@ -85,7 +85,7 @@ private:
     void needSave();//判断是否需要保存图片
     bool m_isclose = false;
     MyStandardItem *m_item0  = nullptr;
-
+    void processNewLoadImage();//处理--上一次图片没处理完就进行下一次操作时，更新对齐动图每一帧的操作状态
 
 };
 
