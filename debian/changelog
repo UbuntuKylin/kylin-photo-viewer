@@ -1,3 +1,12 @@
+kylin-photo-viewer (1.1.0-1) v101; urgency=medium
+  
+  * BUG号：无
+  * 需求号：无
+  * 其他改动说明：适配系统日志模块
+  * 影响域：无影响
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Sat,26  Jun 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.1.0) v101; urgency=medium
   
   * BUG号：无

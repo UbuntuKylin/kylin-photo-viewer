@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QLibraryInfo>
 #include <QTranslator>
+#include <ukui-log4qt.h>
 #include "global/log.h"
 #include "controller/interaction.h"
 #include "view/xatom-helper.h"
@@ -27,7 +28,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //注册MessageHandler
-    qInstallMessageHandler(Log::msgHandler);
+//    qInstallMessageHandler(Log::msgHandler);
+    initUkuiLog4qt("kylin-photo-viewer");
     //应用禁用跟随系统字号
     qApp->setProperty("noChangeSystemFontSize",true);
     QFont font = qApp->font();

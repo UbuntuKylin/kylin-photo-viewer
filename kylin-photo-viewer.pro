@@ -9,7 +9,11 @@ TRANSLATIONS += \
 qm_files.files = translations/*.qm
 qm_files.path = /usr/share/kylin-photo-viewer/translations/
 
-settings.files = data/org.kylin.photo.viewer.gschema.xml
+#settings.files = data/org.kylin.photo.viewer.gschema.xml
+settings.files += \
+    $$PWD/data/org.kylin.photo.viewer.gschema.xml \
+    $$PWD/data/org.ukui.log4qt.kylin-photo-viewer.gschema.xml
+
 settings.path = /usr/share/glib-2.0/schemas/
 
 desktop.files = data/kylin-photo-viewer.desktop
