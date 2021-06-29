@@ -53,8 +53,15 @@ void SideBar::openEmptyFile(bool changeHigh)
 
 void SideBar::initConnect()
 {
-    connect(this,&SideBar::clicked,Interaction::getInstance(),&Interaction::changeImageFromClick);
+//    connect(this,&SideBar::clicked,Interaction::getInstance(),&Interaction::changeImageFromClick);
     connect(Interaction::getInstance(),&Interaction::changeAlbumHighLight,this,&SideBar::setCUrrIndex);
+}
+
+void SideBar::mouseReleaseEvent(QMouseEvent *e)
+{
+    //处理滑动，或拖出相册时，相册选中态和主界面显示的图片保持一致
+    Interaction::getInstance()->changeImageFromClick(this->currentIndex());
+    QListView::mouseReleaseEvent(e);
 }
 
 void SideBar::setCUrrIndex(QModelIndex modelIndex)
