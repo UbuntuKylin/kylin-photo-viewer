@@ -61,7 +61,8 @@ private:
     void operateImage(int proportion,int defaultProportion);//进行操作显示图片原则
     void processingCommand(const QStringList &cmd);//处理终端命令
     QString processingApi(const QStringList &cmd);//处理外部命令
-    void loadAlbum(QString path, QStringList list);//加载相册
+    void creatModule(const QString &path, QStringList list);//创建module
+    void loadAlbum(const QString &path, QStringList list);//加载相册
     void navigation(const QPoint &point = QPoint(-1,-1));//导航器
     void playMovie();//播放动图的槽函数
     inline void changeImageType(QString path = "");//修改图片标签

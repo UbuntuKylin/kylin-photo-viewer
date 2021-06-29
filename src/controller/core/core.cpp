@@ -1093,12 +1093,14 @@ void Core::findAllImageFromDir(QString fullPath)
     }
     QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Writable, QDir::Name);//获取所有支持的图片
 //    QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Writable|QDir::Hidden, QDir::Name);//获取所有支持的图片
-    loadAlbum(path,images);
+    creatModule(path,images);
 
     openImage(filepath);
-}
 
-void Core::loadAlbum(QString path, QStringList list)
+    loadAlbum(path,images);
+}
+//创建相册model
+void Core::creatModule(const QString &path,QStringList list)
 {
     //将所有图片存入队列
     int i = 1;
@@ -1113,12 +1115,19 @@ void Core::loadAlbum(QString path, QStringList list)
 
         item->setPath(tmpFullPath);//用来保存地址路径
         m_albumModel->insertRow(i,item);//插入model
+        i++;
+    }
+}
+//加载相册缩略图
+void Core::loadAlbum(const QString &path, QStringList list)
+{
+    for (QString &filename : list) {
+        QString tmpFullPath = path+"/"+filename;
         //加载缩略图
         AlbumThumbnail* thread= new AlbumThumbnail(tmpFullPath);
         connect(thread,&AlbumThumbnail::finished,thread,&AlbumThumbnail::deleteLater);
         connect(thread,&AlbumThumbnail::albumFinish,this,&Core::albumLoadFinish);
         thread->start();
-        i++;
     }
 }
 
