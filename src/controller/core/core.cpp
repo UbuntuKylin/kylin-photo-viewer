@@ -555,10 +555,7 @@ void Core::openInfile()
 {
     QProcess process;
     QString str = "\"" + m_nowpath + "\"";
-    process.start("peony --show-items " + str);
-    process.waitForFinished();
-    process.waitForReadyRead();
-    process.close();
+    process.startDetached("peony --show-items " + str);
 }
 
 void Core::changeOpenIcon(QString theme)
