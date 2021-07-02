@@ -14,6 +14,7 @@
 #include "savemovie.h"
 #include "loadmovie.h"
 #include <gif_lib.h>
+#include "global/computingtime.h"
 
 class MatAndFileinfo
 {
@@ -35,7 +36,7 @@ signals:
 public:
     static MatAndFileinfo loadImage(QString path, ImreadModes modes = IMREAD_UNCHANGED);
     bool saveImage(const Mat &mat , const QString &savepath , bool replace = true);//静态图
-    bool saveImage(QList<Mat> *list , const int &fps, const QString &savepath , bool replace = true);//动态图
+    bool saveImage(QList<Mat> *list ,const int &fps, const QString &savepath , bool replace = true);//动态图
     void deleteImage(const QString &savepath);
     bool isSaving(const QString &path);
     bool allSaveFinish();

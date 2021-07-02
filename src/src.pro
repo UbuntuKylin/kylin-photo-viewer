@@ -37,6 +37,7 @@ INSTALLS += target
 SOURCES += main.cpp \
     controller/core/coreinteraction.cpp \
     controller/core/albumthumbnail.cpp \
+    global/computingtime.cpp \
     global/log.cpp \
     model/dbus.cpp \
     controller/core/core.cpp \
@@ -64,6 +65,7 @@ HEADERS += \
     controller/core/coreinteraction.h \
     controller/core/albumthumbnail.h \
     controller/core/base.h \
+    global/computingtime.h \
     global/log.h \
     model/dbus.h \
     controller/interaction.h \
