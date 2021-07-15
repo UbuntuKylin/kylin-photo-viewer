@@ -18,7 +18,7 @@ void ComputingTime::start()
 QString ComputingTime::getTime(const QString &tag)
 {
     QString str = QString::number(m_time,'g',2);
-//    QString out = tag + ":" + str + "\n";
+    QString out = tag + ":" + str + "\n";
 //    printf(out.toLocal8Bit().data());
     return str;
 }

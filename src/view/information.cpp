@@ -151,7 +151,6 @@ void Information::layoutS(int line)
     m_gdLayout->setContentsMargins(12,10-line*3,10,16-line*3);
     m_inforWid->setLayout(m_gdLayout);
     m_inforWid->resize(this->width(),this->height());
-    //    m_inforWid->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 }
 //由重命名触发的更新信息栏名字函数
 void Information::updateName(QFileInfo newFile)

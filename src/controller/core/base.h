@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVariant>
 #include <QPixmap>
+#include <QPrinter>
 #include <QColor>
 #include <QTimer>
 #include <QGSettings>

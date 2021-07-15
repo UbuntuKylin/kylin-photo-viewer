@@ -72,7 +72,7 @@ void ShowImageWidget::initConnect()
     connect(m_reName,&QAction::triggered,this,&ShowImageWidget::reName);
     connect(m_setDeskPaper, &QAction::triggered, this,&ShowImageWidget::setDeskPaper);
 //    connect(m_setLockPaper, &QAction::triggered, this,&ShowImageWidget::setLockPaper);
-    connect(m_print, &QAction::triggered, this,&ShowImageWidget::print);
+    connect(m_print, &QAction::triggered, this,&ShowImageWidget::initPrint);
     connect(m_deleteImage, &QAction::triggered, this,&ShowImageWidget::deleteImage);
     connect(m_showInFile, &QAction::triggered, this,&ShowImageWidget::showInFile);
 
@@ -91,7 +91,7 @@ void ShowImageWidget::sideState(int num)
         if (m_isOpen != true) {
             return;
         }
-        emit toShowSide();
+//        emit toShowSide();// ----控制相册在打开是是否自动展示 --0810版本禁用
     }
 }
 //根据number决定界面显示:相册，左右按钮，删除时相册显示
@@ -200,7 +200,6 @@ void ShowImageWidget::isDelete(bool isDel)
 //复制
 void ShowImageWidget::copy()
 {
-    qDebug()<<"复制";
     //复制到剪切板
     QClipboard *clipBoard=QApplication::clipboard();
     clipBoard->setPixmap(m_pic);
@@ -231,22 +230,26 @@ void ShowImageWidget::setLockPaper()
 {
     qDebug()<<"设置为锁屏壁纸";
 }
-//打印
-void ShowImageWidget::print()
+//初始化打印
+void ShowImageWidget::initPrint()
 {
-    qDebug()<<"打印";
-    QImage img = m_pic.toImage();
-    QPrinter printer;
-    QPrintDialog printDialog(&printer,this);
-    if(printDialog.exec())
-    {
-        QPainter painter(&printer);
-        QRect rect=painter.viewport();
-        QSize size=img.size();
-        size.scale(rect.size(),Qt::KeepAspectRatio);
-        painter.setViewport(rect.x(),rect.y(),size.width(),size.height());
-        painter.setWindow(img.rect());
-        painter.drawImage(0,0,img);
+    m_printDialog = new QPrintDialog(this);
+    connect(m_printDialog,SIGNAL(accepted(QPrinter*)),this,SLOT(acceptPrint(QPrinter*)));
+    connect(m_printDialog,&QPrintDialog::finished,this,&ShowImageWidget::finishPrint);
+    m_printDialog->setModal(true);
+    m_printDialog->show();
+}
+//打印开始
+void ShowImageWidget::acceptPrint(QPrinter* printer)
+{
+    Interaction::getInstance()->printImage(printer);
+}
+//打印结束
+void ShowImageWidget::finishPrint(int result)
+{
+    //失败才打印
+    if (1 != result) {
+        qDebug()<<"========"<<result;
     }
 
 }
@@ -261,7 +264,7 @@ void ShowImageWidget::showInFile()
 {
     Interaction::getInstance()->openImageInfile();
 }
-
+//重命名
 void ShowImageWidget::reName()
 {
     emit toRename(1);
