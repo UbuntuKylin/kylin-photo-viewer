@@ -1,20 +1,38 @@
+kylin-photo-viewer (1.1.0-5) v101; urgency=medium
+  
+  * BUG号：无
+  * 需求号：7197
+  * 其他改动说明：优化打印逻辑；调用dbus接口实现文件夹中显示功能；优化图片显示；看图默认不打开无后缀的图片
+  * 影响域：无影响
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Thu,15  Jul 2021 09:46:00 +0800
+
+kylin-photo-viewer (1.1.0-4) v101; urgency=medium
+  
+  * BUG号：64973
+  * 需求号：无
+  * 其他改动说明：无
+  * 影响域：仅bug修复，无影响
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Sat,03  Jul 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.1.0-3) v101; urgency=medium
   
   * BUG号：63239
   * 需求号：无
   * 其他改动说明：无
-  * 影响域：仅bug修复，无影响
+  * 影响域：点击文件夹中显示选项后，关闭看图，文件管理器打开的文件夹将不再随之关闭
 
  -- zoujunnan <zoujunnan@kylinos.cn>  Fri,02  Jul 2021 09:46:00 +0800
 
 kylin-photo-viewer (1.1.0-2) v101; urgency=medium
   
-  * BUG号：无
+  * BUG号：64170
   * 需求号：无
-  * 其他改动说明：优化图片加载效率
+  * 其他改动说明：无
   * 影响域：无影响
 
- -- zoujunnan <zoujunnan@kylinos.cn>  Tue,29  Jun 2021 09:46:00 +0800
+ -- zoujunnan <zoujunnan@kylinos.cn>  Wed,30  Jun 2021 09:46:00 +0800
 
 kylin-photo-viewer (1.1.0-1) v101; urgency=medium
   

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPixmap>
+#include <QPrinter>
 #include <QVariant>
 #include <QFileInfo>
 #include <QStandardItemModel>
@@ -219,6 +220,13 @@ public:
      * 参数类型：旧名字，新名字
      */
     virtual void reName(QString oldPath, QString newPath)=0;//更改主题，切换相册打开按钮图标
+    /*
+     * 接口功能：打印
+     * 接口场景：右键菜单打印
+     * 接口类型：函数，直接调用
+     * 参数类型：图片
+     */
+    virtual void printImage(QPrinter *printer)=0;//更改主题，切换相册打开按钮图标
 
 private:
     static Interaction *m_interaction;//单例指针

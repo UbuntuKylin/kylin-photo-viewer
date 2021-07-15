@@ -35,11 +35,18 @@ private:
 
     void initConnect();
 protected:
+
     virtual void mouseReleaseEvent(QMouseEvent *e);
-signals:
-    void changeImage(bool isChange);//解决从相册切换时动图没有刷新右键菜单内容
+
 private slots:
+
     void setCUrrIndex(QModelIndex modelIndex);
+
+signals:
+
+    void changeImage(bool isChange);//解决从相册切换时动图没有刷新右键菜单内容
+    void sizeChange();//相册尺寸改变，位置改变
+
 };
 
 #endif // SIDEBAR_H

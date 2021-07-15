@@ -30,6 +30,7 @@ void Navigator::showNavigation(QPixmap pix)
 //发送鼠标移动坐标
 void Navigator::mouseMoveEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
     QPoint currpos =this->mapFromGlobal(QCursor().pos());
     emit posChange(currpos);
 }

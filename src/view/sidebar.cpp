@@ -42,6 +42,7 @@ void SideBar::getSelect(int type)
     } else {
         this->resize(SIDEBAR_SIZE.width(),(56 +6 +8 )*type +10);
     }
+    emit sizeChange();
 }
 
 void SideBar::openEmptyFile(bool changeHigh)

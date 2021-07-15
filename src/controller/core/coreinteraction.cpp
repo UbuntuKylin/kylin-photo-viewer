@@ -58,6 +58,7 @@ void CoreInteraction::initConnect()
     connect(m_core,&Core::openFromAlbum,this,&CoreInteraction::openFromAlbum);//点击相册按钮打开图片
     connect(this,&CoreInteraction::coreRename,m_core,&Core::toCoreChangeName);//重命名
     connect(m_core,&Core::renameResult,this,&CoreInteraction::sendRenameResult);//返回重命名结果
+    connect(this,&CoreInteraction::corePrint,m_core,&Core::toPrintImage);//打印
 
 }
 
@@ -231,6 +232,14 @@ void CoreInteraction::reName(QString oldPath, QString newPath)
         return;
     }
     emit coreRename(oldPath,newPath);
+}
+
+void CoreInteraction::printImage(QPrinter *printer)
+{
+    if (coreOperateTooOften()) {
+        return;
+    }
+    emit corePrint(printer);
 }
 
 

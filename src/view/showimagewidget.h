@@ -35,6 +35,7 @@ public slots:
     void albumSlot(bool isOpen);//判断是否发送相册展示的事件
     void isDelete(bool isDel);//判断是删除
     void albumChangeImage(bool isChange);//相册切换图片
+    void acceptPrint(QPrinter *printer);//打印开始
 private:
     QGSettings *m_pGsettingThemeData = nullptr;
 //    QWidget *imageWid;
@@ -53,7 +54,7 @@ private:
     QString m_imagePath = "";//打开的图片文件的路径
     QPixmap m_copyImage;//留着复制可能用
     QString m_paperFormat;//用来判断可设置为壁纸的样式
-
+    QPrintDialog *m_printDialog;
     QMovie *m_loadingMovie = nullptr;
     QPixmap m_pic;
     int m_typeNum;
@@ -71,7 +72,8 @@ private:
     void copy();//复制
     void setDeskPaper();//设置为桌面壁纸
     void setLockPaper();//设置为锁屏壁纸
-    void print();//打印
+    void initPrint();//初始化打印
+    void finishPrint(int result);//返回值
     void deleteImage();//删除图片
     void showInFile();//在文件夹中显示
     void reName();//重命名

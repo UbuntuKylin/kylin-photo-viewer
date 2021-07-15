@@ -68,6 +68,7 @@ QString Core::initDbus(const QStringList &arguments)
         QString format =path;
         format=format.split(".").last();
         if (!Variable::SUPPORT_FORMATS.contains(format.toLower())) {
+            exit(0);
             return "";
         }
         return path;
@@ -553,9 +554,14 @@ void Core::setAsBackground()
 
 void Core::openInfile()
 {
-    QProcess process;
-    QString str = "\"" + m_nowpath + "\"";
-    process.startDetached("peony --show-items " + str);
+    QDBusInterface interface("org.freedesktop.FileManager1",
+                             "/org/freedesktop/FileManager1",
+                             "org.freedesktop.FileManager1",
+                             QDBusConnection::sessionBus());
+    QStringList items;
+    items.push_back(m_nowpath);
+    QString startUpId = "";
+    interface.call("ShowItems",items,startUpId);
 }
 
 void Core::changeOpenIcon(QString theme)
@@ -992,6 +998,18 @@ void Core::toCoreChangeName(QString oldName, QString newName)
     } else {//其他未知错误
         emit renameResult(-4,file);
     }
+}
+
+void Core::toPrintImage(QPrinter *printer)
+{
+    QImage img = m_nowImage.toImage();
+    QPainter painter(printer);
+    QRect rect=painter.viewport();
+    QSize size=img.size();
+    size.scale(rect.size(),Qt::KeepAspectRatio);
+    painter.setViewport(rect.x(),rect.y(),size.width(),size.height());
+    painter.setWindow(img.rect());
+    painter.drawImage(0,0,img);
 }
 
 bool Core::apiFunction()

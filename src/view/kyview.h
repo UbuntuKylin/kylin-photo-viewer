@@ -132,7 +132,7 @@ private slots:
     void changOrigSize();//主界面最大化和还原
     void toShowImage();//显示图片
     void showSidebar();//判断是否显示相册
-    void defaultSidebar();//相册显示
+//    void defaultSidebar();//相册显示--先保留
 
     void delayHide();//顶栏工具栏的延时隐藏
     void delayHide_navi();//导航栏在鼠标离开界面时隐藏
