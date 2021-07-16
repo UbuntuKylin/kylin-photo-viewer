@@ -1000,9 +1000,9 @@ void Core::toCoreChangeName(QString oldName, QString newName)
     }
 }
 
-void Core::toPrintImage(QPrinter *printer)
+void Core::toPrintImage(QPrinter *printer, QImage imag)
 {
-    QImage img = m_nowImage.toImage();
+    QImage img = imag;
     QPainter painter(printer);
     QRect rect=painter.viewport();
     QSize size=img.size();

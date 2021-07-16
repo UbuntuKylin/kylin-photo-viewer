@@ -226,7 +226,7 @@ public:
      * 接口类型：函数，直接调用
      * 参数类型：图片
      */
-    virtual void printImage(QPrinter *printer)=0;//更改主题，切换相册打开按钮图标
+    virtual void printImage(QPrinter *printer,QImage img)=0;//更改主题，切换相册打开按钮图标
 
 private:
     static Interaction *m_interaction;//单例指针
