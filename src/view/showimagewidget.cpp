@@ -242,7 +242,8 @@ void ShowImageWidget::initPrint()
 //打印开始
 void ShowImageWidget::acceptPrint(QPrinter* printer)
 {
-    Interaction::getInstance()->printImage(printer);
+    QImage img = m_pic.toImage();
+    Interaction::getInstance()->printImage(printer,img);
 }
 //打印结束
 void ShowImageWidget::finishPrint(int result)

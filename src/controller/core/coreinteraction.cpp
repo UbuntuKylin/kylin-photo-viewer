@@ -234,12 +234,12 @@ void CoreInteraction::reName(QString oldPath, QString newPath)
     emit coreRename(oldPath,newPath);
 }
 
-void CoreInteraction::printImage(QPrinter *printer)
+void CoreInteraction::printImage(QPrinter *printer, QImage img)
 {
     if (coreOperateTooOften()) {
         return;
     }
-    emit corePrint(printer);
+    emit corePrint(printer,img);
 }
 
 
