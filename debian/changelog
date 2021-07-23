@@ -1,3 +1,12 @@
+kylin-photo-viewer (1.1.0-6) v101; urgency=medium
+  
+  * BUG号：无
+  * 需求号：无
+  * 其他改动说明：改变左边按钮位置，避免被相册遮挡
+  * 影响域：相册打开或关闭时，按钮位置随之改变
+
+ -- zoujunnan <zoujunnan@kylinos.cn>  Fri,23  Jul 2021 09:46:00 +0800
+
 kylin-photo-viewer (1.1.0-5) v101; urgency=medium
   
   * BUG号：无

@@ -239,6 +239,7 @@ void KyView::albumChange()
         return;
     }
     m_sideBar->move(0,(this->height()-m_sideBar->height())/2 + 20);
+    m_showImageWidget->g_back->move(m_sideBar->x() + m_sideBar->width() + 42 ,m_showImageWidget->g_next->y());
 
 }
 //延时隐藏
@@ -545,6 +546,7 @@ void KyView::showSidebar()
         m_albumState = false;
     } else {
         m_sideBar->hide();
+        m_showImageWidget->g_back->move( LEFT_POS,m_showImageWidget->g_next->y());
         emit albumState(false);
         m_albumState = true;
     }
