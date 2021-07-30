@@ -14,6 +14,7 @@
 #include "savemovie.h"
 #include "loadmovie.h"
 #include <gif_lib.h>
+#include "global/computingtime.h"
 
 class MatAndFileinfo
 {
@@ -22,6 +23,7 @@ public:
     QList<Mat> *matList = nullptr;
     int fps = 0;
     QFileInfo info;
+    int maxFrame = 0;
 };
 
 class File : public QObject

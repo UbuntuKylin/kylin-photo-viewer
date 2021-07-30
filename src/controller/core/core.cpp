@@ -15,6 +15,7 @@ void Core::initCore()
     m_albumModel = new QStandardItemModel;
 
     qRegisterMetaType<ImageShowStatus::ChangeShowSizeType>("ImageShowStatus::ChangeShowSizeType");
+    qRegisterMetaType<QFileInfo>("QFileInfo");
     qRegisterMetaType<Processing::FlipWay>("Processing::FlipWay");
 
     m_clickBeforeStartPosition = QPoint(-1,-1);
@@ -67,6 +68,7 @@ QString Core::initDbus(const QStringList &arguments)
         QString format =path;
         format=format.split(".").last();
         if (!Variable::SUPPORT_FORMATS.contains(format.toLower())) {
+            exit(0);
             return "";
         }
         return path;
@@ -202,6 +204,7 @@ void Core::openImage(QString fullPath)
     if (m_isclose == true) {
         return;
     }
+    m_willProcess.clear();
     needSave();
 
     MatAndFileinfo maf = File::loadImage(fullPath);
@@ -225,6 +228,7 @@ void Core::openImage(QString fullPath)
     //记录状态
     changeMat(maf.mat);
     m_info = maf.info;
+    m_maxFrame = maf.maxFrame;
     if (m_matList!=nullptr) {
         m_matList->clear();
     }
@@ -449,6 +453,22 @@ void Core::saveMovieFinish(const QString &path)
     m_thisImageIsSaving = false;
     openImage(path);
 }
+//处理上一次图片没处理完，进行下一次操作的时候，更新对齐动图每一帧的操作状态
+void Core::processNewLoadImage ()
+{
+    //m_willProcess为空，说明上一次处理完毕，不需要进行对齐更新
+    if (m_willProcess.isEmpty()) {
+        return;
+    }
+    //从未处理处开始进行对齐，m_willProcessNum为上一次处理到第几帧
+    for (int i = m_willProcessNum;i<m_matList->length();i++) {
+        //遍历队列，对剩下帧进行同样的操作，保持所有帧一致
+        for (Processing::FlipWay &tmpWay :m_willProcess) {
+            Mat mat = Processing::processingImage(Processing::flip,m_matList->at(i),QVariant(tmpWay));
+            m_matList->replace(i,mat);
+        }
+    }
+}
 
 void Core::flipImage(const Processing::FlipWay &way)
 {
@@ -459,11 +479,20 @@ void Core::flipImage(const Processing::FlipWay &way)
 
     m_processed = true;
 
+    processNewLoadImage();
+
     //如果是动图，则批量处理
     if (m_playMovieTimer->isActive()) {
         for (int i=0;i<m_matList->length();i++) {
             Mat mat = Processing::processingImage(Processing::flip,m_matList->at(i),QVariant(way));
             m_matList->replace(i,mat);
+        }
+        //判断此次操作是否未加载完全，如是，记录此时的加载帧数和操作方式
+        if (m_maxFrame > m_matList->length()) {
+            m_willProcessNum = m_matList->length();
+            m_willProcess.append(way);
+        } else {
+            m_willProcess.clear();
         }
         //刷新导航栏
         m_nowImage = Processing::converFormat(m_matList->first());
@@ -525,12 +554,14 @@ void Core::setAsBackground()
 
 void Core::openInfile()
 {
-    QProcess process;
-    QString str = "\"" + m_nowpath + "\"";
-    process.start("peony --show-items " + str);
-    process.waitForFinished();
-    process.waitForReadyRead();
-    process.close();
+    QDBusInterface interface("org.freedesktop.FileManager1",
+                             "/org/freedesktop/FileManager1",
+                             "org.freedesktop.FileManager1",
+                             QDBusConnection::sessionBus());
+    QStringList items;
+    items.push_back(m_nowpath);
+    QString startUpId = "";
+    interface.call("ShowItems",items,startUpId);
 }
 
 void Core::changeOpenIcon(QString theme)
@@ -584,6 +615,11 @@ void Core::close()
     if (m_playMovieTimer->isActive()) {
         m_playMovieTimer->stop();
         showImage(QPixmap());
+        //判断没有加载完全部时，进行阻塞
+        while (m_maxFrame > m_matList->length()) {
+            QThread::usleep(10);
+        }
+        processNewLoadImage();
         //保存动图
         m_file->saveImage(m_matList,m_fps,m_nowpath,m_apiReplaceFile);
         m_shouldClose = true;
@@ -829,6 +865,37 @@ Enums::ChamgeImageType Core::nextOrBack(const QString &oldPath, const QString &n
     return ERROR_IMAGE;
 }
 
+Enums::RenameState Core::successOrFail(const QString &oldPath, const QString &newPath)
+{
+    QFile file(oldPath);
+    bool ok = file.rename(oldPath,newPath);
+    //改名
+    if (ok) {
+        QFileInfo fileToCore(newPath);
+        QString fileNewName = fileToCore.absoluteFilePath();
+        //更新相册，m_nowpath，m_info信息为重命名后的图片
+        m_nowpath = fileNewName;
+        m_info = fileToCore;
+        for (int i = 1;i<m_albumModel->rowCount();i++) {
+            MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
+            if (item->getPath() == oldPath) {
+                item->setPath(fileNewName);
+            }
+        }
+        return SUCCESS;
+    } else {
+        if (!file.exists()) {
+            qDebug()<<"文件不存在";
+            return NOT_EXITS;
+        }
+        if (QFile::exists(newPath)) {
+            qDebug()<<"文件同名";
+            return SAME_NAME;
+        }
+        return UNKNOWN_ERROR;
+    }
+}
+
 QString Core::nextImagePath(const QString &oldPath)
 {
     //相册中没有文件时，不进行处理
@@ -905,16 +972,44 @@ void Core::albumLoadFinish(QVariant var)
     }
 }
 //重命名
-void Core::toCoreChangeName(QString oldName, QFileInfo newFile)
+void Core::toCoreChangeName(QString oldName, QString newName)
 {
-    QString fileNewName = newFile.absoluteFilePath();
 
-    for (int i = 1;i<m_albumModel->rowCount();i++) {
-        MyStandardItem * item = dynamic_cast<MyStandardItem *>(m_albumModel->item(i));
-        if (item->getPath() == oldName) {
-            item->setPath(fileNewName);
-        }
+    //存原图后缀
+    QFileInfo file(oldName);
+    QString oldSuffix = file.suffix();
+    oldSuffix = "." + oldSuffix;
+    //形成完整路径
+    QString path = file.absolutePath();
+    QString newPath = path + "/" + newName;
+    newPath = newPath + oldSuffix;
+    //判断是否重命名成功，并返回重命名结果
+    RenameState type = successOrFail(oldName,newPath);
+    //重命名返回结果---给前端发信号改名或错误提示
+    if (type == SUCCESS) {//重命名成功
+        QFileInfo fileToCore(newPath);
+        emit renameResult(0,fileToCore);
+    } else if (type == NOT_EXITS){//文件不存在
+        emit renameResult(-1,file);
+    } else if (type == SAME_NAME) {//文件同名
+        emit renameResult(-2,file);
+    } else if (type == NO_PEIMISSION) {//没有权限----暂时算为其他未知错误中，待以后解决
+        emit renameResult(-3,file);
+    } else {//其他未知错误
+        emit renameResult(-4,file);
     }
+}
+
+void Core::toPrintImage(QPrinter *printer, QImage imag)
+{
+    QImage img = imag;
+    QPainter painter(printer);
+    QRect rect=painter.viewport();
+    QSize size=img.size();
+    size.scale(rect.size(),Qt::KeepAspectRatio);
+    painter.setViewport(rect.x(),rect.y(),size.width(),size.height());
+    painter.setWindow(img.rect());
+    painter.drawImage(0,0,img);
 }
 
 bool Core::apiFunction()
@@ -976,6 +1071,11 @@ void Core::needSave()
         m_playMovieTimer->stop();
         //保存动图
         if (m_processed) {
+            //判断没有加载完全部时，进行阻塞
+            while (m_maxFrame > m_matList->length()) {
+                QThread::usleep(10);
+            }
+            processNewLoadImage();
             m_file->saveImage(m_matList,m_fps,m_nowpath);
         }
     } else {
@@ -1006,14 +1106,16 @@ void Core::findAllImageFromDir(QString fullPath)
     for (const QString &format : Variable::SUPPORT_FORMATS) {
         nameFilters<<"*."+format;//构造格式过滤列表
     }
-    QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);//获取所有支持的图片
-
-    loadAlbum(path,images);
+    QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Writable, QDir::Name);//获取所有支持的图片
+//    QStringList images = dir.entryList(nameFilters, QDir::Files|QDir::Writable|QDir::Hidden, QDir::Name);//获取所有支持的图片
+    creatModule(path,images);
 
     openImage(filepath);
-}
 
-void Core::loadAlbum(QString path, QStringList list)
+    loadAlbum(path,images);
+}
+//创建相册model
+void Core::creatModule(const QString &path,QStringList list)
 {
     //将所有图片存入队列
     int i = 1;
@@ -1028,12 +1130,19 @@ void Core::loadAlbum(QString path, QStringList list)
 
         item->setPath(tmpFullPath);//用来保存地址路径
         m_albumModel->insertRow(i,item);//插入model
+        i++;
+    }
+}
+//加载相册缩略图
+void Core::loadAlbum(const QString &path, QStringList list)
+{
+    for (QString &filename : list) {
+        QString tmpFullPath = path+"/"+filename;
         //加载缩略图
         AlbumThumbnail* thread= new AlbumThumbnail(tmpFullPath);
         connect(thread,&AlbumThumbnail::finished,thread,&AlbumThumbnail::deleteLater);
         connect(thread,&AlbumThumbnail::albumFinish,this,&Core::albumLoadFinish);
         thread->start();
-        i++;
     }
 }
 

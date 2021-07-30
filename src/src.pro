@@ -8,6 +8,8 @@ CONFIG += c++11
 # 适配窗口管理器圆角阴影
 LIBS +=-lpthread
 LIBS +=-lX11
+#log
+LIBS += -L/usr/lib/libukui-log4qt.so.1.0.0 -lukui-log4qt
 TARGET = kylin-photo-viewer
 TEMPLATE = app
 
@@ -35,6 +37,7 @@ INSTALLS += target
 SOURCES += main.cpp \
     controller/core/coreinteraction.cpp \
     controller/core/albumthumbnail.cpp \
+    global/computingtime.cpp \
     global/log.cpp \
     model/dbus.cpp \
     controller/core/core.cpp \
@@ -62,6 +65,7 @@ HEADERS += \
     controller/core/coreinteraction.h \
     controller/core/albumthumbnail.h \
     controller/core/base.h \
+    global/computingtime.h \
     global/log.h \
     model/dbus.h \
     controller/interaction.h \

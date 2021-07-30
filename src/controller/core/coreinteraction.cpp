@@ -56,7 +56,9 @@ void CoreInteraction::initConnect()
     connect(m_core,&Core::changeAlbumHighLight,this,&CoreInteraction::changeAlbumHighLight);//在相册中选中到所切换的图片
     connect(m_core,&Core::delayShow,this,&CoreInteraction::delayShow);//图片加载过慢，发信号给前端
     connect(m_core,&Core::openFromAlbum,this,&CoreInteraction::openFromAlbum);//点击相册按钮打开图片
-    connect(this,&CoreInteraction::toCoreChangeName,m_core,&Core::toCoreChangeName);//重命名
+    connect(this,&CoreInteraction::coreRename,m_core,&Core::toCoreChangeName);//重命名
+    connect(m_core,&Core::renameResult,this,&CoreInteraction::sendRenameResult);//返回重命名结果
+    connect(this,&CoreInteraction::corePrint,m_core,&Core::toPrintImage);//打印
 
 }
 
@@ -222,6 +224,22 @@ void CoreInteraction::close()
 QStandardItemModel *CoreInteraction::getAlbumModel()
 {
     return coreGetAlbumModel();
+}
+
+void CoreInteraction::reName(QString oldPath, QString newPath)
+{
+    if (coreOperateTooOften()) {
+        return;
+    }
+    emit coreRename(oldPath,newPath);
+}
+
+void CoreInteraction::printImage(QPrinter *printer, QImage img)
+{
+    if (coreOperateTooOften()) {
+        return;
+    }
+    emit corePrint(printer,img);
 }
 
 

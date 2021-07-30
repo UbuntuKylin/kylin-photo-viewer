@@ -21,6 +21,7 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             return maf;
         }
         auto *tmpMovie = new QMovie(path, "apng");
+        maf.maxFrame = tmpMovie->frameCount();
         tmpMovie->jumpToFrame(0);
         QImage image = tmpMovie->currentImage();
         mat = Mat(image.height(),image.width(),CV_8UC4,const_cast<uchar*>(image.bits()),static_cast<size_t>(image.bytesPerLine())).clone();
@@ -41,7 +42,8 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
             LoadMovie *loadMovie = new LoadMovie(maf.matList,tmpMovie);
             loadMovie->start();
         }
-        if (tmpMovie->frameCount()<3) {
+        //临界值为2时，在线程中回收
+        if (tmpMovie->frameCount()<2) {
             tmpMovie->deleteLater();
         }
     } else if (suffix == "svg") {
@@ -84,7 +86,13 @@ MatAndFileinfo File::loadImage(QString path , ImreadModes modes)
     //    }
     //其他情况下尝试正常读取图像
     if (!mat.data) {
-        mat = imread(path.toLocal8Bit().data(), modes);
+        mat = imread(path.toLocal8Bit().data(),modes);
+        //加载三通道bmp格式图片时，某些图有可能会按照4通道去加载，导致图片完全透明
+        if (modes == IMREAD_UNCHANGED && suffix == "bmp") {
+            if (mat.channels() == 4) {
+                mat = imread(path.toLocal8Bit().data(),IMREAD_ANYCOLOR);
+            }
+        }
         //通用加载方法的缩略图尺寸优化
          if (mat.cols < Variable::ALBUM_IMAGE_SIZE.width() && mat.rows < Variable::ALBUM_IMAGE_SIZE.height()) {
              mat = imread(path.toLocal8Bit().data());

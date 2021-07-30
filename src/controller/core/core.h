@@ -27,6 +27,7 @@ signals:
     void changeAlbumHighLight(QModelIndex modelIndex);//在相册中选中到所切换的图片
     void delayShow(bool isLoading);//处理图片加载缓慢问题
     void openFromAlbum();//从相册打开
+    void renameResult(int code, QFileInfo newPath);//返回报错信息和新路径
 
 public:
     Core();
@@ -47,7 +48,8 @@ public:
     void close();//关闭进程
     QStandardItemModel * getAlbumModel();//获取相册model指针
     void albumLoadFinish(QVariant var);//预览加载完成
-    void toCoreChangeName(QString oldName,QFileInfo newFile);//接收重命名的处理
+    void toCoreChangeName(QString oldName, QString newName);//接收重命名的处理
+    void toPrintImage(QPrinter *printer, QImage imag);//打印
 
 private:
     void initCore();//初始化核心
@@ -60,7 +62,8 @@ private:
     void operateImage(int proportion,int defaultProportion);//进行操作显示图片原则
     void processingCommand(const QStringList &cmd);//处理终端命令
     QString processingApi(const QStringList &cmd);//处理外部命令
-    void loadAlbum(QString path, QStringList list);//加载相册
+    void creatModule(const QString &path, QStringList list);//创建module
+    void loadAlbum(const QString &path, QStringList list);//加载相册
     void navigation(const QPoint &point = QPoint(-1,-1));//导航器
     void playMovie();//播放动图的槽函数
     inline void changeImageType(QString path = "");//修改图片标签
@@ -68,6 +71,7 @@ private:
     void creatNavigation();//创建导航器图片等数据，用于节省算力
     void deleteAlbumItem(const QString &path);//删除相册中的项
     ChamgeImageType nextOrBack(const QString &oldPath,const QString &newPath);
+    RenameState successOrFail(const QString &oldPath,const QString &newPath);//返回重命名结果
     QString nextImagePath(const QString & oldPath);
     QString backImagePath(const QString & oldPath);
     void setHighLight(const QString &path);
@@ -83,7 +87,7 @@ private:
     void needSave();//判断是否需要保存图片
     bool m_isclose = false;
     MyStandardItem *m_item0  = nullptr;
-
+    void processNewLoadImage();//处理--上一次图片没处理完就进行下一次操作时，更新对齐动图每一帧的操作状态
 
 };
 

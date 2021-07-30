@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVariant>
 #include <QPixmap>
+#include <QPrinter>
 #include <QColor>
 #include <QTimer>
 #include <QGSettings>
@@ -18,6 +19,8 @@ class Enums{
 public:
     enum ChamgeImageType{NEXT_IMAGE=-1,BACK_IMAGE=-2,ERROR_IMAGE=-9};
     enum ChangeShowSizeType{BIG = 0,SMALL,ORIGIN,AUTO};//放大、缩小、原图、自适应
+    //成功，同名，文件不存在，没有权限，其他错误，以.开头，名字为空
+    enum RenameState{SUCCESS = 0, SAME_NAME = -1, NOT_EXITS = -2,NO_PEIMISSION = -3, UNKNOWN_ERROR = -4, START_WITH_POINT = -5,EMPTY_NONE = -6};
 };
 
 class ImageShowStatus : public Enums //显示图片细节相关，记录显示图片状态
@@ -30,6 +33,9 @@ public:
     Mat m_nowMat;//记录当前打开
     Mat m_backMat;//记录上次打开
     QPixmap m_nowImage;
+    int m_maxFrame = 0;//图片最大帧数
+    QList<ProcessingBase::FlipWay> m_willProcess;//存操作方式
+    int m_willProcessNum = 0;//存当前加载出来的帧数
     int m_proportion = 0;//图片显示比例
     QSize m_tmpSize;//按比例缩放后的图片大小
     QString m_imageSize;//原图大小

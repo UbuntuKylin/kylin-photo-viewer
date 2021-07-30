@@ -34,11 +34,19 @@ private:
     QModelIndex m_modelIndexOld;//记录上一次的index
 
     void initConnect();
+protected:
+
+    virtual void mouseReleaseEvent(QMouseEvent *e);
+
+private slots:
+
+    void setCUrrIndex(QModelIndex modelIndex);
 
 signals:
+
     void changeImage(bool isChange);//解决从相册切换时动图没有刷新右键菜单内容
-private slots:
-    void setCUrrIndex(QModelIndex modelIndex);
+    void sizeChange();//相册尺寸改变，位置改变
+
 };
 
 #endif // SIDEBAR_H

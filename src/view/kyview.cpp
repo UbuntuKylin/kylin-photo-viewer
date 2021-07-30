@@ -5,8 +5,7 @@ KyView *KyView::mutual = nullptr;
 KyView::KyView(const QStringList &args)
 
 {
-    Interaction *m_interaction =Interaction::getInstance();
-    m_interaction->creatCore(args);
+    Interaction::getInstance()->creatCore(args);
 
     this->resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
@@ -125,8 +124,10 @@ void KyView::initconnect()
     //滚轮放大和缩小
     connect(m_showImageWidget,&ShowImageWidget::reduceChange,m_toolbar,&ToolBar::reduceImage);
     connect(m_showImageWidget,&ShowImageWidget::enlargeChange,m_toolbar,&ToolBar::enlargeImage);
-    //当图片大于2张及以上，默认展示相册
-    connect(m_showImageWidget,&ShowImageWidget::toShowSide,this,&KyView::defaultSidebar);
+    //当图片大于2张及以上，默认展示相册---先保留
+//    connect(m_showImageWidget,&ShowImageWidget::toShowSide,this,&KyView::defaultSidebar);
+    //相册尺寸改变，位置改变
+    connect(m_sideBar,&SideBar::sizeChange,this,&KyView::albumChange);
     //重命名
     connect(m_showImageWidget,&ShowImageWidget::toRename,m_titlebar,&TitleBar::needRename);
     //重命名，显示两栏
@@ -195,13 +196,9 @@ void KyView::openImageChange()
 //主界面展示的图片大小随主界面大小改变的响应函数
 void KyView::showImageChange()
 {
-//    if (m_showImageWidget->isHidden()){
-//        return;
-//    }else{
-        m_showImageWidget->move(0,0);
-        m_showImageWidget->resize(this->width(),this->height());
-        m_showImageWidget->reMove(this->width(),this->height());
-//    }
+    m_showImageWidget->move(0,0);
+    m_showImageWidget->resize(this->width(),this->height());
+    m_showImageWidget->reMove(this->width(),this->height());
 }
 //工具栏大小随主界面大小改变的响应函数
 void KyView::toolbarChange()
@@ -242,6 +239,7 @@ void KyView::albumChange()
         return;
     }
     m_sideBar->move(0,(this->height()-m_sideBar->height())/2 + 20);
+    m_showImageWidget->g_back->move(m_sideBar->x() + m_sideBar->width() + 42 ,m_showImageWidget->g_next->y());
 
 }
 //延时隐藏
@@ -266,7 +264,6 @@ void KyView::delayHide()
     }
 
     inforChange();
-//    }
 }
 
 //鼠标离开界面时需要触发，届时会加上对导航器的处理
@@ -388,8 +385,7 @@ void KyView::hoverChange(int y)
 
     if (m_timestart == true) {
 
-        if (m_timer->remainingTime() < 2000 && m_timer->isActive() ||
-            !(m_timer->isActive())) {
+        if ((m_timer->remainingTime() < 2000 && m_timer->isActive() ) || !(m_timer->isActive())) {
             m_timer->stop();
             m_timer->start(2500);
         }
@@ -544,24 +540,26 @@ void KyView::showSidebar()
 {
 
     if (m_albumState == true) {
-        defaultSidebar();
+        m_sideBar->show();
+        emit albumState(true);
+        albumChange();
+        m_albumState = false;
     } else {
         m_sideBar->hide();
+        m_showImageWidget->g_back->move( LEFT_POS,m_showImageWidget->g_next->y());
         emit albumState(false);
         m_albumState = true;
     }
 
 }
-
-void KyView::defaultSidebar()
-{
-//    m_sideBar->showItem();
-    m_sideBar->show();
-    emit albumState(true);
-    m_albumState = false;
-    albumChange();
-
-}
+//先保留--默认打开相册
+//void KyView::defaultSidebar()
+//{
+//    m_sideBar->show();
+//    emit albumState(true);
+//    albumChange();
+//    m_albumState = false;
+//}
 //检测鼠标位置--顶栏和工具栏的出现和隐藏
 void KyView::mouseMoveEvent(QMouseEvent *event)
 {
@@ -583,7 +581,10 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
     if (!m_mousePress) {
         return;
     }
-
+    double device = QGuiApplication::primaryScreen()->devicePixelRatio();
+    if (device <= 0) {
+        device = 1;
+    }
     m_mousePointFromWindow = event->pos();
 
     QPoint pos = this->mapToGlobal(event->pos());
@@ -597,8 +598,8 @@ void KyView::mouseMoveEvent(QMouseEvent *event)
     xEvent.xclient.display = display;
     xEvent.xclient.window = (XID)(this ->winId());
     xEvent.xclient.format = 32;
-    xEvent.xclient.data.l[0] = pos.x();
-    xEvent.xclient.data.l[1] = pos.y();
+    xEvent.xclient.data.l[0] = pos.x() * device;
+    xEvent.xclient.data.l[1] = pos.y() * device;
     xEvent.xclient.data.l[2] = 8;
     xEvent.xclient.data.l[3] = Button1;
     xEvent.xclient.data.l[4] = 1;
@@ -622,6 +623,7 @@ void KyView::mousePressEvent(QMouseEvent * event)
 
 void KyView::mouseReleaseEvent(QMouseEvent * event)
 {
+    Q_UNUSED(event);
     m_mousePress = false;
 }
 
@@ -641,7 +643,7 @@ void KyView::resizeEvent(QResizeEvent *event)
 //鼠标离开事件
 void KyView::leaveEvent(QEvent *event)
 {
-
+    Q_UNUSED(event);
     m_titleState = false;
     //点出顶栏的下拉菜单时，不隐藏
     if (!m_titlebar->isHidden() && !m_titlebar->g_menu->m_menu->isHidden()) {
@@ -665,6 +667,7 @@ void KyView::leaveEvent(QEvent *event)
 //鼠标进入事件
 void KyView::enterEvent(QEvent *event)
 {
+    Q_UNUSED(event);
     m_titleState = true;
     if (m_timernavi->isActive()) {
         m_timernavi->stop();
@@ -741,6 +744,7 @@ void KyView::mouseDoubleClickEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton) {
         return;
     }
+    //在标题栏的图片名字处双击不响应全屏或恢复
     if (m_titlebar->g_imageName->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
         return;
     }
@@ -921,6 +925,10 @@ bool KyView::event(QEvent *event)
 
 void KyView::x11EventEnd()
 {
+    double device = QGuiApplication::primaryScreen()->devicePixelRatio();
+    if (device <= 0) {
+        device = 1;
+    }
     QPoint globalPoints = QCursor::pos();
 
     XEvent xEvent;
@@ -930,14 +938,14 @@ void KyView::x11EventEnd()
     xEvent.xbutton.button = Button1;
     xEvent.xbutton.window = this->effectiveWinId();
     if (globalPoints.y() < 5) {
-        xEvent.xbutton.x = globalPoints.x();
-        xEvent.xbutton.y = globalPoints.y();
+        xEvent.xbutton.x = globalPoints.x() * device;
+        xEvent.xbutton.y = globalPoints.y() * device;
     } else {
-        xEvent.xbutton.x = this->mapFromGlobal(globalPoints).x();
-        xEvent.xbutton.y = this->mapFromGlobal(globalPoints).y();
+        xEvent.xbutton.x = this->mapFromGlobal(globalPoints).x() * device;
+        xEvent.xbutton.y = this->mapFromGlobal(globalPoints).y() * device;
     }
-    xEvent.xbutton.x_root = globalPoints.x();
-    xEvent.xbutton.y_root = globalPoints.y();
+    xEvent.xbutton.x_root = globalPoints.x()* device;
+    xEvent.xbutton.y_root = globalPoints.y()* device;
     xEvent.xbutton.display = display;
 
     XSendEvent(display,this->effectiveWinId(),False,ButtonReleaseMask,&xEvent);

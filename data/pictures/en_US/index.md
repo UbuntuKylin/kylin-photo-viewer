@@ -21,8 +21,7 @@ Icons and Function:
 
 <br>
 
-Click the "+" button in the main interface or the "![](image/menu1.png)" button to open a picture. If there are multiple pictures in the folder, you can click the "previous" or "next" button
-to switch. As shown in Figure 2.
+Click the "+" button in the main interface or the "![](image/menu1.png)" button to open a picture. If there are multiple pictures in the folder, the album will be displayed automatically. Click the album thumbnail or "next" button to switch. As shown in Figure 2.
 
 ![Fig 2 Open image-big](image/openImage.png)
 <br>
@@ -51,6 +50,17 @@ Click the "![](image/btn10.png)" button in the toolbar to view the details of th
 ![Fig 6 View details-big](image/information1.png)
 
 Click the "![](image/btn11.png)" button in the toolbar to delete the current picture to the recycle bin.
+
+<br>
+
+## ContextMenu
+The right-click menu of pictures mainly includes the following functions: copy, print, delete, rename, set as desktop wallpaper, and show in file. As shown in Figure 7.
+
+![Fig 7 Right click menu-big](image/menu.png)
+
+Click the copy option to copy the image to the clipboard. Click the print option to send the picture to the printer for printing. Click the delete option to delete the current picture to the
+recycle bin. Click rename to edit the current image file name. In addition, you can set the image format supported by desktop wallpaper to desktop wallpaper. Finally, you can select display
+directly in the folder.
 
 <br>
 
